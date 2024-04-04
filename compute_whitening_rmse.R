@@ -7,7 +7,7 @@ spec = matrix(c(
   ), byrow=TRUE, ncol=4)
 opt = getopt(spec)
 
-# /hpc/users/hoffmg01/work/decorrelate_analysis/compute_whitening_rmse.R --super_pop EUR -- out df_EUR.RDS
+# /hpc/users/hoffmg01/work/decorrelate_analysis/compute_whitening_rmse.R --super_pop EUR --out df_EUR.RDS
 
 suppressPackageStartupMessages({
 library(VariantAnnotation)
@@ -68,7 +68,7 @@ df = lapply(1:nrow(df_grid), function(i){
     info = infoAll[idx,]
 
     # read in genome-blocks for this population
-    file = paste0("ldetect-data/", df_grid$super_pop[i], "/fourier_ls-all_mod.bed")
+    file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/ldetect-data/", df_grid$super_pop[i], "/fourier_ls-all_mod.bed")
     gr = import(file, format="bed")
     seqlevelsStyle(gr) = "NCBI"
 
@@ -81,7 +81,7 @@ df = lapply(1:nrow(df_grid), function(i){
 
     df = lapply(seq(length(gr_chr)), function(k){
       # Read data in range
-      vcf.file = paste0("filter/", df_grid$super_pop[i], ".chr",df_grid$chrom[i], ".vcf.gz")
+      vcf.file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/filter/", df_grid$super_pop[i], ".chr",df_grid$chrom[i], ".vcf.gz")
       res = readVcf( vcf.file, genome = "GRCh37", param = gr_chr[k] )
       data = genotypeToSnpMatrix(res)
 
