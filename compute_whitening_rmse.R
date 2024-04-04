@@ -7,7 +7,18 @@ spec = matrix(c(
   ), byrow=TRUE, ncol=4)
 opt = getopt(spec)
 
-# /hpc/users/hoffmg01/work/decorrelate_analysis/compute_whitening_rmse.R --super_pop EUR --out df_EUR.RDS
+# SRC=/hpc/users/hoffmg01/work/decorrelate_analysis/compute_whitening_rmse.R
+#
+# $SRC --super_pop EUR --out df_EUR.RDS
+# $SRC --super_pop AFR --out df_AFR.RDS
+# $SRC --super_pop ASN --out df_ASN.RDS
+
+
+# ml plink/1.90b6.5 parallel
+
+# cd /sc/arion/projects/CommonMind/hoffman/ldref
+
+# seq 1 22 | parallel -P8 "plink  --geno 0  --hwe 1e-5  --keep ASN.indivs --maf 0.05 --out filter/ASN.chr{} --recode vcf --snps-only --vcf /sc/arion/projects/data-ark/Public_Unrestricted/1000G/phase3//VCF/ALL.chr{}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz"
 
 suppressPackageStartupMessages({
 library(VariantAnnotation)
@@ -15,15 +26,9 @@ library(GenomicRanges)
 library(rtracklayer)
 library(decorrelate)
 library(Rfast)
-# library(ggplot2)
 library(CovTools)
 library(corpcor)
-# library(beam)
 library(ShrinkCovMat)
-# library(Matrix)
-# library(survival)
-# library(tidyverse)
-# library(whitening)
 })
 
 
@@ -53,7 +58,7 @@ infoAll$sample = paste(infoAll$sample, infoAll$sample, sep="_")
 
 methods = c("eb",  "0", "0.01", "Schafer", "LW", "Touloumis") 
 
-df_grid = expand.grid(chrom=22:22, super_pop=opt$super_pop, stringsAsFactors=FALSE)
+df_grid = expand.grid(chrom=1:22, super_pop=opt$super_pop, stringsAsFactors=FALSE)
 
 maf = function(x){
     af = sum(x) / (2*length(x))
@@ -79,7 +84,7 @@ df = lapply(1:nrow(df_grid), function(i){
     idx_train = sample(nrow(info), 0.5*nrow(info))
     idx_test = setdiff(seq(nrow(info)), idx_train)
 
-    df = lapply(seq(length(gr_chr))[1:3], function(k){
+    df = lapply(seq(length(gr_chr)), function(k){
       # Read data in range
       vcf.file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/filter/", df_grid$super_pop[i], ".chr",df_grid$chrom[i], ".vcf.gz")
       res = readVcf( vcf.file, genome = "GRCh37", param = gr_chr[k] )
