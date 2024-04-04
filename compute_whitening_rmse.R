@@ -13,11 +13,11 @@ opt = getopt(spec)
 # $SRC --super_pop AFR --out df_AFR.RDS
 # $SRC --super_pop ASN --out df_ASN.RDS
 
+# printf "EUR\nAFR\nASN" | parallel -P3 "$SRC --super_pop {} --out df_{}.RDS"
 
+# Create filtered VCFs
 # ml plink/1.90b6.5 parallel
-
 # cd /sc/arion/projects/CommonMind/hoffman/ldref
-
 # seq 1 22 | parallel -P8 "plink  --geno 0  --hwe 1e-5  --keep ASN.indivs --maf 0.05 --out filter/ASN.chr{} --recode vcf --snps-only --vcf /sc/arion/projects/data-ark/Public_Unrestricted/1000G/phase3//VCF/ALL.chr{}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz"
 
 suppressPackageStartupMessages({
