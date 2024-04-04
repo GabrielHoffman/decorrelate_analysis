@@ -1,166 +1,62 @@
+---
+title: "Evaluate out-of-sample performance of whitening transform"
+subtitle: 'Run on SNPs from 1000 Genomes project'
+author: "Developed by [Gabriel Hoffman](http://gabrielhoffman.github.io/)"
+date: "Run on `r Sys.time()`"
+output: 
+  html_document:
+    toc: true
+    smart: true
+params:
+  DATASET: NULL
+---
 
-cd /sc/arion/projects/CommonMind/hoffman/ldref
+
+<!--- 
+
+cd /hpc/users/hoffmg01/work/decorrelate_analysis
+
+git pull 
 R
 
+system("git pull"); rmarkdown::render("eval_whitening.Rmd")
+
+
+
+# https://hoffmg01.hpc.mssm.edu/nps_ad//analysis/freeze2/concordance/psychencode.html
+
+
+--->
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning=FALSE,
+  message=FALSE,
+  error = FALSE,
+  tidy = FALSE,
+  dev = c("png", "pdf"),
+  package.startup.message = FALSE,
+  cache = TRUE,
+  cache.lazy = TRUE)
+```
+
+
+# Loading
+## Libraries
+```{r load.packages, cache=FALSE}
 suppressPackageStartupMessages({
-library(VariantAnnotation)
-library(GenomicRanges)
-library(rtracklayer)
-library(decorrelate)
-library(Rfast)
 library(ggplot2)
-library(CovTools)
-library(corpcor)
-library(beam)
-library(ShrinkCovMat)
-library(Matrix)
-library(survival)
 library(tidyverse)
-library(whitening)
 })
+```
 
-# from: /Users/gabrielhoffman/workspace/repos/eval_methods/decorrelate
-# norm of matrix compared to identity,
-# This is the root mean squared error of the off diagonal entries
-normCov = function(Sigma){
+```{r read.data}
+df = readRDS("df_EUR.RDS")
+```
 
-  if( length(Sigma) == 1)
-    if( is.na(Sigma) ) return(NA)
-
-  # Based on Frobenius norm  
-  # same as mse
-  # value = base::norm(Sigma - diag(1, nrow(Sigma)), "F")^2 / length(Sigma)
-  # sqrt(value)
-	# base::norm(Sigma - diag(1, nrow(Sigma)), "F") / nrow(Sigma)
-
-  mse = mean((Sigma-diag(1, nrow(Sigma)))^2)
-  sqrt(mse)
-}
-
-
-file = "/sc/arion/projects/data-ark/Public_Unrestricted/1000G/phase3/release_2013502/integrated_call_samples_v3.20130502.ALL.panel"
-infoAll = read.table(file, header=TRUE)
-infoAll$sample = paste(infoAll$sample, infoAll$sample, sep="_")
-
-
-methods = c("eb",  "0", "0.01", "Schafer", "LW", "Touloumis") 
-df_grid = expand.grid(chrom=22:22, super_pop="EUR", stringsAsFactors=FALSE)
-
-maf = function(x){
-	af = sum(x) / (2*length(x))
-	min(af, 1-af)
-}
-
-
-df = lapply(1:nrow(df_grid), function(i){
-
-	# subset info to this super pop
-	idx = which(infoAll$super_pop == df_grid$super_pop[i])
-	info = infoAll[idx,]
-
-	# read in genome-blocks for this population
-	file = paste0("ldetect-data/", df_grid$super_pop[i], "/fourier_ls-all_mod.bed")
-	gr = import(file, format="bed")
-	seqlevelsStyle(gr) = "NCBI"
-
-	# subset Granges for this chrom
-	gr_chr = gr[seqnames(gr) == df_grid$chrom[i]]
-
-	# get training set
-	idx_train = sample(nrow(info), 0.5*nrow(info))
-	idx_test = setdiff(seq(nrow(info)), idx_train)
-
-	df = lapply(seq(length(gr_chr)), function(k){
-		# Read data in range
-		vcf.file = paste0("filter/", df_grid$super_pop[i], ".chr",df_grid$chrom[i], ".vcf.gz")
-		res = readVcf( vcf.file, genome = "GRCh37", param = gr_chr[k] )
-		data = genotypeToSnpMatrix(res)
-
-		# Convert to numeric
-		X = as(data$genotypes, "numeric")
-
-		identical(rownames(X), info$sample)
-
-		# pass MAF filter in both sets
-		min_af = 0
-		keep = (apply(X[idx_train,], 2, maf) > min_af) & (apply(X[idx_test,], 2, maf) > min_af)
-		table(keep)
-
-		X = scale(X)
-		# Get SNPs with non-zero variance in both training and testing
-		X_train = X[idx_train,]
-		X_test = X[idx_test,]
-
-		# learn transformation
-		ecl = eclairs( X_train[,keep], compute="corr")
-
-		rMSE_baseline = normCov(cora(X_test[,keep]))
-
-		df = lapply( methods, function(method){
-
-			message("\r", df_grid$chrom[i], " ", k, " ", method, "   ", appendLF=FALSE)
-
-			# select lambda based on method
-			lambda = switch( method, 
-				eb = ecl$lambda, 
-				"beam" = beam(X_train[,keep], verbose=FALSE)@alphaOpt,
-				"0" = 0,
-				"0.01" = 0.01,
-				"LW" = CovEst.2003LW( scale(X_train[,keep]) )$delta,
-				"Touloumis" = shrinkcovmat.identity(scale(X_train[,keep]))$lambdahat,
-				"Schafer" = estimate.lambda(scale(X_train[,keep]), verbose=FALSE)  )
-
-	    lambda = min(1, max(0, lambda))
-
-			# transform testing data
-			X_test_white = decorrelate(X_test[,keep], ecl, lambda=lambda)
-
-			rMSE = normCov(cora(X_test_white))
-
-			# get rMSE
-			data.frame(method, df_grid[i,], gr_chr[k], nsnps = ncol(X), lambda, rMSE, rMSE_baseline, averageCorr = averageCorr(ecl))
-		})
-		do.call(rbind, df)
-	})
-	do.call(rbind, df)
-})
-df = do.call(rbind, df)
-
-saveRDS(df, file=opt$out)
-
-
-lamb = seq(1e-4, 1, length.out=10)
-values = sapply(lamb, function(x){
-	a = decorrelate(X_test[,keep], ecl, lambda=x)
-	normCov(cora(a))
-	})
-plot(lamb, values)
-
-library(adjclust)
-hcl = adjClust(cora(X), h=100, strictCheck=FALSE)
-clst = cutree_chac(hcl, k=5)
-keep = names(clst)[clst == 1]
-
-df %>%
-	group_by(method) %>%
-	summarize( mean = mean(rMSE/rMSE_baseline))
-
-
-ggplot(df, aes(method, lambda)) + 
-	geom_boxplot() +
-	theme_classic() +
-	theme(aspect.ratio=1)
-
-
-
-ggplot(df, aes(method, rMSE/rMSE_baseline)) + 
-	geom_boxplot() +
-	theme_classic() +
-	theme(aspect.ratio=1) +
-	scale_y_log10()
-
-
-
+```{r plots, cache=FALSE}
 df %>%
 	mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
 	filter(method != "0") %>%
@@ -173,8 +69,7 @@ df %>%
 	ylab("Relative reduction in rMSE")
 
 
-
-fig = df %>%
+df %>%
 	mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
 	mutate(category = cut(nsnps, breaks = c(0, 100, 200, 500, 1000, 2000, 5000, Inf))) %>%
 	filter(method != "0") %>%
@@ -186,7 +81,6 @@ fig = df %>%
 		facet_wrap(~category) +
 		theme(aspect.ratio=1) +
 		ylab("Relative reduction in rMSE (%)")
-ggsave(fig, file = "rMSE_SNP.pdf")
 
 
 df %>%
@@ -198,7 +92,6 @@ df %>%
 	geom_errorbar(aes(ymin = mean - 1.96*sem, ymax = mean + 1.96*sem), width=.1, color="red") +
 	theme_classic() +
 	theme(aspect.ratio=1)
-
 
 
 df %>%
@@ -229,203 +122,7 @@ df %>%
 	facet_wrap(~category) + 
 	theme(aspect.ratio=1) +
 	ylab("Relative reduction in rMSE")
-
-
-
-
-
-
-df$category = cut(df$nsnps, breaks = c(0, 2000, 3500, 5000, 10000))
-
-ggplot(df[df$method%in% methods[c(1,3,4)],], aes(method, rMSE/rMSE_baseline)) + 
-	geom_boxplot() +
-	theme_classic() + 
-	facet_wrap(~category) + 
-	theme(aspect.ratio=1)
-
-
-ggplot(df[df$method%in% methods[c(1,3,4)],], aes(averageCorr, rMSE/rMSE_baseline, color=method)) + 
-	geom_point() +
-	geom_smooth(method="lm", se=FALSE) +
-	theme_classic() +
-	theme(aspect.ratio=1)
-
-
-
-ggplot(df[df$method%in% methods[c(1,3,4)],], aes(nsnps, rMSE/rMSE_baseline, color=method)) + 
-	geom_point() +
-	geom_smooth(method="lm", se=FALSE) +
-	theme_classic() +
-	theme(aspect.ratio=1)
-
-
-
-
-
-C1 = cora(X_train[,keep])
-C2 = cora(X_test[,keep])
-
-cor(C1[lower.tri(C1)], C2[lower.tri(C2)])
-
-C12 = C1
-C12[lower.tri(C12)] = C2[lower.tri(C2)]
-
-image(C12^2, zlim=c(0,1))
-dev.new()
-image(cora(X_test_white)^2, zlim=c(0,1))
-
-
-# plot(C1[lower.tri(C1)], C2[lower.tri(C2)])
-
-
-df_lambda = lapply(seq(1e-4, 1-1e-4, length.out=30), function(lambda){
-
-	X_test_white = decorrelate(X_test[,keep], ecl, lambda=lambda)
-
-	rMSE = normCov(cora(X_test_white))
-
-	data.frame(lambda, rMSE)
-})
-df_lambda = do.call(rbind, df_lambda)
-
-
-# add lines showing lambda estimates
-ggplot(df_lambda, aes(lambda, rMSE)) +
-	geom_point() +
-	theme_classic() +
-	theme(aspect.ratio=1)
-
-
-
-
-# df_lambda_est = data.frame(		eb = ecl$lambda, 
-# 			"0.01" = 0.01,
-# 			# "LW" = CovEst.2003LW( scale(X_train[,keep]) )$delta,
-# 			"Touloumis" = shrinkcovmat.identity(scale(X_train[,keep]))$lambdahat,
-# 			"Schafer" = estimate.lambda(scale(X_train[,keep]), verbose=FALSE)  )
-
-ecl = eclairs( X_train[,keep])
-cor(decorrelate(X_train[,keep], ecl))
-
-
-cor(decorrelate::whiten(X_train[,keep], lambda=0))[1:4, 1:4]
-
-cor(whitening::whiten(X_train[,keep]))[1:4, 1:4]
-
-
-Y = X[,keep][,90:100]
-
-cor(decorrelate::whiten(Y))
-cor(decorrelate::whiten(Y, lambda=0))
-
-
-cor(whitening::whiten(Y))
-
-
-
-
-
-
-
-
-
-library(Rfast)
-set.seed(1)
-n = 8000 # number of samples
-p = 3 # number of features
-
-# create correlation matrix
-Sigma = autocorr.mat(p, .9)
-
-# draw data from correlation matrix Sigma
-Y = rmvnorm(n, rep(3, p), sigma=Sigma*5.1)
-
-# eclairs decomposition
-ecl = eclairs(Y, compute="cor")
-
-cor(decorrelate(Y, ecl))
-cor(decorrelate::whiten(Y))
-
-
-cor(decorrelate::whiten(Y, lambda=0))
-cor(whitening::whiten(Y))
-
-
-
-
-library(Matrix)
-library(Rfast)
-n = 9000
-p = 100
-Sigma = autocorr.mat(p/5, 0.1)
-Sigma = bdiag(Sigma, Sigma, Sigma, Sigma, Sigma)
-
-Y = Rfast::rmvnorm(n, rep(0, p), sigma = Sigma * 5.1)
-rownames(Y) = paste0("sample_", 1:n)
-colnames(Y) = paste0("gene_", 1:p)
-
-incl = 1:floor(n/2)
-ecl = eclairs(Y[incl,], compute="corr")
-# plot(ecl)
-normCov(cora(decorrelate(Y[-incl,], ecl, lambda = 0)))
-normCov(cora(decorrelate(Y[-incl,], ecl, lambda = 0.01)))
-normCov(cora(decorrelate(Y[-incl,], ecl)))
-normCov(cora(Y[-incl,]))
-
-
-averageCorr(ecl)
-
-
-
-cor_similiarty = function( X, pop){
-
-	upop = unique(pop)
-
-	cor.lst = lapply(upop, function( value){
-		cora(X[pop==value,])
-		})
-	names(cor.lst) = upop
-
-	grid = expand.grid(pop1 = upop, pop2 = upop)
-
-	df = lapply(seq(nrow(grid)), function(i){
-		A = cor.lst[[grid$pop1[i]]]
-		B = cor.lst[[grid$pop2[i]]]
-		
-		data.frame(pop1 = grid$pop1[i], 
-			pop2 = grid$pop2[i], 
-			value = sqrt(mean((A-B)^2, na.rm=TRUE)))
-		})
-	df = do.call(rbind, df)
-
-	C = with(df, sparseMatrix(i = as.numeric(pop1), 
-							j = as.numeric(pop2), 
-							x=value, 
-							dims=c(length(upop), length(upop)), 
-							dimnames=list(upop, upop)))
-	as.matrix(C)
-}
-
-
-
-
-gr_chr = gr[seqnames(gr) == df_grid$chrom[i]]
-
-C.lst = lapply(seq(length(gr_chr)), function(k){
-	message(k)
-	# Read data in range
-	vcf.file = paste0("filter/", df_grid$super_pop[i], ".chr",df_grid$chrom[i], ".vcf.gz")
-	res = readVcf( vcf.file, genome = "GRCh37", param = gr_chr[k] )
-	data = genotypeToSnpMatrix(res)
-
-	# Convert to numeric
-	X = as(data$genotypes, "numeric")
-	cor_similiarty(X, info$pop)
-})
-
-C = Reduce( "+", C.lst) / length(C.lst)
-
-
+```
 
 
 
