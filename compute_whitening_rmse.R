@@ -27,6 +27,8 @@ library(rtracklayer)
 library(decorrelate)
 library(Rfast)
 library(CovTools)
+library(survival)
+library(Matrix)
 library(corpcor)
 library(ShrinkCovMat)
 })
@@ -54,7 +56,7 @@ normCov = function(Sigma){
 file = "/sc/arion/projects/data-ark/Public_Unrestricted/1000G/phase3/release_2013502/integrated_call_samples_v3.20130502.ALL.panel"
 infoAll = read.table(file, header=TRUE)
 infoAll$sample = paste(infoAll$sample, infoAll$sample, sep="_")
-
+infoAll$super_pop[infoAll$super_pop == "EAS"] = "ASN"
 
 methods = c("eb",  "0", "0.01", "Schafer", "LW", "Touloumis") 
 
