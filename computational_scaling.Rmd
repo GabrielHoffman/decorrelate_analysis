@@ -206,7 +206,7 @@ library(cowplot)
 library(whitening)
 
 # due to parallel processing, curves are not exactly cubic and linear
-values = as.integer(sort(c(	seq(500, 20000, length.out=50), 
+# values = as.integer(sort(c(	seq(500, 20000, length.out=50), 
 			# seq(25000, 100000, length.out=10))))#,
 		# seq(200000, 1000000, length.out=5))))
 
