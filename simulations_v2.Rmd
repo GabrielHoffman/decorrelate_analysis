@@ -50,15 +50,15 @@ library(Matrix)
 library(Rfast)
 library(ggplot2)
 library(corpcor)
-# library(nlshrink)
 library(ShrinkCovMat)
-# library(TAS)
-# library(beam)
 library(cowplot)
 library(corpcor)
 library(ShrinkCovMat)
 library(CovTools)
+library(RhpcBLASctl)
 })
+
+omp_set_num_threads(12)
 
 # Create correlation matrix with autocorrelation
 autocorr.mat <- function(p = 100, rho = 0.9) {
