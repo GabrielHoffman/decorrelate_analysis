@@ -213,7 +213,7 @@ library(whitening)
 
 values = as.integer(sort(c(	seq(500, 20000, length.out=10))))
 
-df_values = data.frame(n = 1000, p = values, k = 20)
+df_values = data.frame(n = 1000, p = values, k = 50)
 
 df_time = eval_runTime( df_values, 1000, ncores=4 )
 
