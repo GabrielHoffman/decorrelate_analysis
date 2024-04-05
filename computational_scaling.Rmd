@@ -230,8 +230,8 @@ res = fit_curves( df_time, curves)
 ```{r plot.results, cache=FALSE, fig.height=6, fig.width=12}
 fig = ggplot(res$df_observed, aes(p, value, color=variable)) + geom_point() + theme_classic(16) + theme(aspect.ratio=1, plot.title = element_text(hjust = 0.5), legend.position="bottom") + xlab("Number of features") + ylab("Time (seconds)") + geom_line(data=res$df_smoothed, aes(p, value, color=variable)) + scale_color_manual(name="Method", values = c("red", "blue", "green")) + ggtitle("n = 5000")
 
-fig1 = fig + scale_y_continuous(expand=c(0,0), limits=c(0, max(df_time$naive, na.rm=TRUE))) + scale_x_continuous(limits=c(0, 20000), expand=c(0,0))
-fig2 = fig + scale_y_continuous(expand=c(0,0), limits=c(0, max(df_time$naive, na.rm=TRUE))) + scale_x_continuous(expand=c(0,0))
+fig1 = fig + scale_y_continuous(expand=c(0,1), limits=c(0, max(df_time$naive, na.rm=TRUE))) + scale_x_continuous(limits=c(0, 20000), expand=c(0,0))
+fig2 = fig + scale_y_continuous(expand=c(0,.5), limits=c(0, with(df_time, max(decorrelate, low.rank)))) + scale_x_continuous(expand=c(0,0))
 fig3 = fig + scale_x_log10() + scale_y_log10() + xlab(bquote(Number~of~features~(log[10]))) + ylab(bquote(Time~(log[10]~seconds)))
 
 plot_grid(fig1, fig2, fig3, nrow=1)
