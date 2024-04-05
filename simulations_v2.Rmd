@@ -23,8 +23,7 @@ cd /sc/arion/work/hoffmg01/decorrelate_analysis
 ml git pandoc
 
 R
-system("git pull")
-rmarkdown::render("simulations_v2.Rmd");
+system("git pull"); rmarkdown::render("simulations_v2.Rmd");
 
 https://hoffmg01.u.hpc.mssm.edu/eval_methods/decorrelate/simulations_v2.html
 
@@ -145,7 +144,7 @@ run_simulation = function(n, epsilon, p_array, sigma_method, rho){
     C_oracle = cor(Y[-idx_train,] %*% minvsqrt(Sigma))
 
     W = get_w_ginv(scale(Y[idx_train,]), min(dim(Y))-1)
-    value.pseudoinverse = normCov(cor(tcrossprod(Y[-idx_train,], W))
+    value.pseudoinverse = normCov(cor(tcrossprod(Y[-idx_train,], W)))
 
     data.frame(p = p,
                 lambda.eb = ecl_cov$lambda,
