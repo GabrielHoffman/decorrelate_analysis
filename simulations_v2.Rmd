@@ -228,7 +228,7 @@ n = 1000 # number of samples
 idx_train = 1:(n/2)
 epsilon = 1e-4 
 
-p_array = as.integer(seq(20, 1.2*n, length.out=30))
+p_array = as.integer(seq(20, 1.2*n, length.out=300))
 
 # run_simulation(n, epsilon, p_array, sigma_method, rho)
 df_melt = run_simulation(n, epsilon, p_array, "constant", rho = .6)
@@ -260,7 +260,7 @@ n = 1000 # number of samples
 idx_train = 1:(n/2)
 epsilon = 1e-4
  
-p_array = as.integer(seq(20, 1.2*n, length.out=30))
+p_array = as.integer(seq(20, 1.2*n, length.out=300))
 
 # run_simulation(n, epsilon, p_array, sigma_method, rho)
 df_melt = run_simulation(n, epsilon, p_array, "autocorr", rho = .95)
@@ -292,7 +292,7 @@ n = 1000 # number of samples
 idx_train = 1:(n/2)
 epsilon = 1e-4
   
-p_array = as.integer(seq(20, 1.2*n, length.out=30))
+p_array = as.integer(seq(20, 1.2*n, length.out=300))
 
 # run_simulation(n, epsilon, p_array, sigma_method, rho)
 df_melt = run_simulation(n, epsilon, p_array, "block", rho = 0.6)
@@ -321,7 +321,7 @@ n = 1000 # number of samples
 idx_train = 1:(n/2)
 epsilon = 1e-4
   
-p_array = as.integer(seq(20, 1.2*n, length.out=30))
+p_array = as.integer(seq(20, 1.2*n, length.out=300))
 
 # run_simulation(n, epsilon, p_array, sigma_method, rho)
 df_melt = run_simulation(n, epsilon, p_array, "blockauto", rho = 0.95)
