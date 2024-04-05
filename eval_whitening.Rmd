@@ -53,7 +53,7 @@ library(tidyverse)
 ```
 
 ```{r all}
-for( pop in c("EUR", "ASN", "AFR")){
+for( pop in c("EUR", "ASN")){
 	file = paste("df_", pop, ".RDS")
 	df = readRDS(file)
 
