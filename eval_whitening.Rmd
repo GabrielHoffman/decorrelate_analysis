@@ -67,7 +67,7 @@ lapply(c("EUR", "ASN"), function(pop){
 			geom_boxplot() +
 			theme_classic()  +
 			theme(aspect.ratio=1, plot.title = element_text(hjust = 0.5)) +
-			facet_wrap(~category) +
+			facet_wrap( ~ category, nrow=1) +
 			theme(aspect.ratio=1) +
 			ylab("Relative reduction in rMSE (%)") +
 			scale_y_continuous(limits=c(0, NA)) +
