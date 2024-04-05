@@ -30,8 +30,11 @@ library(CovTools)
 library(survival)
 library(Matrix)
 library(corpcor)
+library(RhpcBLASctl)
 library(ShrinkCovMat)
 })
+
+omp_set_num_threads(12)
 
 
 # from: /Users/gabrielhoffman/workspace/repos/eval_methods/decorrelate
@@ -51,6 +54,9 @@ normCov = function(Sigma){
   mse = mean((Sigma-diag(1, nrow(Sigma)))^2)
   sqrt(mse)
 }
+
+# pseudoinverse with fixed rank
+
 
 
 file = "/sc/arion/projects/data-ark/Public_Unrestricted/1000G/phase3/release_2013502/integrated_call_samples_v3.20130502.ALL.panel"
