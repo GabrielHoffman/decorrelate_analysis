@@ -67,7 +67,7 @@ df %>%
 	theme_classic() +
 	theme(aspect.ratio=1) +
 	ylab("Relative reduction in rMSE") +
-	scale_y_continous(limits=c(0, Inf))
+	scale_y_continuous(limits=c(0, Inf))
 
 
 df %>%
@@ -82,7 +82,7 @@ df %>%
 		facet_wrap(~category) +
 		theme(aspect.ratio=1) +
 		ylab("Relative reduction in rMSE (%)") +
-		scale_y_continous(limits=c(0, Inf))
+		scale_y_continuous(limits=c(0, Inf))
 
 
 df %>%
