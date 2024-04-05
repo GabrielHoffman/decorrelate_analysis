@@ -61,17 +61,19 @@ lapply(c("EUR", "ASN"), function(pop){
 		mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
 		mutate(category = cut(nsnps, breaks = c(0, 100, 200, 500, 1000, 2000, 5000, Inf))) %>%
 		filter(method != "0") %>%
-		filter(method != "Touloumis") %>%
 		group_by(method) %>%
-		ggplot(aes(method, rel.err*100, color=method)) + 
+		ggplot(aes(method, rel.err*100, fill=method)) + 
 			geom_boxplot() +
 			theme_classic()  +
-			theme(aspect.ratio=1, plot.title = element_text(hjust = 0.5)) +
+			theme(aspect.ratio=1, 
+				plot.title = element_text(hjust = 0.5),
+				legend.position="none") +
 			facet_wrap( ~ category, nrow=1) +
 			theme(aspect.ratio=1) +
 			ylab("Relative reduction in rMSE (%)") +
 			scale_y_continuous(limits=c(0, NA)) +
-			ggtitle(pop)
+			ggtitle(pop) +
+			coord_flip()
 })
 ```
 
