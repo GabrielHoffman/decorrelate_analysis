@@ -217,7 +217,7 @@ values = as.integer(sort(c(	seq(500, 20000, length.out=5))))
 
 df_values = data.frame(n = 5000, p = values, k = 20)
 
-df_time = eval_runTime( df_values, 10000 )
+df_time = eval_runTime( df_values, 2000 )
 
 curves = c(decorrelate ~ 0 + p + I(p^2),
 	naive ~ 0 + I(p^2) + I(p^3),
