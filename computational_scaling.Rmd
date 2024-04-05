@@ -207,7 +207,7 @@ library(whitening)
 
 # due to parallel processing, curves are not exactly cubic and linear
 values = as.integer(sort(c(	seq(500, 20000, length.out=50), 
-			seq(25000, 100000, length.out=50))))#,
+			seq(25000, 100000, length.out=10))))#,
 		# seq(200000, 1000000, length.out=5))))
 
 
@@ -217,7 +217,7 @@ values = as.integer(sort(c(	seq(500, 20000, length.out=50),
 
 df_values = data.frame(n = 1000, p = values, k = 20)
 
-df_time = eval_runTime( df_values, 10000 )
+df_time = eval_runTime( df_values, 1000, ncores=4 )
 
 curves = c(decorrelate ~ 0 + p + I(p^2),
 	naive ~ 0 + I(p^2) + I(p^3),
