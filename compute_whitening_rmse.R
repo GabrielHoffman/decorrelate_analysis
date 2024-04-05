@@ -70,7 +70,7 @@ infoAll$super_pop[infoAll$super_pop == "EAS"] = "ASN"
 
 methods = c('GIW-EB (current work)',  "0", "0.01", "Schäfer-Strimmer", "Ledoit-Wolf", "Touloumis", "OAS") 
 
-df_grid = expand.grid(chrom=22:22, super_pop=opt$super_pop, stringsAsFactors=FALSE)
+df_grid = expand.grid(chrom=1:22, super_pop=opt$super_pop, stringsAsFactors=FALSE)
 
 maf = function(x){
     af = sum(x) / (2*length(x))
@@ -96,7 +96,7 @@ df = lapply(1:nrow(df_grid), function(i){
     idx_train = sample(nrow(info), 0.5*nrow(info))
     idx_test = setdiff(seq(nrow(info)), idx_train)
 
-    df = lapply(seq(length(gr_chr))[1:5], function(k){
+    df = lapply(seq(length(gr_chr)), function(k){
       # Read data in range
       vcf.file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/filter/", df_grid$super_pop[i], ".chr",df_grid$chrom[i], ".vcf.gz")
       res = readVcf( vcf.file, genome = "GRCh37", param = gr_chr[k] )
