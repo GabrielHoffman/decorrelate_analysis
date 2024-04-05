@@ -19,7 +19,7 @@ vignette: >
 
 <!--- 
 
-cd /hpc/users/hoffmg01/work/eval_methods/decorrelate
+cd /sc/arion/work/hoffmg01/decorrelate_analysis
 ml git pandoc
 
 R
@@ -91,6 +91,15 @@ minvsqrt = function(S){
   with(dcmp, vectors %*% diag(1/sqrt(values)) %*% t(vectors))
 }
 
+
+# whiten with pseudoinverse with fixed rank
+get_w_ginv = function(X, k){
+  C = cov(X)
+  dcmp = eigen(C)
+  W = with(dcmp, vectors[,seq(k)] %*% diag(1/sqrt(values[seq(k)])) %*% t(vectors[,seq(k)]))
+  W
+}
+
 run_simulation = function(n, epsilon, p_array, sigma_method, rho){
 
   df = lapply(p_array, function(p){
@@ -120,6 +129,7 @@ run_simulation = function(n, epsilon, p_array, sigma_method, rho){
     C_decorr = cor(decorrelate(Y[-idx_train,], ecl_cov))
 
     lambda.LW = CovTools::CovEst.2003LW( scale(Y[idx_train,]) )$delta
+    lambda.OAS = CovTools::CovEst.2010OAS( scale(Y[idx_train,]) )$rho
     lambda.Touloumis = ShrinkCovMat::shrinkcovmat.identity(scale(Y[idx_train,]))$lambdahat
     lambda.Schafer = corpcor::estimate.lambda(scale(Y[idx_train,]), verbose=FALSE)
 
@@ -128,17 +138,23 @@ run_simulation = function(n, epsilon, p_array, sigma_method, rho){
     C_lambda_0 = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=0))
     C_lambda_0.01 = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=0.01))
     C_lambda_LW = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=lambda.LW))
+    C_lambda_OAS = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=lambda.OAS))
     C_lambda_Touloumis = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=lambda.Touloumis))
     C_lambda_lambda.Schafer = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=lambda.Schafer))
 
     C_oracle = cor(Y[-idx_train,] %*% minvsqrt(Sigma))
 
+    W = get_w_ginv(scale(Y[idx_train,]), min(dim(Y))-1)
+    value.pseudoinverse = normCov(cor(tcrossprod(Y[-idx_train,], W))
+
     data.frame(p = p,
                 lambda.eb = ecl_cov$lambda,
                 'No transform' = normCov(cor(Y[-idx_train,])), # same as lambda = 1
-                'epsilon = 1e-4' = normCov(C_lambda_0),
+                # 'epsilon = 1e-4' = normCov(C_lambda_0),
+                "Pseudoinverse" = value.pseudoinverse,
                 'lambda = 0.01' = normCov( C_lambda_0.01),
                 'Ledoit-Wolf' = normCov(C_lambda_LW),
+                'OAS' = normCov(C_lambda_OAS),
                 'Touloumis' = normCov(C_lambda_Touloumis),
                 'Schäfer-Strimmer' = normCov(C_lambda_lambda.Schafer),
                 'GIW-EB (current work)' = normCov(C_decorr),
@@ -183,11 +199,9 @@ df_lambda = c('GIW-EB (current work)' = ecl$lambda,
       "Touloumis" = shrinkcovmat.identity(Y[idx_train,])$lambdahat,
       "Schäfer-Strimmer" = estimate.lambda(Y[idx_train,], verbose=FALSE) )
 
-
 df_lambda = data.frame(lambda = df_lambda) %>%
       rownames_to_column %>%
       rename( Method = "rowname")
-
 
 res = lapply(seq(0.01, .9, length.out=20), function(lambda){
       cat("\r", lambda, '   ')
@@ -208,14 +222,11 @@ ggplot(res, aes(lambda, rMSE)) +
       geom_point(data = res[i,], aes(x = lambda, y = rMSE), color="red")
 ```
 
-```{r exit, cache=FALSE}
-knitr::knit_exit()
-```
 
 ## Constant correlation: $\rho = 0.6$
 ```{r run_sim1}
 set.seed(12)
-n = 1000 # number of samples
+n = 10 # number of samples
 idx_train = 1:(n/2)
 epsilon = 1e-4 
 
@@ -240,6 +251,11 @@ ymax = 1.02*max(df_melt$value[df_melt$variable == 'Schäfer-Strimmer'])
 ymin = 0.98*min(df_melt$value)
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+```
+
+
+```{r exit, cache=FALSE}
+knitr::knit_exit()
 ```
 
 
