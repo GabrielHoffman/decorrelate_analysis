@@ -142,7 +142,7 @@ run_simulation = function(n, epsilon, p_array, sigma_method, rho){
 
     C_oracle = cor(Y[-idx_train,] %*% minvsqrt(Sigma))
 
-    W = get_w_ginv(scale(Y[idx_train,]), min(dim(Y))-1)
+    W = get_w_ginv(scale(Y[idx_train,]), min(dim(Y[idx_train,]))-1)
     value.pseudoinverse = normCov(cor(tcrossprod(Y[-idx_train,], W)))
 
     data.frame(p = p,
