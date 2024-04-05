@@ -34,7 +34,7 @@ library(RhpcBLASctl)
 library(ShrinkCovMat)
 })
 
-omp_set_num_threads(12)
+omp_set_num_threads(4)
 
 
 # from: /Users/gabrielhoffman/workspace/repos/eval_methods/decorrelate
@@ -55,18 +55,22 @@ normCov = function(Sigma){
   sqrt(mse)
 }
 
-# pseudoinverse with fixed rank
-
-
+# whiten with pseudoinverse with fixed rank
+get_w_ginv = function(X, k){
+  C = cov(X)
+  dcmp = eigen(C)
+  W = with(dcmp, vectors[,seq(k)] %*% diag(1/sqrt(values[seq(k)])) %*% t(vectors[,seq(k)]))
+  W
+}
 
 file = "/sc/arion/projects/data-ark/Public_Unrestricted/1000G/phase3/release_2013502/integrated_call_samples_v3.20130502.ALL.panel"
 infoAll = read.table(file, header=TRUE)
 infoAll$sample = paste(infoAll$sample, infoAll$sample, sep="_")
 infoAll$super_pop[infoAll$super_pop == "EAS"] = "ASN"
 
-methods = c("eb",  "0", "0.01", "Schafer", "LW", "Touloumis") 
+methods = c('GIW-EB (current work)',  "0", "0.01", "Schäfer-Strimmer", "Ledoit-Wolf", "Touloumis", "OAS") 
 
-df_grid = expand.grid(chrom=1:22, super_pop=opt$super_pop, stringsAsFactors=FALSE)
+df_grid = expand.grid(chrom=22:22, super_pop=opt$super_pop, stringsAsFactors=FALSE)
 
 maf = function(x){
     af = sum(x) / (2*length(x))
@@ -92,7 +96,7 @@ df = lapply(1:nrow(df_grid), function(i){
     idx_train = sample(nrow(info), 0.5*nrow(info))
     idx_test = setdiff(seq(nrow(info)), idx_train)
 
-    df = lapply(seq(length(gr_chr)), function(k){
+    df = lapply(seq(length(gr_chr))[1:5], function(k){
       # Read data in range
       vcf.file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/filter/", df_grid$super_pop[i], ".chr",df_grid$chrom[i], ".vcf.gz")
       res = readVcf( vcf.file, genome = "GRCh37", param = gr_chr[k] )
@@ -110,34 +114,47 @@ df = lapply(1:nrow(df_grid), function(i){
 
       X = scale(X)
       # Get SNPs with non-zero variance in both training and testing
-      X_train = X[idx_train,]
-      X_test = X[idx_test,]
+      X_train = X[idx_train,keep]
+      X_test = X[idx_test,keep]
 
       # learn transformation
-      ecl = eclairs( X_train[,keep], compute="corr")
+      ecl = eclairs( X_train, compute="corr")
 
-      rMSE_baseline = normCov(cora(X_test[,keep]))
+      rMSE_baseline = normCov(cora(X_test))
 
       df = lapply( methods, function(method){
 
           message("\r", df_grid$chrom[i], " ", k, " ", method, "   ", appendLF=FALSE)
 
-          # select lambda based on method
-          lambda = switch( method, 
-            eb = ecl$lambda, 
-            "beam" = beam(X_train[,keep], verbose=FALSE)@alphaOpt,
-            "0" = 0,
-            "0.01" = 0.01,
-            "LW" = CovEst.2003LW( scale(X_train[,keep]) )$delta,
-            "Touloumis" = shrinkcovmat.identity(scale(X_train[,keep]))$lambdahat,
-            "Schafer" = estimate.lambda(scale(X_train[,keep]), verbose=FALSE)  )
+          if( method == 'Pseudoinverse'){
+            rnk = min(dim(X_train)-1)
+            W = get_w_ginv(scale(X_train), rnk)
 
-          lambda = min(1, max(0, lambda))
+            X_test_white = tcrossprod(X_test, W)
 
-          # transform testing data
-          X_test_white = decorrelate(X_test[,keep], ecl, lambda=lambda)
+            rMSE = normCov(cora(X_test_white))
 
-          rMSE = normCov(cora(X_test_white))
+            }else{
+                X_tr = scale(X_train)
+
+                # select lambda based on method
+                lambda = switch( method, 
+                  'GIW-EB (current work)' = ecl$lambda, 
+                  # "beam" = beam(X_tr, verbose=FALSE)@alphaOpt,
+                  "0" = 0,
+                  "0.01" = 0.01,
+                  "Ledoit-Wolf" = CovEst.2003LW( X_tr )$delta,
+                  "OAS" = CovEst.2010OAS(X_tr)$rho,
+                  "Touloumis" = shrinkcovmat.identity(X_tr)$lambdahat,
+                  "Schäfer-Strimmer" = estimate.lambda(X_tr, verbose=FALSE)  )
+
+                lambda = min(1, max(0, lambda))
+
+                # transform testing data
+                X_test_white = decorrelate(X_test, ecl, lambda=lambda)
+
+                rMSE = normCov(cora(X_test_white))
+            }
 
           # get rMSE
           data.frame(method, df_grid[i,], gr_chr[k], nsnps = ncol(X), lambda, rMSE, rMSE_baseline, averageCorr = averageCorr(ecl))
@@ -149,4 +166,17 @@ df = lapply(1:nrow(df_grid), function(i){
 df = do.call(rbind, df)
 
 saveRDS(df, file=opt$out)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
