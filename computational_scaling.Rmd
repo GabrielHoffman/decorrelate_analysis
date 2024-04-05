@@ -211,9 +211,9 @@ values = as.integer(sort(c(	seq(500, 20000, length.out=50),
 		# seq(200000, 1000000, length.out=5))))
 
 
-values = as.integer(sort(c(	seq(50, 2000, length.out=10))))
+# values = as.integer(sort(c(	seq(50, 2000, length.out=10))))
 
-# values = as.integer(sort(c(	seq(500, 10000, length.out=10))))
+values = as.integer(sort(c(	seq(500, 10000, length.out=10))))
 
 df_values = data.frame(n = 1000, p = values, k = 20)
 
