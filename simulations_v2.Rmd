@@ -1,0 +1,349 @@
+
+---
+title: "Decorrelate simulations"
+subtitle: ''
+author: "Developed by [Gabriel Hoffman](http://gabrielhoffman.github.io/)"
+date: "Run on `r Sys.time()`"
+documentclass: article
+output: 
+  html_document:
+  toc: true
+  smart: false
+vignette: >
+  %\VignetteIndexEntry{Decorrelate}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\usepackage[utf8]{inputenc}
+---
+
+
+<!--- 
+
+cd /hpc/users/hoffmg01/work/eval_methods/decorrelate
+ml git pandoc
+
+R
+system("git pull")
+rmarkdown::render("simulations_v2.Rmd");
+
+https://hoffmg01.u.hpc.mssm.edu/eval_methods/decorrelate/simulations_v2.html
+
+
+--->
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning=FALSE,
+  message=FALSE,
+  error = FALSE,
+  tidy = FALSE,
+  eval = TRUE,
+  dev = c("png", "pdf"),
+  cache = TRUE)
+```
+
+```{r load.packages, cache=FALSE}
+suppressPackageStartupMessages({
+library(decorrelate)
+library(Matrix)
+library(Rfast)
+library(ggplot2)
+library(corpcor)
+# library(nlshrink)
+library(ShrinkCovMat)
+# library(TAS)
+# library(beam)
+library(cowplot)
+library(corpcor)
+library(ShrinkCovMat)
+library(CovTools)
+})
+
+# Create correlation matrix with autocorrelation
+autocorr.mat <- function(p = 100, rho = 0.9) {
+    mat <- diag(p)
+    return(rho^abs(row(mat)-col(mat)))
+}
+
+# norm of matrix compared to identity,
+# This is the root mean squared error of the off diagonal entries
+normCov = function(Sigma){
+
+  if( length(Sigma) == 1)
+    if( is.na(Sigma) ) return(NA)
+  # base::norm(Sigma - diag(1, nrow(Sigma)), "F")^2 / length(Sigma)
+
+  mse = mean((Sigma-diag(1, nrow(Sigma)))^2)
+  sqrt(mse)
+}
+
+# matrix square root
+msqrt = function(S){
+  dcmp = eigen(S)
+  with(dcmp, vectors %*% diag(sqrt(values)) %*% t(vectors))
+}
+
+minvsqrt = function(S){
+  dcmp = eigen(S)
+  with(dcmp, vectors %*% diag(1/sqrt(values)) %*% t(vectors))
+}
+
+run_simulation = function(n, epsilon, p_array, sigma_method, rho){
+
+  df = lapply(p_array, function(p){
+
+    # make sure p is even
+    p = 4*as.integer(p/4)
+
+    message(p)
+
+    # create correlation matrix
+    Sigma = switch( sigma_method,
+        "autocorr" = autocorr.mat(p, rho), 
+        "constant" = matrix(rho, p, p), 
+        "block" = bdiag(matrix(rho, p/4, p/4), matrix(rho, p/4, p/4), matrix(rho, p/4, p/4), matrix(rho, p/4, p/4)),
+        "blockauto" = bdiag(autocorr.mat(p/4, rho), autocorr.mat(p/4, rho), autocorr.mat(p/4, rho), autocorr.mat(p/4, rho)))
+    diag(Sigma) = 1
+
+    X_latent = scale(matrnorm(n,p))
+
+    # sample matrix from MVN with covariance Sigma
+    Y = X_latent %*% msqrt(Sigma)
+
+    # Estimate correlation with low rank and shrinkage
+    ecl_cov = eclairs( Y[idx_train,], compute="covariance")
+    ecl_cov$dSq = ecl_cov$dSq + epsilon
+
+    C_decorr = cor(decorrelate(Y[-idx_train,], ecl_cov))
+
+    lambda.LW = CovTools::CovEst.2003LW( scale(Y[idx_train,]) )$delta
+    lambda.Touloumis = ShrinkCovMat::shrinkcovmat.identity(scale(Y[idx_train,]))$lambdahat
+    lambda.Schafer = corpcor::estimate.lambda(scale(Y[idx_train,]), verbose=FALSE)
+
+    lambda.Touloumis = min(1, max(0, lambda.Touloumis))
+
+    C_lambda_0 = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=0))
+    C_lambda_0.01 = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=0.01))
+    C_lambda_LW = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=lambda.LW))
+    C_lambda_Touloumis = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=lambda.Touloumis))
+    C_lambda_lambda.Schafer = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=lambda.Schafer))
+
+    C_oracle = cor(Y[-idx_train,] %*% minvsqrt(Sigma))
+
+    data.frame(p = p,
+                lambda.eb = ecl_cov$lambda,
+                'No transform' = normCov(cor(Y[-idx_train,])), # same as lambda = 1
+                'epsilon = 1e-4' = normCov(C_lambda_0),
+                'lambda = 0.01' = normCov( C_lambda_0.01),
+                'Ledoit-Wolf' = normCov(C_lambda_LW),
+                'Touloumis' = normCov(C_lambda_Touloumis),
+                'Schäfer-Strimmer' = normCov(C_lambda_lambda.Schafer),
+                'GIW-EB (current work)' = normCov(C_decorr),
+                'Oracle' = normCov(C_oracle),
+                check.names=FALSE)
+  })
+  df = do.call(rbind, df)
+
+  df_melt = reshape2::melt(df, id.vars=c('p', 'lambda.eb'))
+  df_melt
+}
+```
+
+
+# rMSE curve
+```{r rMSE}
+set.seed(12)
+n = 500 # number of samples
+idx_train = 1:(n/2)
+p = 300
+rho = 0.6
+
+Sigma = bdiag(matrix(rho, p/4, p/4), matrix(rho, p/4, p/4), matrix(rho, p/4, p/4), matrix(rho, p/4, p/4))
+    diag(Sigma) = 1
+
+X_latent = scale(matrnorm(n,p))
+
+# sample matrix from MVN with covariance Sigma
+Y = X_latent %*% msqrt(Sigma)
+
+# Plot rMSE vs lambda
+######################
+library(tidyverse)
+
+ecl = eclairs( Y[idx_train,], compute="corr")
+
+df_lambda = c('GIW-EB (current work)' = ecl$lambda,
+      "0" = 0,
+      "0.01" = 0.01,
+      "Ledoit-Wolf" = CovEst.2003LW( Y[idx_train,] )$delta,
+      "OAS" = CovEst.2010OAS(Y[idx_train,])$rho,
+      "Touloumis" = shrinkcovmat.identity(Y[idx_train,])$lambdahat,
+      "Schäfer-Strimmer" = estimate.lambda(Y[idx_train,], verbose=FALSE) )
+
+
+df_lambda = data.frame(lambda = df_lambda) %>%
+      rownames_to_column %>%
+      rename( Method = "rowname")
+
+
+res = lapply(seq(0.01, .9, length.out=20), function(lambda){
+      cat("\r", lambda, '   ')
+      X_test_white = decorrelate(Y[-idx_train,], ecl, lambda=lambda)
+      rMSE = normCov(cora(X_test_white))
+      data.frame(lambda = lambda, rMSE = rMSE)
+})
+res = do.call(rbind, res)
+
+i = which.min(res$rMSE)
+
+ggplot(res, aes(lambda, rMSE)) +
+      geom_line(size=1) +
+      theme_classic() +
+      theme(aspect.ratio=1) +
+      xlim(0, 1) +
+      geom_vline(data = df_lambda, aes(xintercept=lambda, color=Method), size=2) +
+      geom_point(data = res[i,], aes(x = lambda, y = rMSE), color="red")
+```
+
+```{r exit, cache=FALSE}
+knitr::knit_exit()
+```
+
+## Constant correlation: $\rho = 0.6$
+```{r run_sim1}
+set.seed(12)
+n = 1000 # number of samples
+idx_train = 1:(n/2)
+epsilon = 1e-4 
+
+p_array = as.integer(seq(20, 1.2*n, length.out=300))
+
+# run_simulation(n, epsilon, p_array, sigma_method, rho)
+df_melt = run_simulation(n, epsilon, p_array, "constant", rho = .6)
+```
+
+```{r constant_correlation, cache=FALSE, fig.height=4, fig.width=12}
+df_melt$line = "1"
+df_melt$line[df_melt$variable == 'Ledoit-Wolf'] = "2"
+
+cols = c(RColorBrewer::brewer.pal(length(unique(df_melt$variable))-1, "Set1"), "black")
+
+cols[cols == "#FFFF33"]= "#cccc29"
+
+fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + geom_point(alpha=.2) + theme_classic() + theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + xlab("Number of features") + ylab("Root Mean Squared Error") + geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + scale_color_manual(name="Method",values = cols) + geom_smooth(method='loess', span=.2, se=FALSE) + scale_linetype_manual(values = c("solid", "dashed"))
+
+# ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
+ymax = 1.02*max(df_melt$value[df_melt$variable == 'Schäfer-Strimmer'])
+ymin = 0.98*min(df_melt$value)
+
+plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+```
+
+
+## Auto-correlation: $\rho = 0.95$
+```{r run_sim2}
+set.seed(12)
+n = 1000 # number of samples
+idx_train = 1:(n/2)
+epsilon = 1e-4
+ 
+p_array = as.integer(seq(20, 1.2*n, length.out=300))
+
+# run_simulation(n, epsilon, p_array, sigma_method, rho)
+df_melt = run_simulation(n, epsilon, p_array, "autocorr", rho = .95)
+```
+
+```{r auto_correlation, cache=FALSE, fig.height=4, fig.width=12}
+df_melt$line = "1"
+df_melt$line[df_melt$variable == 'Ledoit-Wolf'] = "2"
+
+cols = c(RColorBrewer::brewer.pal(length(unique(df_melt$variable))-1, "Set1"), "black")
+
+cols[cols == "#FFFF33"]= "#cccc29"
+
+fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + geom_point(alpha=.2) + theme_classic() + theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + xlab("Number of features") + ylab("Root Mean Squared Error") + geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + scale_color_manual(name="Method",values = cols) + geom_smooth(method='loess', span=.2, se=FALSE) + scale_linetype_manual(values = c("solid", "dashed"))
+
+ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
+ymin = 0.98*min(df_melt$value)
+
+plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+```
+
+
+
+
+## Block correlation: $\rho = 0.6$, 4 blocks
+```{r run_sim3}
+set.seed(12)
+n = 1000 # number of samples
+idx_train = 1:(n/2)
+epsilon = 1e-4
+  
+p_array = as.integer(seq(20, 1.2*n, length.out=300))
+
+# run_simulation(n, epsilon, p_array, sigma_method, rho)
+df_melt = run_simulation(n, epsilon, p_array, "block", rho = 0.6)
+```
+
+```{r block_correlation, cache=FALSE, fig.height=4, fig.width=12}
+df_melt$line = "1"
+df_melt$line[df_melt$variable == 'Ledoit-Wolf'] = "2"
+ 
+cols = c(RColorBrewer::brewer.pal(length(unique(df_melt$variable))-1, "Set1"), "black")
+
+cols[cols == "#FFFF33"]= "#cccc29"
+
+fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + geom_point(alpha=.2) + theme_classic() + theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + xlab("Number of features") + ylab("Root Mean Squared Error") + geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + scale_color_manual(name="Method",values = cols) + geom_smooth(method='loess', span=.2, se=FALSE) + scale_linetype_manual(values = c("solid", "dashed"))
+
+ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
+ymin = 0.98*min(df_melt$value)
+
+plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+```
+
+## Block auto-correlation: $\rho = 0.95$, 4 blocks
+```{r run_sim4}
+set.seed(12)
+n = 1000 # number of samples
+idx_train = 1:(n/2)
+epsilon = 1e-4
+  
+p_array = as.integer(seq(20, 1.2*n, length.out=300))
+
+# run_simulation(n, epsilon, p_array, sigma_method, rho)
+df_melt = run_simulation(n, epsilon, p_array, "blockauto", rho = 0.95)
+```
+
+```{r block_autocor, cache=FALSE, fig.height=4, fig.width=12}
+df_melt$line = "1"
+df_melt$line[df_melt$variable == 'Ledoit-Wolf'] = "2"
+ 
+cols = c(RColorBrewer::brewer.pal(length(unique(df_melt$variable))-1, "Set1"), "black")
+
+cols[cols == "#FFFF33"]= "#cccc29"
+
+fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + geom_point(alpha=.2) + theme_classic() + theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + xlab("Number of features") + ylab("Root Mean Squared Error") + geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + scale_color_manual(name="Method",values = cols) + geom_smooth(method='loess', span=.2, se=FALSE) + scale_linetype_manual(values = c("solid", "dashed"))
+
+ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
+ymin = 0.98*min(df_melt$value)
+
+plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
