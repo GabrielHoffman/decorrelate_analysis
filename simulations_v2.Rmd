@@ -252,10 +252,6 @@ plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ym
 ```
 
 
-```{r exit, cache=FALSE}
-knitr::knit_exit()
-```
-
 
 ## Auto-correlation: $\rho = 0.95$
 ```{r run_sim2}
