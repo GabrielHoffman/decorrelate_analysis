@@ -25,8 +25,7 @@ ml git pandoc
 R
 system("git pull"); rmarkdown::render("simulations_v2.Rmd");
 
-https://hoffmg01.u.hpc.mssm.edu/eval_methods/decorrelate/simulations_v2.html
-
+https://hoffmg01.hpc.mssm.edu/decorrelate_analysis/simulations_v2.html
 
 --->
 
@@ -225,7 +224,7 @@ ggplot(res, aes(lambda, rMSE)) +
 ## Constant correlation: $\rho = 0.6$
 ```{r run_sim1}
 set.seed(12)
-n = 10 # number of samples
+n = 100 # number of samples
 idx_train = 1:(n/2)
 epsilon = 1e-4 
 
