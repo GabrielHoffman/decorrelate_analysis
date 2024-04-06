@@ -306,7 +306,7 @@ cols = c(RColorBrewer::brewer.pal(length(unique(df_melt$variable))-1, "Set1"), "
 
 cols[cols == "#FFFF33"]= "#cccc29"
 
-fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + geom_point(alpha=.2) + theme_classic() + theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + xlab("Number of features") + ylab("Root Mean Squared Error") + geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + scale_color_manual(name="Method",values = cols) + geom_smooth(method='loess', span=.1, se=FALSE) + scale_linetype_manual(values = c("solid", "dashed"))
+fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + geom_point(alpha=.2) + theme_classic() + theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + xlab("Number of features") + ylab("Root Mean Squared Error") + geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + scale_y_continuous(limits=c(0, .35), expand=c(0,0)) + scale_color_manual(name="Method",values = cols) + geom_smooth(method='loess', span=.1, se=FALSE) + scale_linetype_manual(values = c("solid", "dashed"))
 
 ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
 ymin = 0.98*min(df_melt$value)
