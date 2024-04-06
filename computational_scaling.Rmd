@@ -206,16 +206,11 @@ library(cowplot)
 library(whitening)
 
 # due to parallel processing, curves are not exactly cubic and linear
-# values = as.integer(sort(c(	seq(500, 20000, length.out=50), 
-			# seq(25000, 100000, length.out=10))))#,
-		# seq(200000, 1000000, length.out=5))))
-
-
-values = as.integer(sort(c(	seq(500, 20000, length.out=10))))
+values = as.integer(sort(c(	seq(500, 100000, length.out=100))))
 
 df_values = data.frame(n = 5000, p = values, k = 50)
 
-df_time = eval_runTime( df_values, 5000, ncores=4 )
+df_time = eval_runTime( df_values, 10000, ncores=4 )
 
 curves = c(decorrelate ~ 0 + p + I(p^2),
 	naive ~ 0 + I(p^2) + I(p^3),
@@ -230,7 +225,7 @@ fig = ggplot(res$df_observed, aes(p, value, color=variable)) + geom_point() + th
 
 fig1 = fig + scale_y_continuous(expand=c(0,1), limits=c(0, max(df_time$naive, na.rm=TRUE))) + scale_x_continuous(limits=c(0, 20000), expand=c(0,0))
 fig2 = fig + scale_y_continuous(expand=c(0,.5), limits=c(0, with(df_time, max(decorrelate, low.rank)))) + scale_x_continuous(expand=c(0,0))
-fig3 = fig + scale_x_log10() + xlab(bquote(Number~of~features~(log[10]))) + ylab(bquote(Time~(seconds)))
+fig3 = fig + scale_x_log10() + scale_y_log10() + xlab(bquote(Number~of~features~(log[10]))) + ylab(bquote(Time~(log[10]~seconds)))
 
 plot_grid(fig1, fig2, fig3, nrow=1)
 ```
