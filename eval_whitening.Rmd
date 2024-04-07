@@ -59,7 +59,7 @@ lapply(c("EUR", "ASN"), function(pop){
 
 	df %>%
 		mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
-		mutate(category = cut(nsnps, breaks = c(0, 500, 1000, 2000, 5000, Inf))) %>%
+		mutate(category = cut(nsnps, breaks = c(0, 750, 2000, 5000, Inf))) %>%
 		filter(method != "0") %>%
 		group_by(method) %>%
 		ggplot(aes(method, rel.err*100, fill=method)) + 
@@ -80,8 +80,6 @@ lapply(c("EUR", "ASN"), function(pop){
 ```{r exit}
 knitr::knit_exit()
 ```
-
-
 
 
 
