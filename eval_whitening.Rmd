@@ -95,10 +95,9 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 			geom_smooth() + 
 			theme_classic()  +
 			theme(aspect.ratio=1, 
-				plot.title = element_text(hjust = 0.5),
-				legend.position="none") +
+				plot.title = element_text(hjust = 0.5)) +
 			theme(aspect.ratio=1) +
-			scale_y_log10() +
+			scale_x_log10() +
 			ylab("Relative reduction in rMSE (%)") +
 			ggtitle(pop) 
 })
