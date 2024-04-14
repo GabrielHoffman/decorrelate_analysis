@@ -89,7 +89,7 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 		mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
 		filter(method != "0") %>%
 		group_by(method) %>%
-		ggplot(aes(nspns, rel.err*100, fill=method)) + 
+		ggplot(aes(nsnps, rel.err*100, fill=method)) + 
 			geom_point() +
 			geom_smooth() + 
 			theme_classic()  +
