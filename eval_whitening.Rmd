@@ -63,7 +63,8 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 		filter(method != "0") %>%
 		group_by(method) %>%
 		ggplot(aes(method, rel.err*100, fill=method)) + 
-			geom_boxplot() +
+			geom_violin() +
+			geom_boxplot(width=0.1) +
 			theme_classic()  +
 			theme(aspect.ratio=1, 
 				plot.title = element_text(hjust = 0.5),
