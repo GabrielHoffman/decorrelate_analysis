@@ -72,9 +72,9 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 			facet_wrap( ~ category, nrow=1) +
 			theme(aspect.ratio=1) +
 			ylab("Relative reduction in rMSE (%)") +
-			scale_y_continuous(limits=c(0, NA)) +
+			# scale_y_continuous(limits=c(0, NA)) +
 			ggtitle(pop) +
-			coord_flip()
+			coord_flip(xlim=c(0, NA))
 })
 ```
 
@@ -89,7 +89,7 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 		mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
 		filter(method != "0") %>%
 		group_by(method) %>%
-		ggplot(aes(nsnps, rel.err*100, fill=method)) + 
+		ggplot(aes(nsnps, rel.err*100, color=method)) + 
 			geom_point() +
 			geom_smooth() + 
 			theme_classic()  +
