@@ -89,6 +89,7 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 		mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
 		mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
 		filter(method != "0") %>%
+		filter(method != "Touloumis") %>%
 		group_by(method) %>%
 		ggplot(aes(nsnps, rel.err*100, color=method)) + 
 			geom_point() +
