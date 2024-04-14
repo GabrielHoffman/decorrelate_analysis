@@ -52,6 +52,7 @@ library(tidyverse)
 })
 ```
 
+### Toulamis gives negative values!!!!
 ```{r all, fig.width=12, fig.height=4, cache=FALSE}
 lapply(c("EUR", "AFR", "ASN"), function(pop){
 	file = paste0("df_", pop, ".RDS")
@@ -96,8 +97,8 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 			theme(aspect.ratio=1, 
 				plot.title = element_text(hjust = 0.5),
 				legend.position="none") +
-			facet_wrap( ~ category, nrow=1) +
 			theme(aspect.ratio=1) +
+			scale_y_log10() +
 			ylab("Relative reduction in rMSE (%)") +
 			ggtitle(pop) 
 })
