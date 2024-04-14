@@ -43,8 +43,6 @@ knitr::opts_chunk$set(
 ```
 
 
-# Loading
-## Libraries
 ```{r load.packages, cache=FALSE}
 suppressPackageStartupMessages({
 library(ggplot2)
