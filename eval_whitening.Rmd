@@ -98,7 +98,7 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 				legend.position="none") +
 			facet_wrap( ~ category, nrow=1) +
 			theme(aspect.ratio=1) +
-			ylab("Relative reduction in rMSE (%)") 
+			ylab("Relative reduction in rMSE (%)") +
 			ggtitle(pop) 
 })
 ```
