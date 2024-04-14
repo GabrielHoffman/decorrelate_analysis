@@ -99,7 +99,8 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 			theme(aspect.ratio=1) +
 			scale_x_log10() +
 			ylab("Relative reduction in rMSE (%)") +
-			ggtitle(pop) 
+			ggtitle(pop) +
+			coord_fixed(ylim = c(0, 100))
 })
 ```
 
