@@ -72,9 +72,8 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 			facet_wrap( ~ category, nrow=1) +
 			theme(aspect.ratio=1) +
 			ylab("Relative reduction in rMSE (%)") +
-			# scale_y_continuous(limits=c(0, NA)) +
 			ggtitle(pop) +
-			coord_flip(ylim=c(0, NA))
+			coord_flip(ylim=c(0, 120))
 })
 ```
 
