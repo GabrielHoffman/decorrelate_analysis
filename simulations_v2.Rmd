@@ -256,7 +256,7 @@ fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) +
 
 # ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
 ymax = 1.02*max(df_melt$value[df_melt$variable == 'Schäfer-Strimmer'])
-ymin = 0.98*min(df_melt$value)
+ymin = 0#0.98*min(df_melt$value)
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
