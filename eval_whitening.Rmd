@@ -93,12 +93,12 @@ df %>%
 	summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
 	ggplot(aes(method, mean, fill=method)) + 
 		geom_bar(stat="identity") +
-		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se)) +
+		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
 		theme_classic()  +
 		theme(aspect.ratio=1, 
 			plot.title = element_text(hjust = 0.5),
 			legend.position="none") +
-		facet_grid(pop ~ category +
+		facet_grid(pop ~ category) +
 		theme(aspect.ratio=1) +
 		ylab("Relative reduction in rMSE (%)") +
 		ggtitle(pop) +
