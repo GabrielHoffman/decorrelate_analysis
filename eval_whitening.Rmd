@@ -118,7 +118,7 @@ df %>%
 		scale_x_log10() +
 		ylab("Relative reduction in rMSE (%)") +
 		facet_wrap( ~ pop) +
-		ylim(0, 100) 
+		coord_fixed(ylim=c(0, 100) )
 ```
 
 
