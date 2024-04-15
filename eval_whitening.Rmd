@@ -134,7 +134,7 @@ df %>%
 ```
 
 ```{r number.of.snps}
-df %>% 
+a = df %>% 
 	filter(nsnps > 10000) %>% 
 	select(chrom, start, nsnps) %>% 
 	distinct %>%
