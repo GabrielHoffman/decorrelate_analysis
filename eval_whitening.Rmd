@@ -67,7 +67,8 @@ cols[cols == "#FFFF33"]= "#cccc29"
 df %>%
 	# mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
 	# mutate(rel.err = abs(rel.err)) %>%
-	mutate(rel.err = rMSE / rMSE_baseline) %>%
+	# mutate(rel.err = rMSE / rMSE_baseline) %>%
+	mutate(rel.err = rMSE_baseline - rMSE ) %>%
 	mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
 	group_by(method) %>%
 	ggplot(aes(method, rel.err*100, fill=method)) + 
@@ -100,7 +101,8 @@ df %>%
 df2 = df %>%
 	# mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
 	# mutate(rel.err = abs(rel.err)) %>%
-	mutate(rel.err = rMSE / rMSE_baseline) %>%
+	# mutate(rel.err = rMSE / rMSE_baseline) %>%
+	mutate(rel.err = rMSE_baseline - rMSE ) %>%
 	mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
 	group_by(method, category, pop) %>%
 	summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
@@ -130,7 +132,8 @@ df2 %>%
 df %>%
 	# mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
 	# mutate(rel.err = abs(rel.err)) %>%
-	mutate(rel.err = rMSE / rMSE_baseline) %>%
+	# mutate(rel.err = rMSE / rMSE_baseline) %>%
+	mutate(rel.err = rMSE_baseline - rMSE ) %>%
 	mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
 	group_by(method) %>%
 	ggplot(aes(nsnps, rel.err*100, color=method)) + 
