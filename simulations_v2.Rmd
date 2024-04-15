@@ -144,11 +144,12 @@ run_simulation = function(n, epsilon, p_array, sigma_method, rho){
 
     W = get_w_ginv(scale(Y[idx_train,]), min(dim(Y[idx_train,]))-1)
     value.pseudoinverse = normCov(cor(tcrossprod(Y[-idx_train,], W)))
+    
+    rMSE_baseline = normCov(cora(Y[-idx_train,]))
 
     data.frame(p = p,
                 lambda.eb = ecl_cov$lambda,
-                'No transform' = normCov(cor(Y[-idx_train,])), # same as lambda = 1
-                # 'epsilon = 1e-4' = normCov(C_lambda_0),
+                'No transform' = normCov(cor(Y[-idx_train,])), 
                 "Pseudoinverse" = value.pseudoinverse,
                 'lambda = 0.01' = normCov( C_lambda_0.01),
                 'Ledoit-Wolf' = normCov(C_lambda_LW),
