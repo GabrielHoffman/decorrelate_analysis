@@ -94,7 +94,7 @@ df2 %>%
 	ggplot(aes(method, mean, fill=method)) + 
 		geom_bar(stat="identity") +
 		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
-		geom_text(data=filter(df2, mean == 55), aes(method, 40, label=round(meanValue, digits=1))) +
+		geom_text(data=filter(df2, mean == 55), aes(method, 47, label=round(meanValue, digits=1))) +
 		theme_classic()  +
 		theme(aspect.ratio=1, 
 			plot.title = element_text(hjust = 0.5),
