@@ -104,28 +104,23 @@ df %>%
 
 
 ```{r all.curve, fig.width=12, fig.height=6, cache=FALSE}
-lapply(c("EUR", "AFR", "ASN"), function(pop){
-	file = paste0("df_", pop, ".RDS")
-	df = readRDS(file)
-
-	df %>%
-		mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
-		mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
-		mutate(rel.err = abs(rel.err)) %>%
-		# filter(method != "0") %>%
-		# filter(method != "Touloumis") %>%
-		group_by(method) %>%
-		ggplot(aes(nsnps, rel.err*100, color=method)) + 
-			geom_smooth(aes(fill=method), alpha = .1) + 
-			theme_classic()  +
-			theme(aspect.ratio=1, 
-				plot.title = element_text(hjust = 0.5)) +
-			theme(aspect.ratio=1) +
-			scale_x_log10() +
-			ylab("Relative reduction in rMSE (%)") +
-			ggtitle(pop) +
-			coord_fixed(ylim = c(0, 100))
-})
+df %>%
+	mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
+	mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
+	mutate(rel.err = abs(rel.err)) %>%
+	# filter(method != "0") %>%
+	# filter(method != "Touloumis") %>%
+	group_by(method) %>%
+	ggplot(aes(nsnps, rel.err*100, color=method)) + 
+		geom_smooth(aes(fill=method), alpha = .1) + 
+		theme_classic()  +
+		theme(aspect.ratio=1, 
+			plot.title = element_text(hjust = 0.5)) +
+		theme(aspect.ratio=1) +
+		scale_x_log10() +
+		ylab("Relative reduction in rMSE (%)") +
+		facet_wrap( ~ pop, scales="free") +
+		coord_fixed(ylim = c(0, 100))
 ```
 
 
