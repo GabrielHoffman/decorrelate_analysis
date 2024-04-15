@@ -88,7 +88,7 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 		mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
 		group_by(method, category) %>%
 		summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
-		ggplot(aes(method, mean fill=method)) + 
+		ggplot(aes(method, mean, fill=method)) + 
 			geom_bar(stat="identity") +
 			geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se)) +
 			theme_classic()  +
