@@ -20,10 +20,11 @@ vignette: >
 <!--- 
 
 cd /sc/arion/work/hoffmg01/decorrelate_analysis
-ml git pandoc
+ml pandoc gcc/11.2.0
 
 R
 system("git pull"); rmarkdown::render("simulations_v2.Rmd");
+
 
 https://hoffmg01.hpc.mssm.edu/decorrelate_analysis/simulations_v2.html
 
@@ -167,6 +168,10 @@ run_simulation = function(n, epsilon, p_array, sigma_method, rho){
 ```
 
 
+# make sure rMSE change formula is same for sims and 1KG
+# Want: % decrease in rMSE
+
+
 # rMSE curve
 ```{r rMSE}
 set.seed(12)
@@ -279,7 +284,7 @@ fig = df2 %>%
   geom_smooth(method='loess', span=.2, se=FALSE) + 
   scale_linetype_manual(values = c("solid", "dashed"))
 
-ymax = 1.02*max(100*df2$rel.err[df2$variable == 'Pseudoinverse'])
+ymax = 1.02*max(100*df2$rel.err[df2$variable == 'Schäfer-Strimmer'])
 ymin = .98*min(100*df2$rel.err[df2$variable == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
