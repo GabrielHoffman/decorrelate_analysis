@@ -66,8 +66,8 @@ infoAll = read.table(file, header=TRUE)
 infoAll$sample = paste(infoAll$sample, infoAll$sample, sep="_")
 infoAll$super_pop[infoAll$super_pop == "EAS"] = "ASN"
 
-methods = c('GIW-EB (current work)',  "0", "0.01", "Schäfer-Strimmer", "Touloumis", 'Pseudoinverse') 
-# , "Ledoit-Wolf" , "OAS"
+methods = c('GIW-EB (current work)',  "0", "0.01", "Schäfer-Strimmer", "Touloumis") 
+# , "Ledoit-Wolf" , "OAS" , 'Pseudoinverse'
 
 df_grid = expand.grid(chrom=1:22, super_pop=opt$super_pop, stringsAsFactors=FALSE)
 
