@@ -90,7 +90,7 @@ df2 = df %>%
 				mean = pmin(mean, 50), 
 		  	se = ifelse(mean<50,se,0)) 
 
-fig = df2 %>%
+df2 %>%
 	ggplot(aes(method, mean, fill=method)) + 
 		geom_bar(stat="identity") +
 		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
