@@ -262,20 +262,27 @@ plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ym
 ```
 
 ```{r relative.error1, cache=FALSE, fig.height=4, fig.width=12}
-df_melt %>%  
-  mutate(rel.err = value / rMSE_baseline) %>%
-  ggplot(aes(p, rel.err, color=variable)) + 
+df2 = df_melt %>%  
+  mutate(rel.err = value / rMSE_baseline)
+
+fig = df2 %>%
+  ggplot(aes(p, rel.err*100, color=variable)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
   xlab("Number of features") + 
-  ylab("Root Mean Squared Error") + 
+  ylab("Relative reduction in rMSE (%)") +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_color_manual(name="Method",values = cols) + 
   geom_smooth(method='loess', span=.2, se=FALSE) + 
   scale_linetype_manual(values = c("solid", "dashed"))
+
+ymax = 1.02*max(df2$value[df2$variable == 'Schäfer-Strimmer'])
+ymin = 0.98*min(df2$value)
+
+plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 
@@ -312,20 +319,27 @@ plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ym
 
 
 ```{r relative.error2, cache=FALSE, fig.height=4, fig.width=12}
-df_melt %>%  
-  mutate(rel.err = value / rMSE_baseline) %>%
-  ggplot(aes(p, rel.err, color=variable)) + 
+df2 = df_melt %>%  
+  mutate(rel.err = value / rMSE_baseline)
+
+fig = df2 %>%
+  ggplot(aes(p, rel.err*100, color=variable)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
   xlab("Number of features") + 
-  ylab("Root Mean Squared Error") + 
+  ylab("Relative reduction in rMSE (%)") +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_color_manual(name="Method",values = cols) + 
   geom_smooth(method='loess', span=.2, se=FALSE) + 
   scale_linetype_manual(values = c("solid", "dashed"))
+
+ymax = 1.02*max(df2$value[df2$variable == 'Schäfer-Strimmer'])
+ymin = 0.98*min(df2$value)
+
+plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 
@@ -362,20 +376,27 @@ plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ym
 
 
 ```{r relative.error3, cache=FALSE, fig.height=4, fig.width=12}
-df_melt %>%  
-  mutate(rel.err = value / rMSE_baseline) %>%
-  ggplot(aes(p, rel.err, color=variable)) + 
+df2 = df_melt %>%  
+  mutate(rel.err = value / rMSE_baseline)
+
+fig = df2 %>%
+  ggplot(aes(p, rel.err*100, color=variable)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
   xlab("Number of features") + 
-  ylab("Root Mean Squared Error") + 
+  ylab("Relative reduction in rMSE (%)") +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_color_manual(name="Method",values = cols) + 
   geom_smooth(method='loess', span=.2, se=FALSE) + 
   scale_linetype_manual(values = c("solid", "dashed"))
+
+ymax = 1.02*max(df2$value[df2$variable == 'Schäfer-Strimmer'])
+ymin = 0.98*min(df2$value)
+
+plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 
@@ -410,20 +431,27 @@ plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ym
 
 
 ```{r relative.error4, cache=FALSE, fig.height=4, fig.width=12}
-df_melt %>%  
-  mutate(rel.err = value / rMSE_baseline) %>%
-  ggplot(aes(p, rel.err, color=variable)) + 
+df2 = df_melt %>%  
+  mutate(rel.err = value / rMSE_baseline)
+
+fig = df2 %>%
+  ggplot(aes(p, rel.err*100, color=variable)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
   xlab("Number of features") + 
-  ylab("Root Mean Squared Error") + 
+  ylab("Relative reduction in rMSE (%)") +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_color_manual(name="Method",values = cols) + 
   geom_smooth(method='loess', span=.2, se=FALSE) + 
   scale_linetype_manual(values = c("solid", "dashed"))
+
+ymax = 1.02*max(df2$value[df2$variable == 'Schäfer-Strimmer'])
+ymin = 0.98*min(df2$value)
+
+plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 
