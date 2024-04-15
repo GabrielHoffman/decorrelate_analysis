@@ -98,7 +98,7 @@ df %>%
 		facet_grid(pop ~ category) +
 		theme(aspect.ratio=1) +
 		ylab("Relative reduction in rMSE (%)") +
-		coord_flip() 
+		coord_flip(expand=FALSE ) 
 ```
 
 
