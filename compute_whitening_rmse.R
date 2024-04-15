@@ -124,6 +124,7 @@ df = lapply(1:nrow(df_grid), function(i){
           message("\r", df_grid$chrom[i], " ", k, " ", method, "   ", appendLF=FALSE)
 
           if( method == 'Pseudoinverse'){
+            lambda = NA
             rnk = min(dim(X_train)-1)
             W = get_w_ginv(scale(X_train), rnk)
 
