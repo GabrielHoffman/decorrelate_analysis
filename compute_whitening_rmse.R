@@ -16,6 +16,8 @@ opt = getopt(spec)
 # printf "EUR\nAFR\nASN" | parallel -P3 "$SRC --super_pop {} --out df_{}.RDS"
 
 
+# April 15: train on 80%
+
 suppressPackageStartupMessages({
 library(VariantAnnotation)
 library(GenomicRanges)
