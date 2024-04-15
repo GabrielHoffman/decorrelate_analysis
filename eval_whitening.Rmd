@@ -50,7 +50,7 @@ library(tidyverse)
 })
 ```
 
-```{r all, fig.width=12, fig.height=4, cache=FALSE}
+```{r all, fig.width=12, fig.height=8, cache=FALSE}
 df = lapply(c("EUR", "AFR", "ASN"), function(pop){
 	file = paste0("df_", pop, ".RDS")
 	readRDS(file) %>%
@@ -86,6 +86,7 @@ df %>%
 	mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
 	group_by(method, category, pop) %>%
 	summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
+	mutate(mean = pmax(mean, 150)) %>%
 	ggplot(aes(method, mean, fill=method)) + 
 		geom_bar(stat="identity") +
 		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
