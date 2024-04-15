@@ -54,7 +54,7 @@ hcl.lst = mclapply(pop_array, function(pop){
 }, mc.cores=3)
 names(hcl.lst) = pop_array
 
-# saveRDS("hcl.lst", file="hcl.lst_1kg.RDS")
+# saveRDS(hcl.lst, file="hcl.lst_1kg.RDS")
 
 # Cut into clusters
 mean_size = 2000
@@ -79,6 +79,9 @@ res.clusters = mclapply( names(hcl.lst), function(pop){
 	res
 }, mc.cores=3)
 names(res.clusters) = names(hcl.lst)
+
+saveRDS(res.clusters, file="res.clusters_1kg.RDS")
+
 
 # write clusters to bed file
 res_bed = mclapply( names(hcl.lst), function(pop){
