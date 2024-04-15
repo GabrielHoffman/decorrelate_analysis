@@ -87,14 +87,14 @@ df2 = df %>%
 	group_by(method, category, pop) %>%
 	summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
 	mutate(meanValue = mean, 
-				mean = pmin(mean, 50), 
-		  	se = ifelse(mean<50,se,0)) 
+				mean = pmin(mean, 52), 
+		  	se = ifelse(mean<52,se,0)) 
 
 df2 %>%
 	ggplot(aes(method, mean, fill=method)) + 
 		geom_bar(stat="identity") +
 		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
-		geom_text(data=filter(df2, mean == 50), aes(method, 40, label=round(meanValue, digits=1))) +
+		geom_text(data=filter(df2, mean == 52), aes(method, 40, label=round(meanValue, digits=1))) +
 		theme_classic()  +
 		theme(aspect.ratio=1, 
 			plot.title = element_text(hjust = 0.5),
@@ -102,7 +102,7 @@ df2 %>%
 		facet_grid(pop ~ category) +
 		theme(aspect.ratio=1) +
 		ylab("Relative reduction in rMSE (%)") +
-		coord_flip(expand=FALSE, ylim=c(0, 50) )
+		coord_flip(expand=FALSE, ylim=c(0, 55) )
 ```
 
 
