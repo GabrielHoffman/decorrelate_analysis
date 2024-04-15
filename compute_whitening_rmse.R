@@ -84,8 +84,8 @@ df = lapply(1:nrow(df_grid), function(i){
     info = infoAll[idx,]
 
     # read in genome-blocks for this population
-    # file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/ldetect-data/", df_grid$super_pop[i], "/fourier_ls-all_mod.bed")
-    file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/adjclust/", df_grid$super_pop[i], ".bed")
+    file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/ldetect-data/", df_grid$super_pop[i], "/fourier_ls-all_mod.bed")
+    # file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/adjclust/", df_grid$super_pop[i], ".bed")
     gr = import(file, format="bed")
     seqlevelsStyle(gr) = "NCBI"
 
