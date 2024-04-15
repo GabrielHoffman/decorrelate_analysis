@@ -280,7 +280,7 @@ fig = df2 %>%
   scale_linetype_manual(values = c("solid", "dashed"))
 
 ymax = 1.02*max(df2$value[df2$variable == 'Pseudoinverse'])
-ymin = .98*min(df2$value[df2$variable == 'Oracle'])
+ymin = 0#.98*min(df2$value[df2$variable == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
