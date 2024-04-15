@@ -50,7 +50,6 @@ library(tidyverse)
 })
 ```
 
-# Toulamis gives negative values!!!! pmax?
 ```{r all, fig.width=12, fig.height=4, cache=FALSE}
 lapply(c("EUR", "AFR", "ASN"), function(pop){
 	file = paste0("df_", pop, ".RDS")
@@ -76,6 +75,33 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 			coord_flip(ylim=c(0, 120))
 })
 ```
+
+
+```{r all,mean, fig.width=12, fig.height=4, cache=FALSE}
+lapply(c("EUR", "AFR", "ASN"), function(pop){
+	file = paste0("df_", pop, ".RDS")
+	df = readRDS(file)
+
+	df %>%
+		mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
+		mutate(rel.err = abs(rel.err)) %>%
+		mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
+		group_by(method, category) %>%
+		summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
+		ggplot(aes(method, mean fill=method)) + 
+			geom_bar(stat="identity") +
+			geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se)) +
+			theme_classic()  +
+			theme(aspect.ratio=1, 
+				plot.title = element_text(hjust = 0.5),
+				legend.position="none") +
+			facet_wrap( ~ category, nrow=1) +
+			theme(aspect.ratio=1) +
+			ylab("Relative reduction in rMSE (%)") +
+			ggtitle(pop) 
+})
+```
+
 
 
 ```{r all.curve, fig.width=12, fig.height=6, cache=FALSE}
