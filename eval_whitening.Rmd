@@ -77,7 +77,7 @@ lapply(c("EUR", "AFR", "ASN"), function(pop){
 ```
 
 
-```{r all,mean, fig.width=12, fig.height=4, cache=FALSE}
+```{r all,mean, fig.width=12, fig.height=12, cache=FALSE}
 df = lapply(c("EUR", "AFR", "ASN"), function(pop){
 	file = paste0("df_", pop, ".RDS")
 	readRDS(file) %>%
