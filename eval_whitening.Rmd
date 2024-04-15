@@ -95,7 +95,7 @@ df %>%
 		theme(aspect.ratio=1, 
 			plot.title = element_text(hjust = 0.5),
 			legend.position="none") +
-		facet_grid(pop ~ category, scales="free") +
+		facet_grid(pop ~ category) +
 		theme(aspect.ratio=1) +
 		ylab("Relative reduction in rMSE (%)") +
 		coord_flip() 
@@ -118,7 +118,7 @@ df %>%
 		scale_x_log10() +
 		ylab("Relative reduction in rMSE (%)") +
 		facet_wrap( ~ pop) +
-		coord_fixed(ylim=c(0, 100) )
+		coord_fixed(ylim=c(0, 100), expand=FALSE ) 
 ```
 
 
