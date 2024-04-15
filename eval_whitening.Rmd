@@ -94,6 +94,7 @@ df %>%
 	ggplot(aes(method, mean, fill=method)) + 
 		geom_bar(stat="identity") +
 		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
+		geom_hline(yintercept=100, color="grey70", linetype="dashed") + 
 		theme_classic()  +
 		theme(aspect.ratio=1, 
 			plot.title = element_text(hjust = 0.5),
@@ -102,7 +103,7 @@ df %>%
 		theme(aspect.ratio=1) +
 		ylab("Relative reduction in rMSE (%)") +
 		ggtitle(pop) +
-		coord_flip()
+		coord_flip() 
 ```
 
 
