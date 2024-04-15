@@ -115,7 +115,7 @@ df2 %>%
 
 ```{r all.curve, fig.width=12, fig.height=6, cache=FALSE}
 df %>%
-	mutate(rel.err = rMSE ) %>%
+	mutate(rel.err = rMSE / rMSE_baseline) %>%
 	mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
 	group_by(method) %>%
 	ggplot(aes(nsnps, rel.err*100, color=method)) + 
