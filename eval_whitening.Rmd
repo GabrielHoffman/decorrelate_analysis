@@ -59,7 +59,7 @@ df = lapply(c("EUR", "ASN"), function(pop){
 })
 df = bind_rows(df)
 
-cols = c(RColorBrewer::brewer.pal(length(unique(df_melt$variable))-1, "Set1"), "black")
+cols = c(RColorBrewer::brewer.pal(length(unique(df$method))-1, "Set1"), "black")
 
 cols[cols == "#FFFF33"]= "#cccc29"
 
