@@ -87,7 +87,7 @@ df %>%
 	mutate(category = cut(nsnps, breaks = c(0, 300, 500, 700, 1000, 2500, Inf))) %>%
 	group_by(method, category, pop) %>%
 	summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
-	mutate(mean = pmax(mean, 150)) %>%
+	mutate(mean = pmin(mean, 150)) %>%
 	ggplot(aes(method, mean, fill=method)) + 
 		geom_bar(stat="identity") +
 		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
