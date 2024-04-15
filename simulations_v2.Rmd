@@ -54,6 +54,7 @@ library(ShrinkCovMat)
 library(cowplot)
 library(corpcor)
 library(ShrinkCovMat)
+library(tidyverse)
 library(CovTools)
 library(RhpcBLASctl)
 })
@@ -144,12 +145,10 @@ run_simulation = function(n, epsilon, p_array, sigma_method, rho){
 
     W = get_w_ginv(scale(Y[idx_train,]), min(dim(Y[idx_train,]))-1)
     value.pseudoinverse = normCov(cor(tcrossprod(Y[-idx_train,], W)))
-    
-    rMSE_baseline = normCov(cora(Y[-idx_train,]))
 
     data.frame(p = p,
                 lambda.eb = ecl_cov$lambda,
-                'No transform' = normCov(cor(Y[-idx_train,])), 
+                rMSE_baseline = normCov(cor(Y[-idx_train,])), 
                 "Pseudoinverse" = value.pseudoinverse,
                 'lambda = 0.01' = normCov( C_lambda_0.01),
                 'Ledoit-Wolf' = normCov(C_lambda_LW),
@@ -162,7 +161,7 @@ run_simulation = function(n, epsilon, p_array, sigma_method, rho){
   })
   df = do.call(rbind, df)
 
-  df_melt = reshape2::melt(df, id.vars=c('p', 'lambda.eb'))
+  df_melt = reshape2::melt(df, id.vars=c('p', 'lambda.eb', 'rMSE_baseline'))
   df_melt
 }
 ```
@@ -229,7 +228,7 @@ n = 1000 # number of samples
 idx_train = 1:(n/2)
 epsilon = 1e-4 
 
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=12))
 
 # run_simulation(n, epsilon, p_array, sigma_method, rho)
 df_melt = run_simulation(n, epsilon, p_array, "constant", rho = .6)
@@ -243,7 +242,17 @@ cols = c(RColorBrewer::brewer.pal(length(unique(df_melt$variable))-1, "Set1"), "
 
 cols[cols == "#FFFF33"]= "#cccc29"
 
-fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + geom_point(alpha=.2) + theme_classic() + theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + xlab("Number of features") + ylab("Root Mean Squared Error") + geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + scale_color_manual(name="Method",values = cols) + geom_smooth(method='loess', span=.2, se=FALSE) + scale_linetype_manual(values = c("solid", "dashed"))
+fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + 
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + ylab("Root Mean Squared Error") + 
+  geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
+  scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_color_manual(name="Method",values = cols) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) + 
+  scale_linetype_manual(values = c("solid", "dashed"))
 
 # ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
 ymax = 1.02*max(df_melt$value[df_melt$variable == 'Schäfer-Strimmer'])
@@ -251,6 +260,24 @@ ymin = 0.98*min(df_melt$value)
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
+
+```{r relative.error1, cache=FALSE, fig.height=4, fig.width=12}
+df_melt %>%  
+  mutate(rel.err = value / rMSE_baseline) %>%
+  ggplot(aes(p, rel.err, color=variable)) + 
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + 
+  ylab("Root Mean Squared Error") + 
+  geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
+  scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_color_manual(name="Method",values = cols) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) + 
+  scale_linetype_manual(values = c("solid", "dashed"))
+```
+
 
 
 
@@ -261,7 +288,7 @@ n = 1000 # number of samples
 idx_train = 1:(n/2)
 epsilon = 1e-4
  
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=12))
 
 # run_simulation(n, epsilon, p_array, sigma_method, rho)
 df_melt = run_simulation(n, epsilon, p_array, "autocorr", rho = .95)
@@ -284,6 +311,24 @@ plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ym
 ```
 
 
+```{r relative.error2, cache=FALSE, fig.height=4, fig.width=12}
+df_melt %>%  
+  mutate(rel.err = value / rMSE_baseline) %>%
+  ggplot(aes(p, rel.err, color=variable)) + 
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + 
+  ylab("Root Mean Squared Error") + 
+  geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
+  scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_color_manual(name="Method",values = cols) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) + 
+  scale_linetype_manual(values = c("solid", "dashed"))
+```
+
+
 
 
 ## Block correlation: $\rho = 0.6$, 4 blocks
@@ -293,7 +338,7 @@ n = 1000 # number of samples
 idx_train = 1:(n/2)
 epsilon = 1e-4
   
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=12))
 
 # run_simulation(n, epsilon, p_array, sigma_method, rho)
 df_melt = run_simulation(n, epsilon, p_array, "block", rho = 0.6)
@@ -315,6 +360,25 @@ ymin = 0.98*min(df_melt$value)
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
+
+```{r relative.error3, cache=FALSE, fig.height=4, fig.width=12}
+df_melt %>%  
+  mutate(rel.err = value / rMSE_baseline) %>%
+  ggplot(aes(p, rel.err, color=variable)) + 
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + 
+  ylab("Root Mean Squared Error") + 
+  geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
+  scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_color_manual(name="Method",values = cols) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) + 
+  scale_linetype_manual(values = c("solid", "dashed"))
+```
+
+
 ## Block auto-correlation: $\rho = 0.95$, 4 blocks
 ```{r run_sim4}
 set.seed(12)
@@ -322,7 +386,7 @@ n = 1000 # number of samples
 idx_train = 1:(n/2)
 epsilon = 1e-4
   
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=12))
 
 # run_simulation(n, epsilon, p_array, sigma_method, rho)
 df_melt = run_simulation(n, epsilon, p_array, "blockauto", rho = 0.95)
@@ -342,6 +406,24 @@ ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
 ymin = 0.98*min(df_melt$value)
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+```
+
+
+```{r relative.error4, cache=FALSE, fig.height=4, fig.width=12}
+df_melt %>%  
+  mutate(rel.err = value / rMSE_baseline) %>%
+  ggplot(aes(p, rel.err, color=variable)) + 
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + 
+  ylab("Root Mean Squared Error") + 
+  geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
+  scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_color_manual(name="Method",values = cols) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) + 
+  scale_linetype_manual(values = c("solid", "dashed"))
 ```
 
 
