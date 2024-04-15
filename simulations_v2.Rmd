@@ -280,7 +280,7 @@ fig = df2 %>%
   scale_linetype_manual(values = c("solid", "dashed"))
 
 ymax = 1.02*max(100*df2$rel.err[df2$variable == 'Pseudoinverse'])
-ymin = 0#.98*min(df2$value[df2$variable == 'Oracle'])
+ymin = .98*min(100*df2$value[df2$variable == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
@@ -337,7 +337,7 @@ fig = df2 %>%
   scale_linetype_manual(values = c("solid", "dashed"))
 
 ymax = 1.02*max(100*df2$rel.err[df2$variable == 'Schäfer-Strimmer'])
-ymin = 0.98*min(df2$rel.err)
+ymin = .98*min(100*df2$value[df2$variable == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
@@ -394,7 +394,7 @@ fig = df2 %>%
   scale_linetype_manual(values = c("solid", "dashed"))
 
 ymax = 1.02*max(100*df2$rel.err[df2$variable == 'Schäfer-Strimmer'])
-ymin = 0.98*min(df2$rel.err)
+ymin = .98*min(100*df2$value[df2$variable == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
@@ -449,7 +449,7 @@ fig = df2 %>%
   scale_linetype_manual(values = c("solid", "dashed"))
 
 ymax = 1.02*max(100*df2$rel.err[df2$variable == 'Schäfer-Strimmer'])
-ymin = 0.98*min(df2$rel.err)
+ymin = .98*min(100*df2$value[df2$variable == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
