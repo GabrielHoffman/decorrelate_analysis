@@ -99,7 +99,7 @@ df %>%
 		theme(aspect.ratio=1, 
 			plot.title = element_text(hjust = 0.5),
 			legend.position="none") +
-		facet_grid(pop ~ category) +
+		facet_grid(pop ~ category, scales="free") +
 		theme(aspect.ratio=1) +
 		ylab("Relative reduction in rMSE (%)") +
 		ggtitle(pop) +
