@@ -51,7 +51,8 @@ library(tidyverse)
 ```
 
 ```{r all, fig.width=12, fig.height=8, cache=FALSE}
-df = lapply(c("EUR", "AFR", "ASN"), function(pop){
+# , "AFR",
+df = lapply(c("EUR", "ASN"), function(pop){
 	file = paste0("df_", pop, ".RDS")
 	readRDS(file) %>%
 		mutate(pop = pop)
