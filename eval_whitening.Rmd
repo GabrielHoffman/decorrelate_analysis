@@ -122,8 +122,18 @@ df %>%
 		scale_x_log10() +
 		ylab("Relative reduction in rMSE (%)") +
 		facet_wrap( ~ pop) +
-		coord_fixed(ylim=c(0, 100), expand=FALSE ) 
+		coord_fixed(ylim=c(0, 100), xlim=c(0, 20000), expand=FALSE ) 
 ```
+
+```{r number.of.snps}
+df %>% 
+	filter(nsnps > 10000) %>% 
+	select(chrom, start, nsnps) %>% 
+	distinct %>%
+	nrow
+```
+
+
 
 
 ```{r exit}
