@@ -93,7 +93,7 @@ df = lapply(1:nrow(df_grid), function(i){
     gr_chr = gr[seqnames(gr) == df_grid$chrom[i]]
 
     # get training set
-    idx_train = sample(nrow(info), 0.8*nrow(info))
+    idx_train = sample(nrow(info), 0.4*nrow(info))
     idx_test = setdiff(seq(nrow(info)), idx_train)
 
     df = lapply(seq(length(gr_chr)), function(k){
