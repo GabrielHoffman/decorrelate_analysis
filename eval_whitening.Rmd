@@ -64,7 +64,7 @@ cols = c(RColorBrewer::brewer.pal(length(unique(df$method))-1, "Set1"), "black")
 
 cols[cols == "#FFFF33"]= "#cccc29"
 
-breaks = c(0, 2000, 3000, 5000, 7000, Inf)
+breaks = c(0, 3000, 5000, 7000, Inf)
 
 df %>% 
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
@@ -150,13 +150,18 @@ df2 %>%
 
 
 
+library(rstatix)
 
 df %>% 
-	select(method, super_pop, )
-  pivot_longer(cols = -Class, names_to = "Wavelengths", values_to = "value") %>% 
-  mutate(Class = as.factor(Class)) %>% 
-  group_by(Wavelengths) %>% 
-  pairwise_wilcox_test(value~Class, p.adjust.method="bonf")
+	mutate(rel.err = rMSE / rMSE_baseline ) %>%
+	mutate(category = cut(nsnps, breaks = breaks)) %>%
+	select(method, pop, category, rel.err) %>%
+	filter(pop == "EUR", category == "(2e+03,3e+03]") %>% 
+	select(method, rel.err) %>%
+  pairwise_wilcox_test(rel.err ~ method, p.adjust.method="bonf")
+
+
+
 
 
 ```{r all.curve, fig.width=12, fig.height=6, cache=FALSE}
