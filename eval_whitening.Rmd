@@ -125,7 +125,7 @@ df %>%
 cutoff = 35
 
 df2 = df %>%
-	mutate(rel.err = rMSE ) %>%
+	mutate(rel.err = rMSE / rMSE_baseline ) %>%
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
 	group_by(method, category, pop) %>%
 	summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
@@ -148,6 +148,15 @@ df2 %>%
 		scale_fill_manual(name="Method",values = cols)
 ```
 
+
+
+
+df %>% 
+	select(method, super_pop, )
+  pivot_longer(cols = -Class, names_to = "Wavelengths", values_to = "value") %>% 
+  mutate(Class = as.factor(Class)) %>% 
+  group_by(Wavelengths) %>% 
+  pairwise_wilcox_test(value~Class, p.adjust.method="bonf")
 
 
 ```{r all.curve, fig.width=12, fig.height=6, cache=FALSE}
