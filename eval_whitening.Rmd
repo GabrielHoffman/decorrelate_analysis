@@ -122,27 +122,30 @@ df %>%
 
 
 ```{r all.mean, fig.width=12, fig.height=8, cache=FALSE}
+
+cutoff = 35
+
 df2 = df %>%
 	mutate(rel.err = rMSE ) %>%
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
 	group_by(method, category, pop) %>%
 	summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
 	mutate(meanValue = mean, 
-				mean = pmin(mean, 60), 
-		  	se = ifelse(mean<60,se,0)) 
+				mean = pmin(mean, cutoff), 
+		  	se = ifelse(mean<cutoff,se,0)) 
 
 df2 %>%
 	ggplot(aes(method, mean, fill=method)) + 
 		geom_bar(stat="identity") +
 		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
-		geom_text(data=filter(df2, mean == 60), aes(method, 47, label=round(meanValue, digits=1))) +
+		geom_text(data=filter(df2, mean == cutoff), aes(method, 47, label=round(meanValue, digits=1))) +
 		theme_classic()  +
 		theme(aspect.ratio=1, 
 			plot.title = element_text(hjust = 0.5),
 			legend.position="none") +
 		facet_grid(pop ~ category) +
 		ylab("Relative reduction in rMSE (%)") +
-		coord_flip(expand=FALSE, ylim=c(0, 60) ) + 
+		coord_flip(expand=FALSE, ylim=c(0, cutoff) ) + 
 		scale_fill_manual(name="Method",values = cols)
 ```
 
