@@ -64,7 +64,20 @@ cols = c(RColorBrewer::brewer.pal(length(unique(df$method))-1, "Set1"), "black")
 
 cols[cols == "#FFFF33"]= "#cccc29"
 
-breaks = c(0, 500, 1000, 2500, Inf)
+
+breaks = c(0, 2000, 3000, 5000, 7000, Inf)
+
+df %>% 
+	mutate(category = cut(nsnps, breaks = breaks)) %>%
+	filter(method == "0") %>%
+	ggplot(aes(category)) + 
+		geom_bar() +
+		theme_classic()  +
+		theme(aspect.ratio=1, 
+			plot.title = element_text(hjust = 0.5),
+			legend.position="none") +
+		facet_wrap(~pop) +
+		coord_flip()
 
 df %>%
 	mutate(rel.err = rMSE / rMSE_baseline) %>%
@@ -78,7 +91,6 @@ df %>%
 			plot.title = element_text(hjust = 0.5),
 			legend.position="none") +
 		facet_grid(pop ~ category, scales="free") +
-		theme(aspect.ratio=1) +
 		ylab("Relative reduction in rMSE (%)") +
 		coord_flip(ylim=c(0, 120)) + 
 		scale_fill_manual(name="Method",values = cols)
@@ -130,7 +142,6 @@ df2 %>%
 			plot.title = element_text(hjust = 0.5),
 			legend.position="none") +
 		facet_grid(pop ~ category) +
-		theme(aspect.ratio=1) +
 		ylab("Relative reduction in rMSE (%)") +
 		coord_flip(expand=FALSE, ylim=c(0, 60) ) + 
 		scale_fill_manual(name="Method",values = cols)
@@ -148,7 +159,6 @@ df %>%
 		theme_classic()  +
 		theme(aspect.ratio=1, 
 			plot.title = element_text(hjust = 0.5)) +
-		theme(aspect.ratio=1) +
 		scale_x_log10() +
 		ylab("Relative reduction in rMSE (%)") +
 		facet_wrap( ~ pop) +
