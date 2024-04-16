@@ -122,7 +122,7 @@ df %>%
 
 
 ```{r all.mean, fig.width=12, fig.height=8, cache=FALSE}
-cutoff = 35
+cutoff = 78
 
 df2 = df %>%
 	mutate(rel.err = rMSE / rMSE_baseline ) %>%
