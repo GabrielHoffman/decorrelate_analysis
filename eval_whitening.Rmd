@@ -113,7 +113,7 @@ df %>%
 ```{r all.mean, fig.width=12, fig.height=8, cache=FALSE}
 df2 = df %>%
 	mutate(rel.err = rMSE ) %>%
-	mutate(category = cut(nsnps, breaks = breaks))) %>%
+	mutate(category = cut(nsnps, breaks = breaks)) %>%
 	group_by(method, category, pop) %>%
 	summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
 	mutate(meanValue = mean, 
