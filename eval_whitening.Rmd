@@ -64,7 +64,6 @@ cols = c(RColorBrewer::brewer.pal(length(unique(df$method))-1, "Set1"), "black")
 
 cols[cols == "#FFFF33"]= "#cccc29"
 
-
 breaks = c(0, 2000, 3000, 5000, 7000, Inf)
 
 df %>% 
@@ -92,11 +91,11 @@ df %>%
 			legend.position="none") +
 		facet_grid(pop ~ category, scales="free") +
 		ylab("Relative reduction in rMSE (%)") +
-		coord_flip(ylim=c(0, 120)) + 
+		coord_flip(ylim=c(0, NA)) + 
 		scale_fill_manual(name="Method",values = cols)
 ```
 
-
+```{r test, eval=FALSE}
 a = df %>%
 	mutate(rel.err = rMSE ) %>%
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
@@ -119,7 +118,7 @@ df %>%
 		theme(aspect.ratio=1, 
 			plot.title = element_text(hjust = 0.5),
 			legend.position="none")
-
+```
 
 
 ```{r all.mean, fig.width=12, fig.height=8, cache=FALSE}
