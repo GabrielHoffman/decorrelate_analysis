@@ -527,7 +527,7 @@ df$Method = droplevels(df$Method )
 
 ```{r block_autocor, cache=FALSE, fig.height=4, fig.width=12}
 df = df %>%
-  filter(!((Method == 'lambda = 0') & (p > 0.6*n)))
+  filter(!((Method == 'lambda = 0') & (p > 0.51*n)))
   
 fig = ggplot(df, aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
