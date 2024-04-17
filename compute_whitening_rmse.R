@@ -87,7 +87,7 @@ maf = function(x){
 }
 
 
-df = lapply(1:nrow(df_grid[1:2,]), function(i){
+df = lapply(1:nrow(df_grid), function(i){
 
     # subset info to this super pop
     idx = which(infoAll$super_pop == df_grid$super_pop[i])
@@ -106,7 +106,7 @@ df = lapply(1:nrow(df_grid[1:2,]), function(i){
     idx_train = sample(nrow(info), 0.5*nrow(info))
     idx_test = setdiff(seq(nrow(info)), idx_train)
 
-    df = lapply(seq(length(gr_chr[1:10])), function(k){
+    df = lapply(seq(length(gr_chr)), function(k){
       # Read data in range
       vcf.file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/filter/", df_grid$super_pop[i], ".chr",df_grid$chrom[i], ".vcf.gz")
       res = readVcf( vcf.file, genome = "GRCh37", param = gr_chr[k] )
@@ -140,35 +140,35 @@ df = lapply(1:nrow(df_grid[1:2,]), function(i){
                         t(c(tm)),
                         rmse = rmse))
 
-      # tm = system.time({
+      tm = system.time({
       # ecl <- eclairs( Y[idx_train,])
-      # y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 0)
-      # })   
-      # rmse = normCov(cora(y_white))
-      # df = rbind(df, data.frame(
-      #                   Method = "lambda = 0",  
-      #                   t(c(tm)),
-      #                   rmse = rmse))
+      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 0)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "lambda = 0",  
+                        t(c(tm)),
+                        rmse = rmse))
 
-      # tm = system.time({
+      tm = system.time({
       # ecl <- eclairs( Y[idx_train,])
-      # y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 0.01)
-      # })   
-      # rmse = normCov(cora(y_white))
-      # df = rbind(df, data.frame(
-      #                   Method = "lambda = 0.01", 
-      #                   t(c(tm)),
-      #                   rmse = rmse))
+      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 0.01)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "lambda = 0.01", 
+                        t(c(tm)),
+                        rmse = rmse))
 
-      # tm = system.time({
+      tm = system.time({
       # ecl <- eclairs( Y[idx_train,])
-      # y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 1e-4)
-      # })   
-      # rmse = normCov(cora(y_white))
-      # df = rbind(df, data.frame(
-      #                   Method = "lambda = 1e-4",  
-      #                   t(c(tm)),
-      #                   rmse = rmse))
+      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 1e-4)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "lambda = 1e-4",  
+                        t(c(tm)),
+                        rmse = rmse))
 
       # tm = system.time({
       # fit <- CovTools::CovEst.2003LW( scale(Y[idx_train,]) )
@@ -200,15 +200,15 @@ df = lapply(1:nrow(df_grid[1:2,]), function(i){
       #                   t(c(tm)),
       #                   rmse = rmse))
 
-      # tm = system.time({
-      # C <- cor.shrink( scale(Y[idx_train,]), verbose=FALSE )
-      # y_white <- Y[-idx_train,] %*% minvsqrt(C)
-      # })   
-      # rmse = normCov(cora(y_white))
-      # df = rbind(df, data.frame(
-      #                   Method = "Schäfer-Strimmer", 
-      #                   t(c(tm)),
-      #                   rmse = rmse))
+      tm = system.time({
+      C <- cor.shrink( scale(Y[idx_train,]), verbose=FALSE )
+      y_white <- Y[-idx_train,] %*% minvsqrt(C)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "Schäfer-Strimmer", 
+                        t(c(tm)),
+                        rmse = rmse))
 
       # tm = system.time({
       # # learn transformation
