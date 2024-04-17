@@ -341,7 +341,8 @@ fig = ggplot(df, aes(p, rmse, color=Method)) +
   scale_color_manual(name="Method",values = colMethods) + 
   geom_smooth(method='loess', span=.2, se=FALSE)
 
-ymax = 1.02*max(df$rmse[df$Method == 'Schäfer-Strimmer'])
+# ymax = 1.02*max(df$rmse[df$Method == 'Schäfer-Strimmer'])
+ymax = .2
 ymin = 0.98*min(df$rmse)
 
 plot_grid(fig + theme(legend.position="none"), 
@@ -367,7 +368,7 @@ fig = df2 %>%
   geom_smooth(method='loess', span=.2, se=FALSE) 
 
 # ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
-ymax = 0.2
+ymax = 30
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), 
