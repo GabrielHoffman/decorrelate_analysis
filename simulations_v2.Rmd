@@ -119,6 +119,8 @@ run_simulation = function(n, p_array, sigma_method, rho){
     # sample matrix from MVN with covariance Sigma
     Y = X_latent %*% msqrt(Sigma)
 
+    Ys = scale(Y)
+
     df = data.frame()
 
     # Eval methods
@@ -126,8 +128,8 @@ run_simulation = function(n, p_array, sigma_method, rho){
 
     # decorrelate
     tm = system.time({
-      ecl <- eclairs( Y[idx_train,])
-      y_white <- decorrelate(Y[-idx_train,], ecl)
+      ecl <- eclairs( Ys[idx_train,])
+      y_white <- decorrelate(Ys[-idx_train,], ecl)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
@@ -136,8 +138,8 @@ run_simulation = function(n, p_array, sigma_method, rho){
                         rmse = rmse))
 
     tm = system.time({
-      ecl <- eclairs( Y[idx_train,])
-      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 0)
+      ecl <- eclairs( Ys[idx_train,])
+      y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 0)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
@@ -146,8 +148,8 @@ run_simulation = function(n, p_array, sigma_method, rho){
                         rmse = rmse))
 
     tm = system.time({
-      ecl <- eclairs( Y[idx_train,])
-      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 0.01)
+      ecl <- eclairs( Ys[idx_train,])
+      y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 0.01)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
@@ -156,8 +158,8 @@ run_simulation = function(n, p_array, sigma_method, rho){
                         rmse = rmse))
 
     tm = system.time({
-      ecl <- eclairs( Y[idx_train,])
-      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 1e-4)
+      ecl <- eclairs( Ys[idx_train,])
+      y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 1e-4)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
@@ -166,8 +168,8 @@ run_simulation = function(n, p_array, sigma_method, rho){
                         rmse = rmse))
 
     tm = system.time({
-      fit <- CovTools::CovEst.2003LW( scale(Y[idx_train,]) )
-      y_white <- Y[-idx_train,] %*% minvsqrt(fit$S)
+      fit <- CovTools::CovEst.2003LW( Ys[idx_train,] )
+      y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
@@ -176,8 +178,8 @@ run_simulation = function(n, p_array, sigma_method, rho){
                         rmse = rmse))
 
     tm = system.time({
-      fit <- CovTools::CovEst.2010OAS( scale(Y[idx_train,]) )
-      y_white <- Y[-idx_train,] %*% minvsqrt(fit$S)
+      fit <- CovTools::CovEst.2010OAS( Ys[idx_train,] )
+      y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
@@ -186,8 +188,8 @@ run_simulation = function(n, p_array, sigma_method, rho){
                         rmse = rmse))
 
     tm = system.time({
-      fit <- shrinkcovmat.equal( scale(t(Y[idx_train,])) )
-      y_white <- Y[-idx_train,] %*% minvsqrt(fit$Sigmahat)
+      fit <- shrinkcovmat.equal( t(Ys[idx_train,]) )
+      y_white <- Ys[-idx_train,] %*% minvsqrt(fit$Sigmahat)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
@@ -196,8 +198,8 @@ run_simulation = function(n, p_array, sigma_method, rho){
                         rmse = rmse))
 
     tm = system.time({
-      C <- cor.shrink( scale(Y[idx_train,]), verbose=FALSE )
-      y_white <- Y[-idx_train,] %*% minvsqrt(C)
+      C <- cor.shrink( Ys[idx_train,], verbose=FALSE )
+      y_white <- Ys[-idx_train,] %*% minvsqrt(C)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
@@ -206,7 +208,7 @@ run_simulation = function(n, p_array, sigma_method, rho){
                         rmse = rmse))
 
     tm = system.time({
-      y_white <- Y[-idx_train,] %*% minvsqrt(Sigma)
+      y_white <- Ys[-idx_train,] %*% minvsqrt(Sigma)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
@@ -216,9 +218,9 @@ run_simulation = function(n, p_array, sigma_method, rho){
 
     tm = system.time({
       # learn transformation
-      k <- min(dim(Y[idx_train,]))-1
-      W <- get_w_ginv(scale(Y[idx_train,]), k)
-      y_white <- tcrossprod(Y[-idx_train,], W)
+      k <- min(dim(Ys[idx_train,]))-1
+      W <- get_w_ginv(Ys[idx_train,], k)
+      y_white <- tcrossprod(Ys[-idx_train,], W)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
@@ -227,7 +229,7 @@ run_simulation = function(n, p_array, sigma_method, rho){
                         rmse = rmse))    
 
     df$p = p
-    df$rMSE_baseline = normCov(cora(Y[-idx_train,]))
+    df$rMSE_baseline = normCov(cora(Ys[-idx_train,]))
     df
   })
   do.call(rbind, df)
@@ -321,7 +323,7 @@ set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
 
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=25))
 
 # run_simulation(n, p_array, sigma_method, rho)
 df = run_simulation(n, p_array, "constant", rho = .6)
@@ -385,7 +387,7 @@ set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
  
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=25))
 
 df = run_simulation(n, p_array, "autocorr", rho = .95)
 df$Method = factor(df$Method, names(colMethods))
@@ -447,7 +449,7 @@ set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
   
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=25))
 
 df = run_simulation(n, p_array, "block", rho = 0.6)
 df$Method = factor(df$Method, names(colMethods))
@@ -507,7 +509,7 @@ set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
   
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=25))
 
 df = run_simulation(n, p_array, "blockauto", rho = 0.95)
 df$Method = factor(df$Method, names(colMethods))
