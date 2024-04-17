@@ -70,8 +70,7 @@ df = lapply(c("EUR", "AFR", "ASN"), function(pop){
 	file = paste0("df_", pop, ".RDS")
 	readRDS(file) %>%
 		as_tibble %>%
-		mutate(pop = pop)%>%
-		rename(Method = method)
+		mutate(pop = pop)
 })
 df = bind_rows(df) %>%
 	mutate(Method = recode( Method, "0" = 'lambda = 0', "0.01" = 'lambda = 0.01'))
