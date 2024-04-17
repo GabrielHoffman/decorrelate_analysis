@@ -344,8 +344,10 @@ ymax = df %>%
   filter(((Method == 'lambda = 0') & (p < 0.495*n))) %>%
   summarize(max = max(rmse)) %>%
   pull
-  
-fig = ggplot(df, aes(p, rmse, color=Method)) + 
+
+fig = df %>%  
+  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rmse < 1.2*ymax)) %>%
+  ggplot(aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
@@ -433,7 +435,9 @@ ymax = df %>%
   summarize(max = max(rmse)) %>%
   pull
   
-fig = ggplot(df, aes(p, rmse, color=Method)) + 
+fig = df %>%  
+  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rmse < 1.2*ymax)) %>%
+  ggplot(aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
@@ -520,7 +524,9 @@ ymax = df %>%
   summarize(max = max(rmse)) %>%
   pull
   
-fig = ggplot(df, aes(p, rmse, color=Method)) + 
+fig = df %>%  
+  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rmse < 1.2*ymax)) %>%
+  ggplot(aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
@@ -606,7 +612,9 @@ ymax = df %>%
   summarize(max = max(rmse)) %>%
   pull
   
-fig = ggplot(df, aes(p, rmse, color=Method)) + 
+fig = df %>%  
+  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rmse < 1.2*ymax)) %>%
+  ggplot(aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
