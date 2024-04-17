@@ -306,7 +306,7 @@ df_lambda = data.frame(lambda = df_lambda) %>%
       rownames_to_column %>%
       rename( Method = "rowname")
 
-res = lapply(seq(0.01, .9, length.out=20), function(lambda){
+res = lapply(seq(0.01, .9, length.out=50), function(lambda){
       X_test_white = decorrelate(Y[-idx_train,], ecl, lambda=lambda)
       rMSE = normCov(cora(X_test_white))
       data.frame(lambda = lambda, rMSE = rMSE)
