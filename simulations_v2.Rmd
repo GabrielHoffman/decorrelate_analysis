@@ -260,7 +260,7 @@ df_col %>%
   geom_bar(stat = "identity") + 
   coord_polar("y") +
   scale_fill_manual(values = colMethods) +
-  theme_classic()
+  theme_void()
 
 
 set.seed(12)
@@ -331,6 +331,9 @@ df$Method = factor(df$Method, names(colMethods))
 ```
 
 ```{r constant_correlation, cache=FALSE, fig.height=4, fig.width=12}
+df = df %>%
+  filter(!((Method == 'lambda = 0') & (p > 0.9*n)) )
+
 fig = ggplot(df, aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
@@ -394,6 +397,9 @@ df$Method = factor(df$Method, names(colMethods))
 ```
 
 ```{r auto_correlation, cache=FALSE, fig.height=4, fig.width=12}
+df = df %>%
+  filter(!((Method == 'lambda = 0') & (p > 0.9*n)) )
+
 fig = ggplot(df, aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
@@ -456,6 +462,9 @@ df$Method = factor(df$Method, names(colMethods))
 ```
 
 ```{r block_correlation, cache=FALSE, fig.height=4, fig.width=12}
+df = df %>%
+  filter(!((Method == 'lambda = 0') & (p > 0.9*n)) )
+  
 fig = ggplot(df, aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
@@ -517,6 +526,9 @@ df$Method = droplevels(df$Method )
 ```
 
 ```{r block_autocor, cache=FALSE, fig.height=4, fig.width=12}
+df = df %>%
+  filter(!((Method == 'lambda = 0') & (p > 0.9*n)) )
+  
 fig = ggplot(df, aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
