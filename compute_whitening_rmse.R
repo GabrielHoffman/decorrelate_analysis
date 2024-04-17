@@ -225,6 +225,9 @@ df = lapply(1:nrow(df_grid), function(i){
       df$rMSE_baseline = normCov(cora(Y[-idx_train,]))
       df$chrom = df_grid$chrom[i]
       df$super_pop = df_grid$chrom[i]
+
+      cat(df_grid$chrom[i], df_grid$chrom[i], "  \r")
+      
       cbind(df, nsnps = ncol(Y))
     })
     do.call(rbind, df)
