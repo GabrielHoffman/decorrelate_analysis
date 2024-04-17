@@ -147,11 +147,11 @@ run_simulation = function(n, p_array, sigma_method, rho){
 
     tm = system.time({
       ecl <- eclairs( Y[idx_train,])
-      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 1e-1)
+      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 0.01)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
-                        Method = "lambda = 0.1", 
+                        Method = "lambda = 0.01", 
                         t(c(tm)),
                         rmse = rmse))
 
@@ -244,7 +244,7 @@ colMethods = c("GIW-EB (current work)" = "#E41A1C",
               "Schäfer-Strimmer" = "#f569b3", 
               "Pseudoinverse" = "green3",                
               "lambda = 0" = "navy", 
-              "lambda = 0.1" = "#377EB8", 
+              "lambda = 0.01" = "#377EB8", 
               "lambda = 1e-4" = "#37b8b2",              
               "Baseline" = "grey50",
               "Oracle" = "black")
@@ -281,7 +281,7 @@ ecl = eclairs( Y[idx_train,], compute="corr")
 
 df_lambda = c('GIW-EB (current work)' = ecl$lambda,
       "lambda = 0" = 0,
-      "lambda = 0.1" = 0.1,
+      "lambda = 0.01" = 0.01,
       "lambda = 1e-4" = 1e-4,
       "Ledoit-Wolf" = CovEst.2003LW( Y[idx_train,] )$delta,
       "OAS" = CovEst.2010OAS(Y[idx_train,])$rho,
