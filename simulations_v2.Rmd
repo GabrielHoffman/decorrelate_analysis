@@ -389,6 +389,22 @@ plot_grid(fig + theme(legend.position="none"),
 
 
 
+```{r time2}
+df %>%
+  ggplot(aes(p, user.self, color=Method)) +
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio = 1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + 
+  ylab("CPU time (seconds)") +
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) +
+  scale_y_log10()
+```
+
+
+
+
 
 ## Auto-correlation: $\rho = 0.95$
 ```{r run_sim2}
@@ -456,6 +472,22 @@ plot_grid(fig + theme(legend.position="none"),
         fig + coord_cartesian(ylim = c(ymin, ymax)), 
         ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
+
+
+```{r time2}
+df %>%
+  ggplot(aes(p, user.self, color=Method)) +
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio = 1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + 
+  ylab("CPU time (seconds)") +
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) +
+  scale_y_log10()
+```
+
+
 
 
 
@@ -528,6 +560,22 @@ plot_grid(fig + theme(legend.position="none"),
 ```
 
 
+```{r time3}
+df %>%
+  ggplot(aes(p, user.self, color=Method)) +
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio = 1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + 
+  ylab("CPU time (seconds)") +
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) +
+  scale_y_log10()
+```
+
+
+
+
 ## Block auto-correlation: $\rho = 0.95$, 4 blocks
 ```{r run_sim4}
 set.seed(12)
@@ -597,8 +645,18 @@ plot_grid(fig + theme(legend.position="none"),
 ```
 
 
-
-
+```{r time4}
+df %>%
+  ggplot(aes(p, user.self, color=Method)) +
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio = 1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + 
+  ylab("CPU time (seconds)") +
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) +
+  scale_y_log10()
+```
 
 
 
