@@ -50,6 +50,7 @@ library(tidyverse)
 })
 ```
 
+# "lambda = 0.01" vs 0.1
 ```{r all, fig.width=12, fig.height=8, cache=FALSE}
 colMethods = c("GIW-EB (current work)" = "#E41A1C",
               "Ledoit-Wolf" = "#FF7F00", 
@@ -148,7 +149,7 @@ df2 %>%
 	ggplot(aes(Method, mean, fill=Method)) + 
 		geom_bar(stat="identity") +
 		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
-		geom_text(data=filter(df2, mean == cutoff), aes(method, cutoff*.9, label=round(meanValue, digits=1))) +
+		geom_text(data=filter(df2, mean == cutoff), aes(Method, cutoff*.9, label=round(meanValue, digits=1))) +
 		theme_classic()  +
 		theme(aspect.ratio=1, 
 			plot.title = element_text(hjust = 0.5),
