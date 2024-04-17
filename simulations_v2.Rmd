@@ -387,7 +387,8 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.35) 
+  geom_smooth(method='loess', se=FALSE, span=.35) +
+  geom_hline(yintercept = 100, linetype="dashed", color="grey30")
 
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
 # ymax = 30
@@ -477,7 +478,8 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.4) 
+  geom_smooth(method='loess', se=FALSE, span=.4) +
+  geom_hline(yintercept = 100, linetype="dashed", color="grey30")
 
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
@@ -566,7 +568,8 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.35) 
+  geom_smooth(method='loess', se=FALSE, span=.35) +
+  geom_hline(yintercept = 100, linetype="dashed", color="grey30")
 
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'lambda = 0.01'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
@@ -654,7 +657,8 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.4) 
+  geom_smooth(method='loess', se=FALSE, span=.4) +
+  geom_hline(yintercept = 100, linetype="dashed", color="grey30") 
 
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'lambda = 0.01'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
