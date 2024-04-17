@@ -232,7 +232,7 @@ run_simulation = function(n, p_array, sigma_method, rho){
     df$p = p
     df$rMSE_baseline = normCov(cora(Ys[-idx_train,]))
     df
-  }, mc.cores=4)
+  }, mc.cores=6)
   do.call(rbind, df)
 }
 ```
@@ -532,8 +532,6 @@ ymax = df %>%
   filter(((Method == 'lambda = 0') & (p < 0.5*n))) %>%
   summarize(max = max(rmse)) %>%
   pull
-
-
   
 fig = ggplot(df, aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
@@ -564,12 +562,11 @@ fig = df2 %>%
   ggplot(aes(p, rel.err*100, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
-  theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
+  theme(plot.title = element_text(hjust=0.5)) + 
   xlab("Number of features") + 
   ylab("Relative reduction in rMSE (%)") +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
-  scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
-  scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE)
   scale_color_manual(name="Method",values = colMethods) + 
   geom_smooth(method='loess', span=.2, se=FALSE) 
 
