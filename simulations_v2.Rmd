@@ -388,7 +388,7 @@ df$Method = factor(df$Method, names(colMethods))
 ```
 
 ```{r auto_correlation, cache=FALSE, fig.height=4, fig.width=12}
-ggplot(df, aes(p, rmse, color=Method)) + 
+fig = ggplot(df, aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
@@ -447,7 +447,8 @@ df = run_simulation(n, p_array, "block", rho = 0.6)
 df$Method = factor(df$Method, names(colMethods))
 ```
 
-```{r block_correlation, cache=FALSE, fig.height=4, fig.width=12}ggplot(df, aes(p, rmse, color=Method)) + 
+```{r block_correlation, cache=FALSE, fig.height=4, fig.width=12}
+fig = ggplot(df, aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
@@ -505,7 +506,7 @@ df$Method = factor(df$Method, names(colMethods))
 ```
 
 ```{r block_autocor, cache=FALSE, fig.height=4, fig.width=12}
-ggplot(df, aes(p, rmse, color=Method)) + 
+fig = ggplot(df, aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
