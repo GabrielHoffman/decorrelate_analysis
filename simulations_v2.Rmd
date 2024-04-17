@@ -389,7 +389,7 @@ plot_grid(fig + theme(legend.position="none"),
 
 
 
-```{r time2}
+```{r time1}
 df %>%
   ggplot(aes(p, user.self, color=Method)) +
   geom_point(alpha=.2) + 
