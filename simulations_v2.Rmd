@@ -372,7 +372,7 @@ df2 = df %>%
   mutate(rel.err = rmse / rMSE_baseline)
 
 ymax = df2 %>%
-  filter(((Method == 'lambda = 0') & (p < 0.495*n))) %>%
+  filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
   summarize(max = max(100*rel.err)) %>%
   pull
 
@@ -431,7 +431,7 @@ df$Method = factor(df$Method, names(colMethods))
 
 ```{r auto_correlation, cache=FALSE, fig.height=4, fig.width=12}
 ymax = df %>%
-  filter(((Method == 'lambda = 0') & (p < 0.495*n))) %>%
+  filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
   summarize(max = max(rmse)) %>%
   pull
   
@@ -462,7 +462,7 @@ df2 = df %>%
   mutate(rel.err = rmse / rMSE_baseline)
 
 ymax = df2 %>%
-  filter(((Method == 'lambda = 0') & (p < 0.495*n))) %>%
+  filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
   summarize(max = max(100*rel.err)) %>%
   pull
 
@@ -520,7 +520,7 @@ df$Method = factor(df$Method, names(colMethods))
 
 ```{r block_correlation, cache=FALSE, fig.height=4, fig.width=12}
 ymax = df %>%
-  filter(((Method == 'lambda = 0') & (p < 0.495*n))) %>%
+  filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
   summarize(max = max(rmse)) %>%
   pull
   
@@ -551,7 +551,7 @@ df2 = df %>%
   mutate(rel.err = rmse / rMSE_baseline)
 
 ymax = df2 %>%
-  filter(((Method == 'lambda = 0') & (p < 0.495*n))) %>%
+  filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
   summarize(max = max(100*rel.err)) %>%
   pull
 
@@ -608,7 +608,7 @@ df$Method = droplevels(df$Method )
 
 ```{r block_autocor, cache=FALSE, fig.height=4, fig.width=12}
 ymax = df %>%
-  filter(((Method == 'lambda = 0') & (p < 0.495*n))) %>%
+  filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
   summarize(max = max(rmse)) %>%
   pull
   
@@ -639,7 +639,7 @@ df2 = df %>%
   mutate(rel.err = rmse / rMSE_baseline)
 
 ymax = df2 %>%
-  filter(((Method == 'lambda = 0') & (p < 0.495*n))) %>%
+  filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
   summarize(max = max(100*rel.err)) %>%
   pull
 
