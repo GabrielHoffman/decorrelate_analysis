@@ -246,7 +246,7 @@ run_simulation = function(n, p_array, sigma_method, rho){
 ```
 
 
-# rMSE curve
+# Colors
 ```{r rMSE}
 colMethods = c("GIW-EB (current work)" = "#E41A1C",
               "Ledoit-Wolf" = "#FF7F00", 
@@ -270,8 +270,10 @@ df_col %>%
   coord_polar("y") +
   scale_fill_manual(values = colMethods) +
   theme_void()
+```
 
-
+# rMSE curve
+```{r rmse.curve}
 set.seed(12)
 n = 500 # number of samples
 idx_train = 1:(n/2)
