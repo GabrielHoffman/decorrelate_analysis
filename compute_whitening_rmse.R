@@ -124,6 +124,12 @@ df = lapply(1:nrow(df_grid), function(i){
 
       Y = scale(X)
 
+
+      df = data.frame()
+
+      # Eval methods
+      #-------------
+
       # decorrelate
       tm = system.time({
       ecl <- eclairs( Y[idx_train,])
