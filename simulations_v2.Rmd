@@ -107,7 +107,7 @@ get_w_ginv = function(X, k){
 }
 
 
-run_simulation = function(n, epsilon, p_array, sigma_method, rho){
+run_simulation = function(n, p_array, sigma_method, rho){
 
   df = lapply(p_array, function(p){
 
@@ -236,17 +236,8 @@ run_simulation = function(n, epsilon, p_array, sigma_method, rho){
                         t(c(tm)),
                         rmse = rmse))    
 
-    tm = system.time({
-      # no transformation
-      y_white <- Y[-idx_train,]
-      })   
-    rmse = normCov(cora(y_white))
-    df = rbind(df, data.frame(
-                        Method = "Baseline", 
-                        t(c(tm)),
-                        rmse = rmse))
-
     df$p = p
+    df$rMSE_baseline = normCov(cora(Y[-idx_train,]))
     df
   })
   do.call(rbind, df)
@@ -260,6 +251,29 @@ run_simulation = function(n, epsilon, p_array, sigma_method, rho){
 
 # rMSE curve
 ```{r rMSE}
+colMethods = c("GIW-EB (current work)" = "#E41A1C",
+              "Ledoit-Wolf" = "#FF7F00", 
+              "OAS"= "#cccc29", 
+              "Touloumis" = "#A65628", 
+              "Schäfer-Strimmer" = "#f569b3", 
+              "Pseudoinverse" = "green3",                
+              "lambda = 0" = "navy", 
+              "lambda = 0.1" = "#377EB8", 
+              "lambda = 1e-4" = "#37b8b2",              
+              "Baseline" = "grey50",
+              "Oracle" = "black")
+
+df_col = data.frame(Method = factor(names(colMethods),names(colMethods)), 
+    color = colMethods, 
+    value = 1)
+
+df_col %>% 
+  ggplot(aes(x = "", y = value, fill = Method)) + 
+  geom_bar(stat = "identity") + 
+  coord_polar("y") +
+  scale_fill_manual(values = colMethods)
+
+
 set.seed(12)
 n = 500 # number of samples
 idx_train = 1:(n/2)
@@ -276,13 +290,13 @@ Y = X_latent %*% msqrt(Sigma)
 
 # Plot rMSE vs lambda
 ######################
-library(tidyverse)
 
 ecl = eclairs( Y[idx_train,], compute="corr")
 
 df_lambda = c('GIW-EB (current work)' = ecl$lambda,
-      "0" = 0,
-      "0.01" = 0.01,
+      "lambda = 0" = 0,
+      "lambda = 0.1" = 0.1,
+      "lambda = 1e-4" = 1e-4,
       "Ledoit-Wolf" = CovEst.2003LW( Y[idx_train,] )$delta,
       "OAS" = CovEst.2010OAS(Y[idx_train,])$rho,
       "Touloumis" = shrinkcovmat.identity(Y[idx_train,])$lambdahat,
@@ -308,7 +322,10 @@ ggplot(res, aes(lambda, rMSE)) +
       theme(aspect.ratio=1) +
       xlim(0, 1) +
       geom_vline(data = df_lambda, aes(xintercept=lambda, color=Method), size=2) +
-      geom_point(data = res[i,], aes(x = lambda, y = rMSE), color="red")
+      geom_point(data = res[i,], aes(x = lambda, y = rMSE), color="red") +
+      scale_color_manual(values = colMethods) +
+      xlab(bquote(lambda)) +
+      ylab("Out-of-sample root mean squared error")
 ```
 
 
@@ -317,47 +334,41 @@ ggplot(res, aes(lambda, rMSE)) +
 set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
-epsilon = 1e-4 
 
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=30))
 
-# run_simulation(n, epsilon, p_array, sigma_method, rho)
-df_melt = run_simulation(n, epsilon, p_array, "constant", rho = .6)
+# run_simulation(n, p_array, sigma_method, rho)
+df = run_simulation(n, p_array, "constant", rho = .6)
+df$Method = factor(df$Method, names(colMethods))
 ```
 
 ```{r constant_correlation, cache=FALSE, fig.height=4, fig.width=12}
-df_melt$line = "1"
-df_melt$line[df_melt$variable == 'Ledoit-Wolf'] = "2"
-
-cols = c(RColorBrewer::brewer.pal(length(unique(df_melt$variable))-1, "Set1"), "black")
-
-cols[cols == "#FFFF33"]= "#cccc29"
-
-fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + 
+fig = ggplot(df, aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
-  xlab("Number of features") + ylab("Root Mean Squared Error") + 
+  xlab("Number of features") + 
+  ylab("Root Mean Squared Error") + 
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
-  scale_color_manual(name="Method",values = cols) + 
-  geom_smooth(method='loess', span=.2, se=FALSE) + 
-  scale_linetype_manual(values = c("solid", "dashed"))
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE)
 
-# ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
-ymax = 1.02*max(df_melt$value[df_melt$variable == 'Schäfer-Strimmer'])
-ymin = 0.98*min(df_melt$value)
+ymax = 1.02*max(df$rmse[df$Method == 'Schäfer-Strimmer'])
+ymin = 0.98*min(df$rmse)
 
-plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+plot_grid(fig + theme(legend.position="none"), 
+        fig + 
+        coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 ```{r relative.error1, cache=FALSE, fig.height=4, fig.width=12}
-df2 = df_melt %>%  
-  mutate(rel.err = value / rMSE_baseline)
+df2 = df %>%  
+  mutate(rel.err = rmse / rMSE_baseline)
 
 fig = df2 %>%
-  ggplot(aes(p, rel.err*100, color=variable)) + 
+  ggplot(aes(p, rel.err*100, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
@@ -366,12 +377,11 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
-  scale_color_manual(name="Method",values = cols) + 
-  geom_smooth(method='loess', span=.2, se=FALSE) + 
-  scale_linetype_manual(values = c("solid", "dashed"))
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) 
 
-ymax = 1.02*max(100*df2$rel.err[df2$variable == 'Schäfer-Strimmer'])
-ymin = .98*min(100*df2$rel.err[df2$variable == 'Oracle'])
+ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
+ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
@@ -384,37 +394,41 @@ plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ym
 set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
-epsilon = 1e-4
  
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=30))
 
-# run_simulation(n, epsilon, p_array, sigma_method, rho)
-df_melt = run_simulation(n, epsilon, p_array, "autocorr", rho = .95)
+df = run_simulation(n, p_array, "autocorr", rho = .95)
+df$Method = factor(df$Method, names(colMethods))
 ```
 
 ```{r auto_correlation, cache=FALSE, fig.height=4, fig.width=12}
-df_melt$line = "1"
-df_melt$line[df_melt$variable == 'Ledoit-Wolf'] = "2"
+ggplot(df, aes(p, rmse, color=Method)) + 
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + 
+  ylab("Root Mean Squared Error") + 
+  geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
+  scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE)
 
-cols = c(RColorBrewer::brewer.pal(length(unique(df_melt$variable))-1, "Set1"), "black")
+ymax = 1.02*max(df$rmse[df$Method == 'lambda = 0.1'])
+ymin = 0.98*min(df$rmse)
 
-cols[cols == "#FFFF33"]= "#cccc29"
-
-fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + geom_point(alpha=.2) + theme_classic() + theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + xlab("Number of features") + ylab("Root Mean Squared Error") + geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + scale_color_manual(name="Method",values = cols) + geom_smooth(method='loess', span=.2, se=FALSE) + scale_linetype_manual(values = c("solid", "dashed"))
-
-ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
-ymin = 0.98*min(df_melt$value)
-
-plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+plot_grid(fig + theme(legend.position="none"), 
+        fig + 
+        coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 
 ```{r relative.error2, cache=FALSE, fig.height=4, fig.width=12}
-df2 = df_melt %>%  
-  mutate(rel.err = value / rMSE_baseline)
+df2 = df %>%  
+  mutate(rel.err = rmse / rMSE_baseline)
 
 fig = df2 %>%
-  ggplot(aes(p, rel.err*100, color=variable)) + 
+  ggplot(aes(p, rel.err*100, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
@@ -423,12 +437,11 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
-  scale_color_manual(name="Method",values = cols) + 
-  geom_smooth(method='loess', span=.2, se=FALSE) + 
-  scale_linetype_manual(values = c("solid", "dashed"))
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) 
 
-ymax = 1.02*max(100*df2$rel.err[df2$variable == 'Schäfer-Strimmer'])
-ymin = .98*min(100*df2$rel.err[df2$variable == 'Oracle'])
+ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
+ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
@@ -441,37 +454,40 @@ plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ym
 set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
-epsilon = 1e-4
   
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=30))
 
-# run_simulation(n, epsilon, p_array, sigma_method, rho)
-df_melt = run_simulation(n, epsilon, p_array, "block", rho = 0.6)
+df = run_simulation(n, p_array, "block", rho = 0.6)
+df$Method = factor(df$Method, names(colMethods))
 ```
 
-```{r block_correlation, cache=FALSE, fig.height=4, fig.width=12}
-df_melt$line = "1"
-df_melt$line[df_melt$variable == 'Ledoit-Wolf'] = "2"
- 
-cols = c(RColorBrewer::brewer.pal(length(unique(df_melt$variable))-1, "Set1"), "black")
+```{r block_correlation, cache=FALSE, fig.height=4, fig.width=12}ggplot(df, aes(p, rmse, color=Method)) + 
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + 
+  ylab("Root Mean Squared Error") + 
+  geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
+  scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE)
 
-cols[cols == "#FFFF33"]= "#cccc29"
+ymax = 1.02*max(df$rmse[df$Method == 'lambda = 0.1'])
+ymin = 0.98*min(df$rmse)
 
-fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + geom_point(alpha=.2) + theme_classic() + theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + xlab("Number of features") + ylab("Root Mean Squared Error") + geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + scale_y_continuous(limits=c(0, .35), expand=c(0,0)) + scale_color_manual(name="Method",values = cols) + geom_smooth(method='loess', span=.1, se=FALSE) + scale_linetype_manual(values = c("solid", "dashed"))
-
-ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
-ymin = 0.98*min(df_melt$value)
-
-plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+plot_grid(fig + theme(legend.position="none"), 
+        fig + 
+        coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 
 ```{r relative.error3, cache=FALSE, fig.height=4, fig.width=12}
-df2 = df_melt %>%  
-  mutate(rel.err = value / rMSE_baseline)
+df2 = df %>%  
+  mutate(rel.err = rmse / rMSE_baseline)
 
 fig = df2 %>%
-  ggplot(aes(p, rel.err*100, color=variable)) + 
+  ggplot(aes(p, rel.err*100, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
@@ -480,12 +496,11 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
-  scale_color_manual(name="Method",values = cols) + 
-  geom_smooth(method='loess', span=.2, se=FALSE) + 
-  scale_linetype_manual(values = c("solid", "dashed"))
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) 
 
-ymax = 1.02*max(100*df2$rel.err[df2$variable == 'lambda = 0.01'])
-ymin = .98*min(100*df2$rel.err[df2$variable == 'Oracle'])
+ymax = 1.02*max(100*df2$rel.err[df2$Method == 'lambda = 0.1'])
+ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
@@ -496,37 +511,41 @@ plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ym
 set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
-epsilon = 1e-4
   
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 1.2*n, length.out=30))
 
-# run_simulation(n, epsilon, p_array, sigma_method, rho)
-df_melt = run_simulation(n, epsilon, p_array, "blockauto", rho = 0.95)
+df = run_simulation(n, p_array, "blockauto", rho = 0.95)
+df$Method = factor(df$Method, names(colMethods))
 ```
 
 ```{r block_autocor, cache=FALSE, fig.height=4, fig.width=12}
-df_melt$line = "1"
-df_melt$line[df_melt$variable == 'Ledoit-Wolf'] = "2"
- 
-cols = c(RColorBrewer::brewer.pal(length(unique(df_melt$variable))-1, "Set1"), "black")
+ggplot(df, aes(p, rmse, color=Method)) + 
+  geom_point(alpha=.2) + 
+  theme_classic() + 
+  theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
+  xlab("Number of features") + 
+  ylab("Root Mean Squared Error") + 
+  geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
+  scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE)
 
-cols[cols == "#FFFF33"]= "#cccc29"
+ymax = 1.02*max(df$rmse[df$Method == 'lambda = 0.1'])
+ymin = 0.98*min(df$rmse)
 
-fig = ggplot(df_melt, aes(p, value, color=variable, linetype=line)) + geom_point(alpha=.2) + theme_classic() + theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + xlab("Number of features") + ylab("Root Mean Squared Error") + geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + scale_y_continuous(limits=c(0, .42), expand=c(0,0)) + scale_color_manual(name="Method",values = cols) + geom_smooth(method='loess', span=.2, se=FALSE) + scale_linetype_manual(values = c("solid", "dashed"))
-
-ymax = 1.02*max(df_melt$value[df_melt$variable == 'lambda = 0.01'])
-ymin = 0.98*min(df_melt$value)
-
-plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+plot_grid(fig + theme(legend.position="none"), 
+        fig + 
+        coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 
 ```{r relative.error4, cache=FALSE, fig.height=4, fig.width=12}
-df2 = df_melt %>%  
-  mutate(rel.err = value / rMSE_baseline)
+df2 = df %>%  
+  mutate(rel.err = rmse / rMSE_baseline)
 
 fig = df2 %>%
-  ggplot(aes(p, rel.err*100, color=variable)) + 
+  ggplot(aes(p, rel.err*100, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
@@ -535,12 +554,11 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
   scale_y_continuous(limits=c(0, NA), expand=c(0,0)) + 
-  scale_color_manual(name="Method",values = cols) + 
-  geom_smooth(method='loess', span=.2, se=FALSE) + 
-  scale_linetype_manual(values = c("solid", "dashed"))
+  scale_color_manual(name="Method",values = colMethods) + 
+  geom_smooth(method='loess', span=.2, se=FALSE) 
 
-ymax = 1.02*max(100*df2$rel.err[df2$variable == 'Schäfer-Strimmer'])
-ymin = .98*min(100*df2$rel.err[df2$variable == 'Oracle'])
+ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
+ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
