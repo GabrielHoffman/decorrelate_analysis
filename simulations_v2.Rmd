@@ -30,16 +30,6 @@ https://hoffmg01.hpc.mssm.edu/decorrelate_analysis/simulations_v2.html
 
 --->
 
-# Touloumis: shrinkcovmat.identity()
-# LW: CovTools::CovEst.2003LW()
-# OAS: CovTools::CovEst.2010OAS()
-# Schäfer-Strimmer: cor.shrink()
-# lambda = 0
-# lambda = 1e-4
-# lambda = 1e-1
-# decorrelate
-# pseudo-inverse
-
 
 
 ```{r setup, include=FALSE}
@@ -243,10 +233,6 @@ run_simulation = function(n, p_array, sigma_method, rho){
   do.call(rbind, df)
 }
 ```
-
-
-# make sure rMSE change formula is same for sims and 1KG
-# Want: % decrease in rMSE
 
 
 # rMSE curve
