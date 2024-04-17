@@ -90,8 +90,7 @@ df %>%
 			plot.title = element_text(hjust = 0.5),
 			legend.position="none") +
 		facet_wrap(~pop) +
-		coord_flip() +
-		theme_classic()
+		coord_flip() 
 
 df %>%
 	mutate(rel.err = rMSE / rMSE_baseline) %>%

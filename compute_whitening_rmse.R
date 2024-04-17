@@ -7,6 +7,7 @@ spec = matrix(c(
   ), byrow=TRUE, ncol=4)
 opt = getopt(spec)
 
+# cd /hpc/users/hoffmg01/work/decorrelate_analysis
 # SRC=/hpc/users/hoffmg01/work/decorrelate_analysis/compute_whitening_rmse.R
 #
 # $SRC --super_pop EUR --out df_EUR.RDS

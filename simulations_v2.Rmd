@@ -257,7 +257,8 @@ df_col %>%
   ggplot(aes(x = "", y = value, fill = Method)) + 
   geom_bar(stat = "identity") + 
   coord_polar("y") +
-  scale_fill_manual(values = colMethods)
+  scale_fill_manual(values = colMethods) +
+  theme_classic()
 
 
 set.seed(12)
@@ -365,7 +366,8 @@ fig = df2 %>%
   scale_color_manual(name="Method",values = colMethods) + 
   geom_smooth(method='loess', span=.2, se=FALSE) 
 
-ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
+# ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
+ymax = 0.2
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), 
