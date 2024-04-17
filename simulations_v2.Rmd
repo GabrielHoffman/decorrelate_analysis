@@ -286,6 +286,8 @@ X_latent = scale(matrnorm(n,p))
 # sample matrix from MVN with covariance Sigma
 Y = X_latent %*% msqrt(Sigma)
 
+Y = scale(Y)
+
 # Plot rMSE vs lambda
 ######################
 
@@ -297,7 +299,7 @@ df_lambda = c('GIW-EB (current work)' = ecl$lambda,
       "lambda = 1e-4" = 1e-4,
       "Ledoit-Wolf" = CovEst.2003LW( Y[idx_train,] )$delta,
       "OAS" = CovEst.2010OAS(Y[idx_train,])$rho,
-      "Touloumis" = shrinkcovmat.identity(Y[idx_train,])$lambdahat,
+      "Touloumis" = shrinkcovmat.identity(t(Y[idx_train,]))$lambdahat,
       "Schäfer-Strimmer" = estimate.lambda(Y[idx_train,], verbose=FALSE) )
 
 df_lambda = data.frame(lambda = df_lambda) %>%
