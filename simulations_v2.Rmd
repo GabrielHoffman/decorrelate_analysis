@@ -389,7 +389,7 @@ plot_grid(fig + theme(legend.position="none"),
 
 
 
-```{r time1}
+```{r time1, fig.height=4, fig.width=6}
 df %>%
   ggplot(aes(p, user.self, color=Method)) +
   geom_point(alpha=.2) + 
@@ -474,7 +474,7 @@ plot_grid(fig + theme(legend.position="none"),
 ```
 
 
-```{r time2}
+```{r time2, fig.height=4, fig.width=6}
 df %>%
   ggplot(aes(p, user.self, color=Method)) +
   geom_point(alpha=.2) + 
@@ -560,7 +560,7 @@ plot_grid(fig + theme(legend.position="none"),
 ```
 
 
-```{r time3}
+```{r time3, fig.height=4, fig.width=6}
 df %>%
   ggplot(aes(p, user.self, color=Method)) +
   geom_point(alpha=.2) + 
@@ -645,7 +645,7 @@ plot_grid(fig + theme(legend.position="none"),
 ```
 
 
-```{r time4}
+```{r time4, fig.height=4, fig.width=6}
 df %>%
   ggplot(aes(p, user.self, color=Method)) +
   geom_point(alpha=.2) + 
