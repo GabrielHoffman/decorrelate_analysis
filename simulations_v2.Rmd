@@ -375,7 +375,7 @@ ymax = df2 %>%
   pull
 
 fig = df2 %>%
-  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rel.err*100 < 1.2*ymax)) %>% %>%
+  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rel.err*100 < 1.2*ymax)) %>%
   ggplot(aes(p, rel.err*100, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
@@ -463,7 +463,7 @@ ymax = df2 %>%
   pull
 
 fig = df2 %>%
-  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rel.err*100 < 1.2*ymax)) %>% %>%
+  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rel.err*100 < 1.2*ymax)) %>% 
   ggplot(aes(p, rel.err*100, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
@@ -550,7 +550,7 @@ ymax = df2 %>%
   pull
 
 fig = df2 %>%
-  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rel.err*100 < 1.2*ymax)) %>% %>%
+  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rel.err*100 < 1.2*ymax)) %>% 
   ggplot(aes(p, rel.err*100, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
