@@ -63,7 +63,7 @@ cols = c(RColorBrewer::brewer.pal(length(unique(df$method))-1, "Set1"), "black")
 
 cols[cols == "#FFFF33"]= "#cccc29"
 
-breaks = c(0, 3000, 5000, 7000, Inf)
+breaks = c(0, 1500, 3000, 5000, 7000, Inf)
 
 df %>% 
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
