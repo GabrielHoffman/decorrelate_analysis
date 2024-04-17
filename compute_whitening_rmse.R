@@ -124,8 +124,8 @@ df = lapply(1:nrow(df_grid), function(i){
 
       Y = scale(X)
 
-
       df = data.frame()
+      browser()
 
       # Eval methods
       #-------------
