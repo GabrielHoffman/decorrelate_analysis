@@ -66,7 +66,7 @@ omp_set_num_threads(6)
 
 loess.my = function(formula, data, ...){
   # fit = loess.as(data$x, data$y, degree=0)
-  fit = loess(y~x, data=data, span=.4)
+  fit = loess(y~x, data=data, span=.3)
   fit
 }
 
