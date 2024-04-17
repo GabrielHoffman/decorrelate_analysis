@@ -198,7 +198,7 @@ df %>%
 ```{r number.of.snps}
 a = df %>% 
 	filter(nsnps > 10000) %>% 
-	select(chrom, start, nsnps) %>% 
+	select(chrom, nsnps) %>% 
 	distinct %>%
 	nrow
 ```
