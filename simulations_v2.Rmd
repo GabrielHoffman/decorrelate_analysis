@@ -52,6 +52,7 @@ library(Rfast)
 library(ggplot2)
 library(corpcor)
 library(ShrinkCovMat)
+library(parallel)
 library(cowplot)
 library(corpcor)
 library(tidyverse)
@@ -99,7 +100,7 @@ get_w_ginv = function(X, k){
 
 run_simulation = function(n, p_array, sigma_method, rho){
 
-  df = lapply(p_array, function(p){
+  df = mclapply(p_array, function(p){
 
     # make sure p is even
     p = 4*as.integer(p/4)
@@ -231,7 +232,7 @@ run_simulation = function(n, p_array, sigma_method, rho){
     df$p = p
     df$rMSE_baseline = normCov(cora(Ys[-idx_train,]))
     df
-  })
+  }, mc.cores=12)
   do.call(rbind, df)
 }
 ```
