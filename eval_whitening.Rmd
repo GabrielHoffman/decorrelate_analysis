@@ -191,7 +191,7 @@ df %>%
 		ylab("Relative reduction in rMSE (%)") +
 		facet_wrap( ~ pop) +
 		coord_fixed(ylim=c(0, 100), xlim=c(140, 20000), expand=FALSE )  + 
-		scale_color_manual(name="Method",values = colMethods)
+		scale_color_manual(name="Method",values = colMethods) +
 		scale_fill_manual(name="Method",values = colMethods)
 ```
 
