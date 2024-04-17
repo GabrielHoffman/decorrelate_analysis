@@ -170,25 +170,25 @@ df = lapply(1:nrow(df_grid), function(i){
                         t(c(tm)),
                         rmse = rmse))
 
-      tm = system.time({
-      fit <- CovTools::CovEst.2003LW( scale(Y[idx_train,]) )
-      y_white <- Y[-idx_train,] %*% minvsqrt(fit$S)
-      })   
-      rmse = normCov(cora(y_white))
-      df = rbind(df, data.frame(
-                        Method = "Ledoit-Wolf",  
-                        t(c(tm)),
-                        rmse = rmse))
+      # tm = system.time({
+      # fit <- CovTools::CovEst.2003LW( scale(Y[idx_train,]) )
+      # y_white <- Y[-idx_train,] %*% minvsqrt(fit$S)
+      # })   
+      # rmse = normCov(cora(y_white))
+      # df = rbind(df, data.frame(
+      #                   Method = "Ledoit-Wolf",  
+      #                   t(c(tm)),
+      #                   rmse = rmse))
 
-      tm = system.time({
-      fit <- CovTools::CovEst.2010OAS( scale(Y[idx_train,]) )
-      y_white <- Y[-idx_train,] %*% minvsqrt(fit$S)
-      })   
-      rmse = normCov(cora(y_white))
-      df = rbind(df, data.frame(
-                        Method = "OAS",  
-                        t(c(tm)),
-                        rmse = rmse))
+      # tm = system.time({
+      # fit <- CovTools::CovEst.2010OAS( scale(Y[idx_train,]) )
+      # y_white <- Y[-idx_train,] %*% minvsqrt(fit$S)
+      # })   
+      # rmse = normCov(cora(y_white))
+      # df = rbind(df, data.frame(
+      #                   Method = "OAS",  
+      #                   t(c(tm)),
+      #                   rmse = rmse))
 
       tm = system.time({
       fit <- shrinkcovmat.equal( scale(t(Y[idx_train,])) )
