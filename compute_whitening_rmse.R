@@ -141,7 +141,6 @@ df = lapply(1:nrow(df_grid), function(i){
                 # select lambda based on method
                 lambda = switch( method, 
                   'GIW-EB (current work)' = ecl$lambda, 
-                  # "beam" = beam(X_tr, verbose=FALSE)@alphaOpt,
                   "0" = 0,
                   "0.01" = 0.01,
                   "Ledoit-Wolf" = CovEst.2003LW( X_tr )$delta,
