@@ -356,7 +356,7 @@ fig = df %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") +
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) + 
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.3)
+  geom_smooth(method='loess', se=FALSE, span=.3, size=1.5)
 
 ymax = 1.02*max(df$rmse[df$Method == 'Schäfer-Strimmer'])
 # ymax = .2
@@ -387,7 +387,7 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.35) +
+  geom_smooth(method='loess', se=FALSE, span=.35, size=1.5) +
   geom_hline(yintercept = 100, linetype="dashed", color="grey30")
 
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
@@ -447,7 +447,7 @@ fig = df %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") +
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) + 
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.3)
+  geom_smooth(method='loess', se=FALSE, span=.3, size=1.5)
 
 ymax = 1.02*max(df$rmse[df$Method == 'lambda = 1e-4'])
 ymin = 0.98*min(df$rmse)
@@ -478,7 +478,7 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.4) +
+  geom_smooth(method='loess', se=FALSE, span=.4, size=1.5) +
   geom_hline(yintercept = 100, linetype="dashed", color="grey30")
 
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
@@ -537,7 +537,7 @@ fig = df %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") +
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) + 
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.3)
+  geom_smooth(method='loess', se=FALSE, span=.3, size=1.5)
 
 ymax = 1.02*max(df$rmse[df$Method == 'lambda = 0.01'])
 ymin = 0.98*min(df$rmse)
@@ -568,7 +568,7 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.35) +
+  geom_smooth(method='loess', se=FALSE, span=.35, size=1.5) +
   geom_hline(yintercept = 100, linetype="dashed", color="grey30")
 
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'lambda = 0.01'])
@@ -626,7 +626,7 @@ fig = df %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") +
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) + 
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.3)
+  geom_smooth(method='loess', se=FALSE, span=.3, size=1.5)
 
 ymax = 1.02*max(df$rmse[df$Method == 'lambda = 1e-4'])
 ymin = 0.98*min(df$rmse)
