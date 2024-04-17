@@ -51,6 +51,8 @@ library(tidyverse)
 ```
 
 # "lambda = 0.01" vs 0.1
+# uncomment: ecl <- eclairs( Y[idx_train,])
+# uncomment other methods
 ```{r all, fig.width=12, fig.height=8, cache=FALSE}
 colMethods = c("GIW-EB (current work)" = "#E41A1C",
               "Ledoit-Wolf" = "#FF7F00", 
@@ -88,7 +90,8 @@ df %>%
 			plot.title = element_text(hjust = 0.5),
 			legend.position="none") +
 		facet_wrap(~pop) +
-		coord_flip()
+		coord_flip() +
+		theme_classic()
 
 df %>%
 	mutate(rel.err = rMSE / rMSE_baseline) %>%
