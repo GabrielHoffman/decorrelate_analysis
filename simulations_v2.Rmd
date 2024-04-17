@@ -65,7 +65,7 @@ omp_set_num_threads(6)
 
 
 loess.my = function(formula, data, ...){
-  fit = loess.as(data$x, data$y, criterion="gvc")
+  fit = loess.as(data$x, data$y, criterion="gcv")
   # fit = loess(y~x, data=data)
   fit
 }
@@ -397,7 +397,7 @@ plot_grid(fig + theme(legend.position="none"),
 
 
 
-```{r time1, fig.height=4, fig.width=6}
+```{r time1, fig.height=4, fig.width=6, cache=FALSE}
 df %>%
   ggplot(aes(p, user.self, color=Method)) +
   geom_point(alpha=.2) + 
@@ -482,7 +482,7 @@ plot_grid(fig + theme(legend.position="none"),
 ```
 
 
-```{r time2, fig.height=4, fig.width=6}
+```{r time2, fig.height=4, fig.width=6, cache=FALSE}
 df %>%
   ggplot(aes(p, user.self, color=Method)) +
   geom_point(alpha=.2) + 
@@ -568,7 +568,7 @@ plot_grid(fig + theme(legend.position="none"),
 ```
 
 
-```{r time3, fig.height=4, fig.width=6}
+```{r time3, fig.height=4, fig.width=6, cache=FALSE}
 df %>%
   ggplot(aes(p, user.self, color=Method)) +
   geom_point(alpha=.2) + 
@@ -653,7 +653,7 @@ plot_grid(fig + theme(legend.position="none"),
 ```
 
 
-```{r time4, fig.height=4, fig.width=6}
+```{r time4, fig.height=4, fig.width=6, cache=FALSE}
 df %>%
   ggplot(aes(p, user.self, color=Method)) +
   geom_point(alpha=.2) + 
