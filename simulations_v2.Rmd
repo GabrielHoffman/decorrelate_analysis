@@ -519,6 +519,7 @@ n = 1000 # number of samples
 idx_train = 1:(n/2)
   
 p_array = as.integer(seq(20, 1.2*n, length.out=25))
+p_array = as.integer(seq(20, .7*n, length.out=100))
 
 df = run_simulation(n, p_array, "blockauto", rho = 0.95)
 df$Method = factor(df$Method, names(colMethods))
