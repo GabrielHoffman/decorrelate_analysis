@@ -87,7 +87,7 @@ maf = function(x){
 }
 
 
-df = lapply(1:nrow(df_grid), function(i){
+df = lapply(1:nrow(df_grid[1:2,]), function(i){
 
     # subset info to this super pop
     idx = which(infoAll$super_pop == df_grid$super_pop[i])
@@ -224,10 +224,10 @@ df = lapply(1:nrow(df_grid), function(i){
 
       df$rMSE_baseline = normCov(cora(Y[-idx_train,]))
       df$chrom = df_grid$chrom[i]
-      df$super_pop = df_grid$chrom[i]
+      df$super_pop = df_grid$super_pop[i]
 
-      cat(df_grid$chrom[i], df_grid$chrom[i], "  \r")
-      
+      cat(df_grid$chrom[i], k, "  \r")
+
       cbind(df, nsnps = ncol(Y))
     })
     do.call(rbind, df)
