@@ -15,9 +15,6 @@ opt = getopt(spec)
 
 # printf "EUR\nAFR\nASN" | parallel -P3 "$SRC --super_pop {} --out df_{}.RDS"
 
-
-# April 15: train on 80%
-
 suppressPackageStartupMessages({
 library(VariantAnnotation)
 library(GenomicRanges)
@@ -53,13 +50,29 @@ normCov = function(Sigma){
   sqrt(mse)
 }
 
+# matrix square root
+msqrt = function(S){
+  dcmp = eigen(S)
+  # with(dcmp, vectors %*% diag(sqrt(values)) %*% t(vectors))
+  with(dcmp, vectors %*% (sqrt(values) * t(vectors)))
+}
+
+minvsqrt = function(S){
+  dcmp = eigen(S)
+  # with(dcmp, vectors %*% diag(1/sqrt(values)) %*% t(vectors))
+  with(dcmp, vectors %*% ((1/sqrt(values)) * t(vectors)))
+}
+
+
 # whiten with pseudoinverse with fixed rank
 get_w_ginv = function(X, k){
   C = cov(X)
   dcmp = eigen(C)
-  W = with(dcmp, vectors[,seq(k)] %*% diag(1/sqrt(values[seq(k)])) %*% t(vectors[,seq(k)]))
+  # W = with(dcmp, vectors[,seq(k)] %*% diag(1/sqrt(values[seq(k)])) %*% t(vectors[,seq(k)]))
+  W = with(dcmp, vectors[,seq(k)] %*% ((1/sqrt(values[seq(k)])) * t(vectors[,seq(k)])))
   W
 }
+
 
 file = "/sc/arion/projects/data-ark/Public_Unrestricted/1000G/phase3/release_2013502/integrated_call_samples_v3.20130502.ALL.panel"
 infoAll = read.table(file, header=TRUE)
@@ -93,7 +106,7 @@ df = lapply(1:nrow(df_grid), function(i){
     gr_chr = gr[seqnames(gr) == df_grid$chrom[i]]
 
     # get training set
-    idx_train = sample(nrow(info), 0.4*nrow(info))
+    idx_train = sample(nrow(info), 0.5*nrow(info))
     idx_test = setdiff(seq(nrow(info)), idx_train)
 
     df = lapply(seq(length(gr_chr)), function(k){
@@ -112,54 +125,105 @@ df = lapply(1:nrow(df_grid), function(i){
       keep = (apply(X[idx_train,], 2, maf) > min_af) & (apply(X[idx_test,], 2, maf) > min_af)
       table(keep)
 
-      X = scale(X)
-      # Get SNPs with non-zero variance in both training and testing
-      X_train = X[idx_train,keep]
-      X_test = X[idx_test,keep]
+      Y = scale(X)
 
+      # decorrelate
+      tm = system.time({
+      ecl <- eclairs( Y[idx_train,])
+      y_white <- decorrelate(Y[-idx_train,], ecl)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = 'GIW-EB (current work)', 
+                        t(c(tm)),
+                        rmse = rmse))
+
+      tm = system.time({
+      ecl <- eclairs( Y[idx_train,])
+      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 0)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "lambda = 0",  
+                        t(c(tm)),
+                        rmse = rmse))
+
+      tm = system.time({
+      ecl <- eclairs( Y[idx_train,])
+      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 0.01)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "lambda = 0.01", 
+                        t(c(tm)),
+                        rmse = rmse))
+
+      tm = system.time({
+      ecl <- eclairs( Y[idx_train,])
+      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 1e-4)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "lambda = 1e-4",  
+                        t(c(tm)),
+                        rmse = rmse))
+
+      tm = system.time({
+      fit <- CovTools::CovEst.2003LW( scale(Y[idx_train,]) )
+      y_white <- Y[-idx_train,] %*% minvsqrt(fit$S)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "Ledoit-Wolf",  
+                        t(c(tm)),
+                        rmse = rmse))
+
+      tm = system.time({
+      fit <- CovTools::CovEst.2010OAS( scale(Y[idx_train,]) )
+      y_white <- Y[-idx_train,] %*% minvsqrt(fit$S)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "OAS",  
+                        t(c(tm)),
+                        rmse = rmse))
+
+      tm = system.time({
+      fit <- shrinkcovmat.equal( scale(t(Y[idx_train,])) )
+      y_white <- Y[-idx_train,] %*% minvsqrt(fit$Sigmahat)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "Touloumis", 
+                        t(c(tm)),
+                        rmse = rmse))
+
+      tm = system.time({
+      C <- cor.shrink( scale(Y[idx_train,]), verbose=FALSE )
+      y_white <- Y[-idx_train,] %*% minvsqrt(C)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "Schäfer-Strimmer", 
+                        t(c(tm)),
+                        rmse = rmse))
+
+      tm = system.time({
       # learn transformation
-      ecl = eclairs( X_train, compute="corr")
+      k <- min(dim(Y[idx_train,]))-1
+      W <- get_w_ginv(scale(Y[idx_train,]), k)
+      y_white <- tcrossprod(Y[-idx_train,], W)
+      })   
+      rmse = normCov(cora(y_white))
+      df = rbind(df, data.frame(
+                        Method = "Pseudoinverse", 
+                        t(c(tm)),
+                        rmse = rmse))    
 
-      rMSE_baseline = normCov(cora(X_test))
-
-      df = lapply( methods, function(method){
-
-          message("\r", df_grid$chrom[i], " ", k, " ", method, "   ", appendLF=FALSE)
-
-          if( method == 'Pseudoinverse'){
-            lambda = NA
-            rnk = min(dim(X_train)-1)
-            W = get_w_ginv(scale(X_train), rnk)
-
-            X_test_white = tcrossprod(X_test, W)
-
-            rMSE = normCov(cora(X_test_white))
-
-            }else{
-                X_tr = scale(X_train)
-
-                # select lambda based on method
-                lambda = switch( method, 
-                  'GIW-EB (current work)' = ecl$lambda, 
-                  "0" = 0,
-                  "0.01" = 0.01,
-                  "Ledoit-Wolf" = CovEst.2003LW( X_tr )$delta,
-                  "OAS" = CovEst.2010OAS(X_tr)$rho,
-                  "Touloumis" = shrinkcovmat.identity(X_tr)$lambdahat,
-                  "Schäfer-Strimmer" = estimate.lambda(X_tr, verbose=FALSE)  )
-
-                lambda = min(1, max(0, lambda))
-
-                # transform testing data
-                X_test_white = decorrelate(X_test, ecl, lambda=lambda)
-
-                rMSE = normCov(cora(X_test_white))
-            }
-
-          # get rMSE
-          data.frame(method, df_grid[i,], gr_chr[k], nsnps = ncol(X), lambda, rMSE, rMSE_baseline, averageCorr = averageCorr(ecl))
-      })
-      do.call(rbind, df)
+      df$rMSE_baseline = normCov(cora(Y[-idx_train,]))
+      df$chrom = df_grid$chrom[i]
+      df$super_pop = super_pop$chrom[i]
+      cbind(df, nsnps = ncol(Y))
     })
     do.call(rbind, df)
 })
