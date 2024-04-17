@@ -288,9 +288,9 @@ df_lambda = c('GIW-EB (current work)' = ecl$lambda,
       "Touloumis" = shrinkcovmat.identity(Y[idx_train,])$lambdahat,
       "Schäfer-Strimmer" = estimate.lambda(Y[idx_train,], verbose=FALSE) )
 
-df_lambda = data.frame(lambda = df_lambda) %>%
-      rownames_to_column %>%
-      rename( Method = "rowname")
+# df_lambda = data.frame(lambda = df_lambda) %>%
+#       rownames_to_column %>%
+#       rename( Method = "rowname")
 
 res = lapply(seq(0.01, .9, length.out=20), function(lambda){
       cat("\r", lambda, '   ')
@@ -369,7 +369,9 @@ fig = df2 %>%
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
-plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+plot_grid(fig + theme(legend.position="none"), 
+        fig + coord_cartesian(ylim = c(ymin, ymax)), 
+        ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 
@@ -429,7 +431,9 @@ fig = df2 %>%
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
-plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+plot_grid(fig + theme(legend.position="none"), 
+        fig + coord_cartesian(ylim = c(ymin, ymax)), 
+        ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 
@@ -489,7 +493,9 @@ fig = df2 %>%
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'lambda = 0.1'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
-plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+plot_grid(fig + theme(legend.position="none"), 
+        fig + coord_cartesian(ylim = c(ymin, ymax)), 
+        ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 
@@ -503,6 +509,7 @@ p_array = as.integer(seq(20, 1.2*n, length.out=30))
 
 df = run_simulation(n, p_array, "blockauto", rho = 0.95)
 df$Method = factor(df$Method, names(colMethods))
+df$Method = droplevels(df$Method )
 ```
 
 ```{r block_autocor, cache=FALSE, fig.height=4, fig.width=12}
@@ -547,7 +554,9 @@ fig = df2 %>%
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
-plot_grid(fig + theme(legend.position="none"), fig + coord_cartesian(ylim = c(ymin, ymax)), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
+plot_grid(fig + theme(legend.position="none"), 
+        fig + coord_cartesian(ylim = c(ymin, ymax)), 
+        ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
 
