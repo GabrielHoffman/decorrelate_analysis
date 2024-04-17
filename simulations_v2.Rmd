@@ -64,11 +64,11 @@ library(RhpcBLASctl)
 omp_set_num_threads(6)
 
 
-loess.my = function(formula, data, ...){
-  # fit = loess.as(data$x, data$y, degree=0)
-  fit = loess(y~x, data=data, span=.3)
-  fit
-}
+# loess = function(formula, data, ...){
+#   # fit = loess.as(data$x, data$y, degree=0)
+#   fit = loess(y~x, data=data, span=.3)
+#   fit
+# }
 
 # norm of matrix compared to identity,
 # This is the root mean squared error of the off diagonal entries
@@ -354,7 +354,7 @@ fig = ggplot(df, aes(p, rmse, color=Method)) +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") +
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) + 
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE)
+  geom_smooth(method='loess', se=FALSE, span=.3)
 
 ymax = 1.02*max(df$rmse[df$Method == 'Schäfer-Strimmer'])
 # ymax = .2
@@ -384,7 +384,7 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE) 
+  geom_smooth(method='loess', se=FALSE, span=.2) 
 
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
 # ymax = 30
@@ -406,7 +406,7 @@ df %>%
   xlab("Number of features") + 
   ylab("CPU time (seconds)") +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE) +
+  geom_smooth(method='loess', se=FALSE) +
   scale_y_log10()
 ```
 
@@ -441,7 +441,7 @@ fig = ggplot(df, aes(p, rmse, color=Method)) +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") +
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) + 
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE)
+  geom_smooth(method='loess', se=FALSE, span=.3)
 
 ymax = 1.02*max(df$rmse[df$Method == 'lambda = 1e-4'])
 ymin = 0.98*min(df$rmse)
@@ -471,7 +471,7 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE) 
+  geom_smooth(method='loess', se=FALSE, span=.2) 
 
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
@@ -491,7 +491,7 @@ df %>%
   xlab("Number of features") + 
   ylab("CPU time (seconds)") +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE) +
+  geom_smooth(method='loess', se=FALSE) +
   scale_y_log10()
 ```
 
@@ -527,7 +527,7 @@ fig = ggplot(df, aes(p, rmse, color=Method)) +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") +
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) + 
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE)
+  geom_smooth(method='loess', se=FALSE, span=.3)
 
 ymax = 1.02*max(df$rmse[df$Method == 'lambda = 0.01'])
 ymin = 0.98*min(df$rmse)
@@ -557,7 +557,7 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE) 
+  geom_smooth(method='loess', se=FALSE, span=.2) 
 
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'lambda = 0.01'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
@@ -577,7 +577,7 @@ df %>%
   xlab("Number of features") + 
   ylab("CPU time (seconds)") +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE) +
+  geom_smooth(method='loess', se=FALSE) +
   scale_y_log10()
 ```
 
@@ -612,7 +612,7 @@ fig = ggplot(df, aes(p, rmse, color=Method)) +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") +
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) + 
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE)
+  geom_smooth(method='loess', se=FALSE, span=.3)
 
 ymax = 1.02*max(df$rmse[df$Method == 'lambda = 1e-4'])
 ymin = 0.98*min(df$rmse)
@@ -642,7 +642,7 @@ fig = df2 %>%
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE) 
+  geom_smooth(method='loess', se=FALSE) 
 
 ymax = 1.02*max(100*df2$rel.err[df2$Method == 'lambda = 0.01'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
@@ -662,7 +662,7 @@ df %>%
   xlab("Number of features") + 
   ylab("CPU time (seconds)") +
   scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess.my', se=FALSE) +
+  geom_smooth(method='loess', se=FALSE, span=.2) +
   scale_y_log10()
 ```
 
