@@ -341,7 +341,7 @@ df$Method = factor(df$Method, names(colMethods))
 
 ```{r constant_correlation, cache=FALSE, fig.height=4, fig.width=12}
 ymax = df %>%
-  filter(((Method == 'lambda = 0') & (p < 0.495*n))) %>%
+  filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
   summarize(max = max(rmse)) %>%
   pull
 
@@ -677,20 +677,6 @@ df %>%
   geom_smooth(method='loess', se=FALSE) +
   scale_y_log10()
 ```
-
-
-df2 %>%
-  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rel.err*100 < 1.2*ymax)) %>%
-  ggplot(aes(p, rel.err*100, color=Method)) + 
-  geom_point(alpha=.2) + 
-  theme_classic() + 
-  theme(aspect.ratio = 1, plot.title = element_text(hjust=0.5), legend.position="none") + 
-  xlab("Number of features") + 
-  ylab("Relative reduction in rMSE (%)") +
-  geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
-  coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
-  scale_color_manual(name="Method",values = colMethods) + 
-  geom_smooth(method='loess', se=FALSE, span=.4) 
 
 
 
