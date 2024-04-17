@@ -186,7 +186,7 @@ run_simulation = function(n, p_array, sigma_method, rho){
                         rmse = rmse))
 
     tm = system.time({
-      fit <- shrinkcovmat.identity( scale(t(Y[idx_train,])) )
+      fit <- shrinkcovmat.equal( scale(t(Y[idx_train,])) )
       y_white <- Y[-idx_train,] %*% minvsqrt(fit$Sigmahat)
       })   
     rmse = normCov(cora(y_white))
