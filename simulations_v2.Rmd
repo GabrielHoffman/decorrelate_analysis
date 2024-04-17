@@ -637,7 +637,7 @@ plot_grid(fig + theme(legend.position="none"),
 ```
 
 
-```{r relative.error4, cache=FALSE, fig.height=4, fig.width=10}
+```{r relative.error4, cache=FALSE, fig.height=4, fig.width=12}
 df2 = df %>%  
   mutate(rel.err = rmse / rMSE_baseline)
 
