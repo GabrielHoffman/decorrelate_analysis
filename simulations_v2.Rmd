@@ -539,9 +539,8 @@ fig = ggplot(df, aes(p, rmse, color=Method)) +
   theme(aspect.ratio=1, plot.title = element_text(hjust=0.5)) + 
   xlab("Number of features") + 
   ylab("Root Mean Squared Error") + 
-  geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
-  scale_x_continuous(limits=c(0, NA), expand=c(0,0)) + 
-  scale_y_continuous(limits=c(0, ymax), expand=c(0,0)) + 
+  geom_vline(xintercept = n/2, linetype="dashed", color="grey30") +
+  coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) + 
   scale_color_manual(name="Method",values = colMethods) + 
   geom_smooth(method='loess', span=.2, se=FALSE)
 
@@ -566,7 +565,7 @@ fig = df2 %>%
   xlab("Number of features") + 
   ylab("Relative reduction in rMSE (%)") +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
-  coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
+  coord_fixed(xlim = c(0, NA), ylim=c(0, NA), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
   geom_smooth(method='loess', span=.2, se=FALSE) 
 
