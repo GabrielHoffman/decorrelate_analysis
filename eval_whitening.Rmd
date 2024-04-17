@@ -148,7 +148,7 @@ df2 %>%
 ```
 
 
-```{r compare, cache=FALSE}
+```{r compare, cache=FALSE, eval=FALSE}
 library(rstatix)
 
 df %>% 
