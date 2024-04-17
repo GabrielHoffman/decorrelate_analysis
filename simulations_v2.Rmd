@@ -65,7 +65,7 @@ omp_set_num_threads(6)
 
 
 loess.my = function(formula, data, ...){
-  fit = loess.as(data$x, data$y, criterion="gcv")
+  fit = loess.as(data$x, data$y, criterion="gcv", degree=0)
   # fit = loess(y~x, data=data)
   fit
 }
