@@ -524,7 +524,7 @@ fig = ggplot(df, aes(p, rmse, color=Method)) +
   scale_color_manual(name="Method",values = colMethods) + 
   geom_smooth(method='loess', span=.2, se=FALSE)
 
-ymax = 1.02*max(df$rmse[df$Method == 'lambda = 0.1'])
+ymax = 1.02*max(df$rmse[df$Method == 'Pseudoinverse'])
 ymin = 0.98*min(df$rmse)
 
 plot_grid(fig + theme(legend.position="none"), 
