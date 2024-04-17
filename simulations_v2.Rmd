@@ -383,7 +383,7 @@ fig = df2 %>%
   theme_classic() + 
   theme(aspect.ratio = 1, plot.title = element_text(hjust=0.5)) + 
   xlab("Number of features") + 
-  ylab("Relative reduction in rMSE (%)") +
+  ylab("Relative Root Mean Squared Error(%)") +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
@@ -474,7 +474,7 @@ fig = df2 %>%
   theme_classic() + 
   theme(aspect.ratio = 1, plot.title = element_text(hjust=0.5)) + 
   xlab("Number of features") + 
-  ylab("Relative reduction in rMSE (%)") +
+  ylab("Relative Root Mean Squared Error(%)") +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
@@ -564,7 +564,7 @@ fig = df2 %>%
   theme_classic() + 
   theme(aspect.ratio = 1, plot.title = element_text(hjust=0.5)) + 
   xlab("Number of features") + 
-  ylab("Relative reduction in rMSE (%)") +
+  ylab("Relative Root Mean Squared Error(%)") +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
@@ -653,7 +653,7 @@ fig = df2 %>%
   theme_classic() + 
   theme(aspect.ratio = 1, plot.title = element_text(hjust=0.5)) + 
   xlab("Number of features") + 
-  ylab("Relative reduction in rMSE (%)") +
+  ylab("Relative Root Mean Squared Error(%)") +
   geom_vline(xintercept = n/2, linetype="dashed", color="grey30") + 
   coord_fixed(xlim = c(0, NA), ylim=c(0, ymax), expand = FALSE) +
   scale_color_manual(name="Method",values = colMethods) + 
