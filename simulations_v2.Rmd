@@ -30,6 +30,16 @@ https://hoffmg01.hpc.mssm.edu/decorrelate_analysis/simulations_v2.html
 
 --->
 
+# Touloumis: shrinkcovmat.identity()
+# LW: CovTools::CovEst.2003LW()
+# OAS: CovTools::CovEst.2010OAS()
+# Schäfer-Strimmer: cor.shrink()
+# lambda = 0
+# lambda = 1e-4
+# lambda = 1e-1
+# decorrelate
+# pseudo-inverse
+
 
 
 ```{r setup, include=FALSE}
@@ -54,19 +64,12 @@ library(corpcor)
 library(ShrinkCovMat)
 library(cowplot)
 library(corpcor)
-library(ShrinkCovMat)
 library(tidyverse)
 library(CovTools)
 library(RhpcBLASctl)
 })
 
 omp_set_num_threads(6)
-
-# Create correlation matrix with autocorrelation
-autocorr.mat <- function(p = 100, rho = 0.9) {
-    mat <- diag(p)
-    return(rho^abs(row(mat)-col(mat)))
-}
 
 # norm of matrix compared to identity,
 # This is the root mean squared error of the off diagonal entries
@@ -83,12 +86,14 @@ normCov = function(Sigma){
 # matrix square root
 msqrt = function(S){
   dcmp = eigen(S)
-  with(dcmp, vectors %*% diag(sqrt(values)) %*% t(vectors))
+  # with(dcmp, vectors %*% diag(sqrt(values)) %*% t(vectors))
+  with(dcmp, vectors %*% (sqrt(values) * t(vectors)))
 }
 
 minvsqrt = function(S){
   dcmp = eigen(S)
-  with(dcmp, vectors %*% diag(1/sqrt(values)) %*% t(vectors))
+  # with(dcmp, vectors %*% diag(1/sqrt(values)) %*% t(vectors))
+  with(dcmp, vectors %*% ((1/sqrt(values)) * t(vectors)))
 }
 
 
@@ -96,9 +101,11 @@ minvsqrt = function(S){
 get_w_ginv = function(X, k){
   C = cov(X)
   dcmp = eigen(C)
-  W = with(dcmp, vectors[,seq(k)] %*% diag(1/sqrt(values[seq(k)])) %*% t(vectors[,seq(k)]))
+  # W = with(dcmp, vectors[,seq(k)] %*% diag(1/sqrt(values[seq(k)])) %*% t(vectors[,seq(k)]))
+  W = with(dcmp, vectors[,seq(k)] %*% ((1/sqrt(values[seq(k)])) * t(vectors[,seq(k)])))
   W
 }
+
 
 run_simulation = function(n, epsilon, p_array, sigma_method, rho){
 
@@ -122,48 +129,127 @@ run_simulation = function(n, epsilon, p_array, sigma_method, rho){
     # sample matrix from MVN with covariance Sigma
     Y = X_latent %*% msqrt(Sigma)
 
-    # Estimate correlation with low rank and shrinkage
-    ecl_cov = eclairs( Y[idx_train,], compute="covariance")
-    ecl_cov$dSq = ecl_cov$dSq + epsilon
+    df = data.frame()
 
-    C_decorr = cor(decorrelate(Y[-idx_train,], ecl_cov))
+    # Eval methods
+    #-------------
 
-    lambda.LW = CovTools::CovEst.2003LW( scale(Y[idx_train,]) )$delta
-    lambda.OAS = CovTools::CovEst.2010OAS( scale(Y[idx_train,]) )$rho
-    lambda.Touloumis = ShrinkCovMat::shrinkcovmat.identity(scale(Y[idx_train,]))$lambdahat
-    lambda.Schafer = corpcor::estimate.lambda(scale(Y[idx_train,]), verbose=FALSE)
+    # decorrelate
+    tm = system.time({
+      ecl <- eclairs( Y[idx_train,])
+      y_white <- decorrelate(Y[-idx_train,], ecl)
+      })   
+    rmse = normCov(cora(y_white))
+    df = rbind(df, data.frame(
+                        Method = 'GIW-EB (current work)', 
+                        t(c(tm)),
+                        rmse = rmse))
 
-    lambda.Touloumis = min(1, max(0, lambda.Touloumis))
+    tm = system.time({
+      ecl <- eclairs( Y[idx_train,])
+      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 0)
+      })   
+    rmse = normCov(cora(y_white))
+    df = rbind(df, data.frame(
+                        Method = "lambda = 0",  
+                        t(c(tm)),
+                        rmse = rmse))
 
-    C_lambda_0 = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=0))
-    C_lambda_0.01 = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=0.01))
-    C_lambda_LW = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=lambda.LW))
-    C_lambda_OAS = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=lambda.OAS))
-    C_lambda_Touloumis = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=lambda.Touloumis))
-    C_lambda_lambda.Schafer = cor(decorrelate(Y[-idx_train,], ecl_cov, lambda=lambda.Schafer))
+    tm = system.time({
+      ecl <- eclairs( Y[idx_train,])
+      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 1e-1)
+      })   
+    rmse = normCov(cora(y_white))
+    df = rbind(df, data.frame(
+                        Method = "lambda = 0.1", 
+                        t(c(tm)),
+                        rmse = rmse))
 
-    C_oracle = cor(Y[-idx_train,] %*% minvsqrt(Sigma))
+    tm = system.time({
+      ecl <- eclairs( Y[idx_train,])
+      y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 1e-4)
+      })   
+    rmse = normCov(cora(y_white))
+    df = rbind(df, data.frame(
+                        Method = "lambda = 1e-4",  
+                        t(c(tm)),
+                        rmse = rmse))
 
-    W = get_w_ginv(scale(Y[idx_train,]), min(dim(Y[idx_train,]))-1)
-    value.pseudoinverse = normCov(cor(tcrossprod(Y[-idx_train,], W)))
+    tm = system.time({
+      fit <- CovTools::CovEst.2003LW( scale(Y[idx_train,]) )
+      y_white <- Y[-idx_train,] %*% minvsqrt(fit$S)
+      })   
+    rmse = normCov(cora(y_white))
+    df = rbind(df, data.frame(
+                        Method = "Ledoit-Wolf",  
+                        t(c(tm)),
+                        rmse = rmse))
 
-    data.frame(p = p,
-                lambda.eb = ecl_cov$lambda,
-                rMSE_baseline = normCov(cor(Y[-idx_train,])), 
-                "Pseudoinverse" = value.pseudoinverse,
-                'lambda = 0.01' = normCov( C_lambda_0.01),
-                'Ledoit-Wolf' = normCov(C_lambda_LW),
-                'OAS' = normCov(C_lambda_OAS),
-                'Touloumis' = normCov(C_lambda_Touloumis),
-                'Schäfer-Strimmer' = normCov(C_lambda_lambda.Schafer),
-                'GIW-EB (current work)' = normCov(C_decorr),
-                'Oracle' = normCov(C_oracle),
-                check.names=FALSE)
+    tm = system.time({
+      fit <- CovTools::CovEst.2010OAS( scale(Y[idx_train,]) )
+      y_white <- Y[-idx_train,] %*% minvsqrt(fit$S)
+      })   
+    rmse = normCov(cora(y_white))
+    df = rbind(df, data.frame(
+                        Method = "OAS",  
+                        t(c(tm)),
+                        rmse = rmse))
+
+    tm = system.time({
+      fit <- shrinkcovmat.identity( scale(t(Y[idx_train,])) )
+      y_white <- Y[-idx_train,] %*% minvsqrt(fit$Sigmahat)
+      })   
+    rmse = normCov(cora(y_white))
+    df = rbind(df, data.frame(
+                        Method = "Touloumis", 
+                        t(c(tm)),
+                        rmse = rmse))
+
+    tm = system.time({
+      C <- cor.shrink( scale(Y[idx_train,]), verbose=FALSE )
+      y_white <- Y[-idx_train,] %*% minvsqrt(C)
+      })   
+    rmse = normCov(cora(y_white))
+    df = rbind(df, data.frame(
+                        Method = "Schäfer-Strimmer", 
+                        t(c(tm)),
+                        rmse = rmse))
+
+    tm = system.time({
+      y_white <- Y[-idx_train,] %*% minvsqrt(Sigma)
+      })   
+    rmse = normCov(cora(y_white))
+    df = rbind(df, data.frame(
+                        Method = "Oracle", 
+                        t(c(tm)),
+                        rmse = rmse))
+
+    tm = system.time({
+      # learn transformation
+      k <- min(dim(Y[idx_train,]))-1
+      W <- get_w_ginv(scale(Y[idx_train,]), k)
+      y_white <- tcrossprod(Y[-idx_train,], W)
+      })   
+    rmse = normCov(cora(y_white))
+    df = rbind(df, data.frame(
+                        Method = "Pseudoinverse", 
+                        t(c(tm)),
+                        rmse = rmse))    
+
+    tm = system.time({
+      # no transformation
+      y_white <- Y[-idx_train,]
+      })   
+    rmse = normCov(cora(y_white))
+    df = rbind(df, data.frame(
+                        Method = "Baseline", 
+                        t(c(tm)),
+                        rmse = rmse))
+
+    df$p = p
+    df
   })
-  df = do.call(rbind, df)
-
-  df_melt = reshape2::melt(df, id.vars=c('p', 'lambda.eb', 'rMSE_baseline'))
-  df_melt
+  do.call(rbind, df)
 }
 ```
 
