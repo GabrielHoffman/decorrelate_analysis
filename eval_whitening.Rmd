@@ -92,7 +92,7 @@ df %>%
 		coord_flip() 
 
 df %>%
-	mutate(rel.err = rMSE / rMSE_baseline) %>%
+	mutate(rel.err = rmse / rMSE_baseline) %>%
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
 	group_by(Method) %>%
 	ggplot(aes(Method, rel.err*100, fill=Method)) + 
@@ -110,7 +110,7 @@ df %>%
 
 ```{r test, eval=FALSE}
 a = df %>%
-	mutate(rel.err = rMSE ) %>%
+	mutate(rel.err = rmse ) %>%
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
 	group_by(Method, category, pop) %>%
 	summarize(mean = mean(100*rel.err), 
@@ -138,7 +138,7 @@ df %>%
 cutoff = 85
 
 df2 = df %>%
-	mutate(rel.err = rMSE / rMSE_baseline ) %>%
+	mutate(rel.err = rmse / rMSE_baseline ) %>%
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
 	group_by(Method, category, pop) %>%
 	summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
@@ -166,7 +166,7 @@ df2 %>%
 library(rstatix)
 
 df %>% 
-	mutate(rel.err = rMSE / rMSE_baseline ) %>%
+	mutate(rel.err = rmse / rMSE_baseline ) %>%
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
 	select(Method, pop, category, rel.err) %>%
 	filter(pop == "EUR", category == "(0,3e+03]") %>% 
@@ -179,7 +179,7 @@ df %>%
 
 ```{r all.curve, fig.width=12, fig.height=6, cache=FALSE}
 df %>%
-	mutate(rel.err = rMSE / rMSE_baseline) %>%
+	mutate(rel.err = rmse / rMSE_baseline) %>%
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
 	group_by(Method) %>%
 	ggplot(aes(nsnps, rel.err*100, color=Method)) + 
