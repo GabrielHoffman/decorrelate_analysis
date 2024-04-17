@@ -288,12 +288,11 @@ df_lambda = c('GIW-EB (current work)' = ecl$lambda,
       "Touloumis" = shrinkcovmat.identity(Y[idx_train,])$lambdahat,
       "Schäfer-Strimmer" = estimate.lambda(Y[idx_train,], verbose=FALSE) )
 
-# df_lambda = data.frame(lambda = df_lambda) %>%
-#       rownames_to_column %>%
-#       rename( Method = "rowname")
+df_lambda = data.frame(lambda = df_lambda) %>%
+      rownames_to_column %>%
+      rename( Method = "rowname")
 
 res = lapply(seq(0.01, .9, length.out=20), function(lambda){
-      cat("\r", lambda, '   ')
       X_test_white = decorrelate(Y[-idx_train,], ecl, lambda=lambda)
       rMSE = normCov(cora(X_test_white))
       data.frame(lambda = lambda, rMSE = rMSE)
