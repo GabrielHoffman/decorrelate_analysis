@@ -54,7 +54,8 @@ library(tidyverse)
 # uncomment: ecl <- eclairs( Y[idx_train,])
 # uncomment other methods
 ```{r all, fig.width=12, fig.height=8, cache=FALSE}
-colMethods = c("GIW-EB (current work)" = "#E41A1C",
+colMethods = c("GIW-EB" = "#E41A1C",
+              "GIW-EB (k=50)" = "#9f1214",
               "Ledoit-Wolf" = "#FF7F00", 
               "OAS"= "#cccc29", 
               "Touloumis" = "#A65628", 

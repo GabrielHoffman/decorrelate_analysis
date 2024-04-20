@@ -262,7 +262,7 @@ run_simulation = function(n, p_array, sigma_method, rho){
 # Colors
 ```{r rMSE}
 colMethods = c("GIW-EB" = "#E41A1C",
-              "GIW-EB (k=20)" = "#9f1214",
+              "GIW-EB (k=50)" = "#9f1214",
               "Ledoit-Wolf" = "#FF7F00", 
               "OAS"= "#cccc29", 
               "Touloumis" = "#A65628", 
@@ -310,7 +310,7 @@ Y = scale(Y)
 ecl = eclairs( Y[idx_train,], compute="corr")
 
 df_lambda = c('GIW-EB' = ecl$lambda,
-      "GIW-EB (k=20)" = eclairs( Y[idx_train,], compute="corr", k=20)$lambda,
+      "GIW-EB (k=50)" = eclairs( Y[idx_train,], compute="corr", k=50)$lambda,
       "lambda = 0" = 0,
       "lambda = 0.01" = 0.01,
       "lambda = 1e-4" = 1e-4,

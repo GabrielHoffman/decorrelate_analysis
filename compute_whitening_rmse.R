@@ -147,12 +147,12 @@ df = lapply(1:nrow(df_grid), function(i){
 
       # decorrelate
       tm = system.time({
-      ecl <- eclairs( Y[idx_train,], k=20)
+      ecl <- eclairs( Y[idx_train,], k=50)
       y_white <- decorrelate(Y[-idx_train,], ecl)
       })   
       rmse = normCov(cora(y_white))
       df = rbind(df, data.frame(
-                  Method = 'GIW-EB (k=20)', 
+                  Method = 'GIW-EB (k=50)', 
                   t(c(tm)),
                   rmse = rmse))
 
