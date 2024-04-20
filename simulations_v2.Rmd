@@ -299,7 +299,7 @@ Y = scale(Y)
 ecl = eclairs( Y[idx_train,], compute="corr")
 
 df_lambda = c('GIW-EB' = ecl$lambda,
-      "GIW-EB (k=20)" = eclairs( Y[idx_train,], compute="corr")$lambda,
+      "GIW-EB (k=20)" = eclairs( Y[idx_train,], compute="corr", k=20)$lambda,
       "lambda = 0" = 0,
       "lambda = 0.01" = 0.01,
       "lambda = 1e-4" = 1e-4,
