@@ -156,7 +156,6 @@ df = lapply(1:nrow(df_grid), function(i){
                   t(c(tm)),
                   rmse = rmse))
 
-
       tm = system.time({
       ecl <- eclairs( Y[idx_train,])
       y_white <- decorrelate(Y[-idx_train,], ecl, lambda = 0)
