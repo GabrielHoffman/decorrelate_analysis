@@ -276,7 +276,7 @@ df_col %>%
 ```
 
 # rMSE curve
-```{r rmse.curve}
+```{r rmse.curve, cache=FALSE}
 set.seed(12)
 n = 500 # number of samples
 idx_train = 1:(n/2)
