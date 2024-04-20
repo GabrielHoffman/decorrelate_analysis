@@ -150,12 +150,12 @@ run_simulation = function(n, p_array, sigma_method, rho){
 
     # decorrelate
     tm = system.time({
-      ecl <- eclairs( Ys[idx_train,], k=20)
+      ecl <- eclairs( Ys[idx_train,], k=50)
       y_white <- decorrelate(Ys[-idx_train,], ecl)
       })   
     rmse = normCov(cora(y_white))
     df = rbind(df, data.frame(
-                        Method = 'GIW-EB (k=20)', 
+                        Method = 'GIW-EB (k=50)', 
                         t(c(tm)),
                         rmse = rmse))
 
