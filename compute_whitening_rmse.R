@@ -147,7 +147,7 @@ df = lapply(1:nrow(df_grid), function(i){
 
       # decorrelate
       tm = system.time({
-      ecl <- eclairs( Ys[idx_train,], k=20)
+      ecl <- eclairs( Y[idx_train,], k=20)
       y_white <- decorrelate(Ys[-idx_train,], ecl)
       })   
       rmse = normCov(cora(y_white))
