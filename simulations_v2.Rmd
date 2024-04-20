@@ -326,6 +326,7 @@ ggplot(res, aes(lambda, rMSE)) +
       geom_point(data = res[i,], aes(x = lambda, y = rMSE), color="red") +
       scale_color_manual(values = colMethods) +
       xlab(bquote(lambda)) +
+      scale_color_manual(name="Method",values = colMethods) + 
       ylab("Out-of-sample root mean squared error")
 ```
 
