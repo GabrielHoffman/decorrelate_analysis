@@ -139,6 +139,7 @@ df %>%
 cutoff = 85
 
 df2 = df %>%
+	filter(Method == "Pseudoinverse") %>%
 	mutate(rel.err = rmse / rMSE_baseline ) %>%
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
 	group_by(Method, category, pop) %>%
@@ -210,6 +211,13 @@ a = df %>%
 ```{r exit}
 knitr::knit_exit()
 ```
+
+
+
+
+
+
+
 
 
 
