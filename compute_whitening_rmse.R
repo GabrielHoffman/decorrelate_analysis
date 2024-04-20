@@ -58,17 +58,20 @@ msqrt = function(S){
   with(dcmp, vectors %*% (sqrt(values) * t(vectors)))
 }
 
-minvsqrt = function(S){
-  dcmp = eigen(S)
+minvsqrt = function(S, tol = 1e-14){
+  dcmp = eigen(S)  
+  k = sum(dcmp$values > tol)
   # with(dcmp, vectors %*% diag(1/sqrt(values)) %*% t(vectors))
-  with(dcmp, vectors %*% ((1/sqrt(values)) * t(vectors)))
+  with(dcmp, vectors[,seq(k)] %*% ((1/sqrt(values[seq(k)])) * t(vectors[,seq(k)])))
 }
 
 
 # whiten with pseudoinverse with fixed rank
-get_w_ginv = function(X, k){
+get_w_ginv = function(X, k, tol = 1e-14){
   C = cov(X)
   dcmp = eigen(C)
+
+  k = sum(dcmp$values[seq(k)] > tol)
   # W = with(dcmp, vectors[,seq(k)] %*% diag(1/sqrt(values[seq(k)])) %*% t(vectors[,seq(k)]))
   W = with(dcmp, vectors[,seq(k)] %*% ((1/sqrt(values[seq(k)])) * t(vectors[,seq(k)])))
   W
@@ -88,28 +91,29 @@ maf = function(x){
 }
 
 
+# subset info to this super pop
+idx = which(infoAll$super_pop == opt$super_pop)
+info = infoAll[idx,]
+
+# get training set
+set.seed(1)
+idx_train = sample(nrow(info), 0.5*nrow(info))
+idx_test = setdiff(seq(nrow(info)), idx_train)
+
 df = lapply(1:nrow(df_grid), function(i){
 
-    # subset info to this super pop
-    idx = which(infoAll$super_pop == df_grid$super_pop[i])
-    info = infoAll[idx,]
-
     # read in genome-blocks for this population
-    file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/ldetect-data/", df_grid$super_pop[i], "/fourier_ls-all_mod.bed")
-    # file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/adjclust/", df_grid$super_pop[i], ".bed")
+    file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/ldetect-data/", opt$super_pop, "/fourier_ls-all_mod.bed")
+    # file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/adjclust/", opt$super_pop, ".bed")
     gr = import(file, format="bed")
     seqlevelsStyle(gr) = "NCBI"
 
     # subset Granges for this chrom
     gr_chr = gr[seqnames(gr) == df_grid$chrom[i]]
 
-    # get training set
-    idx_train = sample(nrow(info), 0.5*nrow(info))
-    idx_test = setdiff(seq(nrow(info)), idx_train)
-
     df = lapply(seq(length(gr_chr)), function(k){
       # Read data in range
-      vcf.file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/filter/", df_grid$super_pop[i], ".chr",df_grid$chrom[i], ".vcf.gz")
+      vcf.file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/filter/", opt$super_pop, ".chr",df_grid$chrom[i], ".vcf.gz")
       res = readVcf( vcf.file, genome = "GRCh37", param = gr_chr[k] )
       data = genotypeToSnpMatrix(res)
 

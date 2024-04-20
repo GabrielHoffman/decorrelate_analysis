@@ -89,22 +89,24 @@ msqrt = function(S){
   with(dcmp, vectors %*% (sqrt(values) * t(vectors)))
 }
 
-minvsqrt = function(S){
-  dcmp = eigen(S)
+minvsqrt = function(S, tol = 1e-14){
+  dcmp = eigen(S)  
+  k = sum(dcmp$values > tol)
   # with(dcmp, vectors %*% diag(1/sqrt(values)) %*% t(vectors))
-  with(dcmp, vectors %*% ((1/sqrt(values)) * t(vectors)))
+  with(dcmp, vectors[,seq(k)] %*% ((1/sqrt(values[seq(k)])) * t(vectors[,seq(k)])))
 }
 
 
 # whiten with pseudoinverse with fixed rank
-get_w_ginv = function(X, k){
+get_w_ginv = function(X, k, tol = 1e-14){
   C = cov(X)
   dcmp = eigen(C)
+
+  k = sum(dcmp$values[seq(k)] > tol)
   # W = with(dcmp, vectors[,seq(k)] %*% diag(1/sqrt(values[seq(k)])) %*% t(vectors[,seq(k)]))
   W = with(dcmp, vectors[,seq(k)] %*% ((1/sqrt(values[seq(k)])) * t(vectors[,seq(k)])))
   W
 }
-
 
 run_simulation = function(n, p_array, sigma_method, rho){
 
@@ -295,7 +297,8 @@ Y = scale(Y)
 
 ecl = eclairs( Y[idx_train,], compute="corr")
 
-df_lambda = c('GIW-EB (current work)' = ecl$lambda,
+df_lambda = c('GIW-EB' = ecl$lambda,
+      "GIW-EB (k=20)" = eclairs( Y[idx_train,], compute="corr")$lambda,
       "lambda = 0" = 0,
       "lambda = 0.01" = 0.01,
       "lambda = 1e-4" = 1e-4,
