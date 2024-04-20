@@ -253,7 +253,7 @@ run_simulation = function(n, p_array, sigma_method, rho){
     df$p = p
     df$rMSE_baseline = normCov(cora(Ys[-idx_train,]))
     df
-  }, mc.cores=6)
+  }, mc.cores=1)
   do.call(rbind, df)
 }
 ```
