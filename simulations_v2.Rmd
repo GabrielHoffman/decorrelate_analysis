@@ -250,7 +250,8 @@ run_simulation = function(n, p_array, sigma_method, rho){
 
 # Colors
 ```{r rMSE}
-colMethods = c("GIW-EB (current work)" = "#E41A1C",
+colMethods = c("GIW-EB" = "#E41A1C",
+              "GIW-EB (k=20)" = "#9f1214",
               "Ledoit-Wolf" = "#FF7F00", 
               "OAS"= "#cccc29", 
               "Touloumis" = "#A65628", 
