@@ -351,7 +351,7 @@ set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
 
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 2*n, length.out=300))
 
 # run_simulation(n, p_array, sigma_method, rho)
 df = run_simulation(n, p_array, "constant", rho = .6)
@@ -443,7 +443,7 @@ set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
  
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 2*n, length.out=300))
 
 df = run_simulation(n, p_array, "autocorr", rho = .95)
 df$Method = factor(df$Method, names(colMethods))
@@ -533,7 +533,7 @@ set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
   
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 2*n, length.out=300))
 
 df = run_simulation(n, p_array, "block", rho = 0.6)
 df$Method = factor(df$Method, names(colMethods))
@@ -621,7 +621,7 @@ set.seed(12)
 n = 1000 # number of samples
 idx_train = 1:(n/2)
   
-p_array = as.integer(seq(20, 1.2*n, length.out=300))
+p_array = as.integer(seq(20, 2*n, length.out=300))
 
 df = run_simulation(n, p_array, "blockauto", rho = 0.95)
 df$Method = factor(df$Method, names(colMethods))
