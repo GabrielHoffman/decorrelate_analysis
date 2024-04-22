@@ -90,21 +90,21 @@ breaks = c(0, 1500, 3000, 5000, 7000, Inf)
 # 		facet_wrap(~pop) +
 # 		coord_flip() 
 
-df %>%
-	mutate(rel.err = rmse / rMSE_baseline) %>%
-	mutate(category = cut(nsnps, breaks = breaks)) %>%
-	group_by(Method) %>%
-	ggplot(aes(Method, rel.err*100, fill=Method)) + 
-		geom_violin() +
-		geom_boxplot(width=0.1) +
-		theme_classic()  +
-		theme(aspect.ratio=1, 
-			plot.title = element_text(hjust = 0.5),
-			legend.position="none") +
-		facet_grid(pop ~ category, scales="free") +
-		ylab("Relative reduction in rMSE (%)") +
-		coord_flip(ylim=c(0, NA)) + 
-		scale_fill_manual(name="Method",values = colMethods)
+# df %>%
+# 	mutate(rel.err = rmse / rMSE_baseline) %>%
+# 	mutate(category = cut(nsnps, breaks = breaks)) %>%
+# 	group_by(Method) %>%
+# 	ggplot(aes(Method, rel.err*100, fill=Method)) + 
+# 		geom_violin() +
+# 		geom_boxplot(width=0.1) +
+# 		theme_classic()  +
+# 		theme(aspect.ratio=1, 
+# 			plot.title = element_text(hjust = 0.5),
+# 			legend.position="none") +
+# 		facet_grid(pop ~ category, scales="free") +
+# 		ylab("Relative reduction in rMSE (%)") +
+# 		coord_flip(ylim=c(0, NA)) + 
+# 		scale_fill_manual(name="Method",values = colMethods)
 ```
 
 ```{r test, eval=FALSE}
