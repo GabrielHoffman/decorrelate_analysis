@@ -389,7 +389,7 @@ df = run_simulation(n, p_array, "constant", rho = .6)
 df$Method = factor(df$Method, names(colMethods))
 ```
 
-```{r plot.sim1}
+```{r plot.sim1, cache=FALSE}
 make_plots(n/2, n, "constant", 0.6)
 ```
 
@@ -486,7 +486,7 @@ df = run_simulation(n, p_array, "autocorr", rho = .95)
 df$Method = factor(df$Method, names(colMethods))
 ```
 
-```{r plot.sim2}
+```{r plot.sim2, cache=FALSE}
 make_plots(n/2, n, "autocorr", 0.95)
 ```
 
@@ -582,7 +582,7 @@ df$Method = factor(df$Method, names(colMethods))
 ```
 
 
-```{r plot.sim3}
+```{r plot.sim3, cache=FALSE}
 make_plots(n/2, n, "block", 0.6)
 ```
 
@@ -677,7 +677,7 @@ df$Method = droplevels(df$Method )
 ```
 
 
-```{r plot.sim4}
+```{r plot.sim4, cache=FALSE}
 make_plots(n/2, n, "blockauto", 0.95)
 ```
 
