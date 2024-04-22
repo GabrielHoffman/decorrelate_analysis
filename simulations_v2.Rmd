@@ -134,8 +134,9 @@ make_plots = function(n,p, sigma_method, rho){
 
   ecl = eclairs(Ys, compute="corr")
 
-  ggcorrplot(as.matrix(Sigma), ggtheme=ggplot2::theme_void)
+  par( pty = "s")
   plot(ecl)
+  ggcorrplot(as.matrix(Sigma), ggtheme=ggplot2::theme_void)
 }
 
 run_simulation = function(n, p_array, sigma_method, rho){
