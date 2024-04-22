@@ -56,14 +56,14 @@ library(tidyverse)
 ```{r all, fig.width=12, fig.height=8, cache=FALSE}
 colMethods = c("GIW-EB" = "#E41A1C",
               "GIW-EB (k=50)" = "#9f1214",
-              "Ledoit-Wolf" = "#FF7F00", 
+              "lambda = 0.01" = "#377EB8", 
+              "lambda = 1e-4" = "#37b8b2",
+              "lambda = 0" = "#0000cd", 
+              "Ledoit-Wolf" = "#FF7F00",    
               "OAS"= "#cccc29", 
               "Touloumis" = "#A65628", 
               "Schäfer-Strimmer" = "#f569b3", 
-              "Pseudoinverse" = "green3",                
-              "lambda = 0" = "#0000cd", 
-              "lambda = 0.01" = "#377EB8", 
-              "lambda = 1e-4" = "#37b8b2",              
+              "Pseudoinverse" = "green3",                           
               "Baseline" = "grey50",
               "Oracle" = "black")
 
