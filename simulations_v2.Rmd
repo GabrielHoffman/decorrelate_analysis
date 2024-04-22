@@ -460,7 +460,7 @@ ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Schäfer-Strimmer'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), 
-        fig + coord_cartesian(ylim = c(ymin, ymax), xlim = c(0, NA), xlim = c(0, NA), expand=FALSE), 
+        fig + coord_cartesian(ylim = c(ymin, ymax), xlim = c(0, NA), expand=FALSE), 
         ncol=2, align="hv", axis="tblr", labels = LETTERS[3:4])
 ```
 
