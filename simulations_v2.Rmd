@@ -136,7 +136,16 @@ make_plots = function(n,p, sigma_method, rho){
 
   par( pty = "s")
   plot(ecl)
-  ggcorrplot(as.matrix(Sigma), ggtheme=ggplot2::theme_void)
+
+  # Sigma for plotting
+  p = p/10
+  Sigma = switch( sigma_method,
+      "autocorr" = autocorr.mat(p, rho), 
+      "constant" = matrix(rho, p, p), 
+      "block" = bdiag(matrix(rho, p/4, p/4), matrix(rho, p/4, p/4), matrix(rho, p/4, p/4), matrix(rho, p/4, p/4)),
+      "blockauto" = bdiag(autocorr.mat(p/4, rho), autocorr.mat(p/4, rho), autocorr.mat(p/4, rho), autocorr.mat(p/4, rho)))
+  diag(Sigma) = 1
+  ggcorrplot(as.matrix(Sigma), outline.color="white", show.legend=TRUE) + theme_void() + geom_tile(lwd=0)
 }
 
 run_simulation = function(n, p_array, sigma_method, rho){
