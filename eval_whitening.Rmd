@@ -50,9 +50,6 @@ library(tidyverse)
 })
 ```
 
-# "lambda = 0.01" vs 0.1
-# uncomment: ecl <- eclairs( Y[idx_train,])
-# uncomment other methods
 ```{r all, fig.width=12, fig.height=8, cache=FALSE}
 colMethods = c("GIW-EB" = "#E41A1C",
               "GIW-EB (k=50)" = "#9f1214",
@@ -81,17 +78,17 @@ df$Method = droplevels(df$Method)
 
 breaks = c(0, 1500, 3000, 5000, 7000, Inf)
 
-df %>% 
-	mutate(category = cut(nsnps, breaks = breaks)) %>%
-	filter(Method == "lambda = 0") %>%
-	ggplot(aes(category)) + 
-		geom_bar() +
-		theme_classic()  +
-		theme(aspect.ratio=1, 
-			plot.title = element_text(hjust = 0.5),
-			legend.position="none") +
-		facet_wrap(~pop) +
-		coord_flip() 
+# df %>% 
+# 	mutate(category = cut(nsnps, breaks = breaks)) %>%
+# 	filter(Method == "lambda = 0") %>%
+# 	ggplot(aes(category)) + 
+# 		geom_bar() +
+# 		theme_classic()  +
+# 		theme(aspect.ratio=1, 
+# 			plot.title = element_text(hjust = 0.5),
+# 			legend.position="none") +
+# 		facet_wrap(~pop) +
+# 		coord_flip() 
 
 df %>%
 	mutate(rel.err = rmse / rMSE_baseline) %>%
@@ -180,7 +177,7 @@ df %>%
 
 
 
-```{r all.curve, fig.width=12, fig.height=6, cache=FALSE}
+```{r all.curve, fig.width=12, fig.height=6, cache=FALSE, eval=FALSE}
 df %>%
 	mutate(rel.err = rmse / rMSE_baseline) %>%
 	mutate(category = cut(nsnps, breaks = breaks)) %>%
