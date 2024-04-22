@@ -108,6 +108,36 @@ get_w_ginv = function(X, k, tol = 1e-14){
   W
 }
 
+make_plots = function(n,p, sigma_method, rho){
+
+  library(ggcorrplot)
+
+  # make sure p is even
+  p = 4*as.integer(p/4)
+
+  message(p)
+
+  # create correlation matrix
+  Sigma = switch( sigma_method,
+      "autocorr" = autocorr.mat(p, rho), 
+      "constant" = matrix(rho, p, p), 
+      "block" = bdiag(matrix(rho, p/4, p/4), matrix(rho, p/4, p/4), matrix(rho, p/4, p/4), matrix(rho, p/4, p/4)),
+      "blockauto" = bdiag(autocorr.mat(p/4, rho), autocorr.mat(p/4, rho), autocorr.mat(p/4, rho), autocorr.mat(p/4, rho)))
+  diag(Sigma) = 1
+
+  X_latent = scale(matrnorm(n,p))
+
+  # sample matrix from MVN with covariance Sigma
+  Y = X_latent %*% msqrt(Sigma)
+
+  Ys = scale(Y)
+
+  ecl = eclairs(Ys, compute="corr")
+
+  ggcorrplot(as.matrix(Sigma), ggtheme=ggplot2::theme_void)
+  plot(ecl)
+}
+
 run_simulation = function(n, p_array, sigma_method, rho){
 
   df = mclapply(p_array, function(p){
@@ -358,6 +388,12 @@ df = run_simulation(n, p_array, "constant", rho = .6)
 df$Method = factor(df$Method, names(colMethods))
 ```
 
+```{ plot.sim1}
+make_plots(n/2, n, "constant", 0.6)
+```
+
+
+
 ```{r constant_correlation, cache=FALSE, fig.height=4, fig.width=12}
 ymax = df %>%
   filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
@@ -449,6 +485,11 @@ df = run_simulation(n, p_array, "autocorr", rho = .95)
 df$Method = factor(df$Method, names(colMethods))
 ```
 
+```{ plot.sim2}
+make_plots(n/2, n, "autocorr", 0.95)
+```
+
+
 ```{r auto_correlation, cache=FALSE, fig.height=4, fig.width=12}
 ymax = df %>%
   filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
@@ -539,6 +580,12 @@ df = run_simulation(n, p_array, "block", rho = 0.6)
 df$Method = factor(df$Method, names(colMethods))
 ```
 
+
+```{ plot.sim3}
+make_plots(n/2, n, "block", 0.6)
+```
+
+
 ```{r block_correlation, cache=FALSE, fig.height=4, fig.width=12}
 ymax = df %>%
   filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
@@ -627,6 +674,12 @@ df = run_simulation(n, p_array, "blockauto", rho = 0.95)
 df$Method = factor(df$Method, names(colMethods))
 df$Method = droplevels(df$Method )
 ```
+
+
+```{ plot.sim4}
+make_plots(n/2, n, "blockauto", 0.95)
+```
+
 
 ```{r block_autocor, cache=FALSE, fig.height=4, fig.width=12}
 ymax = df %>%
