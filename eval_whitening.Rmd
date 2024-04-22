@@ -156,7 +156,7 @@ df2 %>%
 			plot.title = element_text(hjust = 0.5),
 			legend.position="none") +
 		facet_grid(pop ~ category) +
-		ylab("Relative reduction in rMSE (%)") +
+		ylab("rMSE compared to baseline(%)") +
 		coord_flip(expand=FALSE, ylim=c(0, cutoff) ) + 
 		scale_fill_manual(name="Method",values = colMethods)
 ```
