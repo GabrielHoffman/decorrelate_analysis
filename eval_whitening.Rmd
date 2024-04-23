@@ -64,8 +64,8 @@ colMethods = c("GIW-EB" = "#E41A1C",
               "Baseline" = "grey50",
               "Oracle" = "black")
 
-#  "AFR",
-df = lapply(c("EUR", "ASN"), function(pop){
+#  
+df = lapply(c("EUR", "AFR", "ASN"), function(pop){
 	file = paste0("df_", pop, ".RDS")
 	readRDS(file) %>%
 		as_tibble %>%
