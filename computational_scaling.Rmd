@@ -20,7 +20,6 @@ vignette: >
 <!--- 
 
 cd /hpc/users/hoffmg01/work/decorrelate_analysis
-ml git pandoc
 
 R
 system("git pull")
@@ -158,6 +157,160 @@ fit_curves = function( df_time, curves ){
 }
 ```
 
+
+```{r simulate.data}
+library(decorrelate)
+library(Matrix)
+library(Rfast)
+library(ggplot2)
+library(cowplot)
+library(whitening)
+
+# due to parallel processing, curves are not exactly cubic and linear
+# values = as.integer(sort(c(	seq(500, 30000, length.out=100))))
+values = as.integer(sort(c(	seq(500, 10000, length.out=6))))
+
+df_values = data.frame(n = 5000, p = values, k = 50)
+
+df_time = eval_runTime( df_values, 10000, ncores=12 )
+
+res = df_time %>%
+	as_tibble %>%
+	pivot_longer(cols = c("decorrelate.cpu", "decorrelate.wall", "low_rank.cpu", "low_rank.wall", "naive.cpu", "naive.wall")) %>%
+	mutate(Method =  gsub("^(.*)\\.(.*)$", "\\1", name)) %>%
+	mutate(Measure =  gsub("^(.*)\\.(.*)$", "\\2", name)) %>%
+	dplyr::select(-name)
+```
+
+
+```{r plot.results.wall, cache=FALSE, fig.height=6, fig.width=12}
+# Wall time
+fig = res %>% 
+	filter(Measure == "wall") %>%
+	ggplot(aes(p, value, color=Method)) + 
+		geom_point() + 
+		theme_classic(16) + 
+		theme(aspect.ratio=1, plot.title = element_text(hjust = 0.5), legend.position="bottom") + 
+		xlab("Number of features") + 
+		ylab("Wall Time (seconds)") + 
+		# geom_line(data=res$df_smoothed, aes(p, value, color=variable)) + 
+		scale_color_manual(name="Method", values = c("green4", "#E41A1C", "#9f1214")) + 
+		ggtitle("n = 5000")
+
+ymax.naive = res %>% 
+	filter(Measure == "wall", Method == "naive") %>%
+	pull(value) %>%
+	max(na.rm=TRUE)
+
+ymax.d = res %>% 
+	filter(Measure == "wall", Method == "decorrelate") %>%
+	pull(value) %>%
+	max(na.rm=TRUE)
+
+fig1 = fig + 
+	scale_y_continuous(expand=c(0,1), limits=c(0, ymax)) + 
+	scale_x_continuous(limits=c(0, 20000), expand=c(0,0))
+fig2 = fig + 
+	scale_y_continuous(expand=c(0,.5), limits=c(0, ymax.d))) + 
+	scale_x_continuous(expand=c(0,0))
+fig3 = fig + scale_x_log10() + 
+	scale_y_log10() + xlab(bquote(Number~of~features~(log[10]))) + 
+ylab(bquote(Time~(log[10]~seconds)))
+
+plot_grid(fig1, fig2, fig3, nrow=1)
+```
+
+```{r plot.results.wall, cache=FALSE, fig.height=6, fig.width=12}
+# CPU time
+fig = res %>% 
+	filter(Measure == "cpu") %>%
+	ggplot(aes(p, value, color=Method)) + 
+		geom_point() + 
+		theme_classic(16) + 
+		theme(aspect.ratio=1, plot.title = element_text(hjust = 0.5), legend.position="bottom") + 
+		xlab("Number of features") + 
+		ylab("CPU Time (seconds)") + 
+		# geom_line(data=res$df_smoothed, aes(p, value, color=variable)) + 
+		scale_color_manual(name="Method", values = c("green4", "#E41A1C", "#9f1214")) + 
+		ggtitle("n = 5000")
+
+ymax.naive = res %>% 
+	filter(Measure == "cpu", Method == "naive") %>%
+	pull(value) %>%
+	max(na.rm=TRUE)
+
+ymax.d = res %>% 
+	filter(Measure == "cpu", Method == "decorrelate") %>%
+	pull(value) %>%
+	max(na.rm=TRUE)
+
+fig1 = fig + 
+	scale_y_continuous(expand=c(0,1), limits=c(0, ymax)) + 
+	scale_x_continuous(limits=c(0, 20000), expand=c(0,0))
+fig2 = fig + 
+	scale_y_continuous(expand=c(0,.5), limits=c(0, ymax.d))) + 
+	scale_x_continuous(expand=c(0,0))
+fig3 = fig + scale_x_log10() + 
+	scale_y_log10() + xlab(bquote(Number~of~features~(log[10]))) + 
+ylab(bquote(Time~(log[10]~seconds)))
+
+plot_grid(fig1, fig2, fig3, nrow=1)
+```
+
+
+```{r exit, cache=FALSE}
+knitr::knit_exit()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r plot.results, cache=FALSE, fig.height=6, fig.width=12}
+curves = c(decorrelate ~ 0 + p + I(p^2),
+	naive ~ 0 + I(p^2) + I(p^3),
+	low.rank ~ 0 + p)
+
+res = fit_curves( df_time, curves)
+
+fig = ggplot(res$df_observed, aes(p, value, color=variable)) + 
+	geom_point() + 
+	theme_classic(16) + 
+	theme(aspect.ratio=1, plot.title = element_text(hjust = 0.5), legend.position="bottom") + 
+	xlab("Number of features") + 
+	ylab("Time (seconds)") + 
+	geom_line(data=res$df_smoothed, aes(p, value, color=variable)) + 
+	scale_color_manual(name="Method", values = c("green4", "#E41A1C", "#9f1214")) + 
+	ggtitle("n = 5000")
+
+
+fig1 = fig + scale_y_continuous(expand=c(0,1), limits=c(0, max(df_time$naive, na.rm=TRUE))) + scale_x_continuous(limits=c(0, 20000), expand=c(0,0))
+fig2 = fig + scale_y_continuous(expand=c(0,.5), limits=c(0, with(df_time, max(decorrelate, low.rank)))) + scale_x_continuous(expand=c(0,0))
+fig3 = fig + scale_x_log10() + scale_y_log10() + xlab(bquote(Number~of~features~(log[10]))) + ylab(bquote(Time~(log[10]~seconds)))
+
+plot_grid(fig1, fig2, fig3, nrow=1)
+```
+
+
+
+
+
+
+
+
+
+
+
 ```{r test, eval=FALSE}
 n = 5000
 p = 10000
@@ -200,52 +353,6 @@ system.time(PRIMME::svds(Y, 200, isreal=TRUE))
 ```
 
 
-```{r simulate.data}
-library(decorrelate)
-library(Matrix)
-library(Rfast)
-library(ggplot2)
-library(cowplot)
-library(whitening)
-
-# due to parallel processing, curves are not exactly cubic and linear
-values = as.integer(sort(c(	seq(500, 30000, length.out=100))))
-
-df_values = data.frame(n = 5000, p = values, k = 50)
-
-df_time = eval_runTime( df_values, 10000, ncores=12 )
-```
-
-
-```{r plot.results, cache=FALSE, fig.height=6, fig.width=12}
-curves = c(decorrelate ~ 0 + p + I(p^2),
-	naive ~ 0 + I(p^2) + I(p^3),
-	low.rank ~ 0 + p)
-
-res = fit_curves( df_time, curves)
-
-fig = ggplot(res$df_observed, aes(p, value, color=variable)) + 
-	geom_point() + 
-	theme_classic(16) + 
-	theme(aspect.ratio=1, plot.title = element_text(hjust = 0.5), legend.position="bottom") + 
-	xlab("Number of features") + 
-	ylab("Time (seconds)") + 
-	geom_line(data=res$df_smoothed, aes(p, value, color=variable)) + 
-	scale_color_manual(name="Method", values = c("green4", "#E41A1C", "#9f1214")) + 
-	ggtitle("n = 5000")
-
-
-fig1 = fig + scale_y_continuous(expand=c(0,1), limits=c(0, max(df_time$naive, na.rm=TRUE))) + scale_x_continuous(limits=c(0, 20000), expand=c(0,0))
-fig2 = fig + scale_y_continuous(expand=c(0,.5), limits=c(0, with(df_time, max(decorrelate, low.rank)))) + scale_x_continuous(expand=c(0,0))
-fig3 = fig + scale_x_log10() + scale_y_log10() + xlab(bquote(Number~of~features~(log[10]))) + ylab(bquote(Time~(log[10]~seconds)))
-
-plot_grid(fig1, fig2, fig3, nrow=1)
-```
-
-
-```{r exit, cache=FALSE}
-knitr::knit_exit()
-```
 
 
 <!-- Run time at r max(values) features: -->
