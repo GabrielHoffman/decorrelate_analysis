@@ -168,7 +168,7 @@ library(whitening)
 
 # due to parallel processing, curves are not exactly cubic and linear
 # values = as.integer(sort(c(	seq(500, 30000, length.out=100))))
-values = as.integer(sort(c(	seq(500, 10000, length.out=6))))
+values = as.integer(sort(c(	seq(500, 1000, length.out=6))))
 
 df_values = data.frame(n = 5000, p = values, k = 50)
 
