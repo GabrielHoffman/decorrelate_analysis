@@ -228,7 +228,7 @@ fig = ggplot(res$df_observed, aes(p, value, color=variable)) +
 	xlab("Number of features") + 
 	ylab("Time (seconds)") + 
 	geom_line(data=res$df_smoothed, aes(p, value, color=variable)) + 
-	scale_color_manual(name="Method", values = c("green3", "blue", "green")) + 
+	scale_color_manual(name="Method", values = c("green4", "#E41A1C", "#9f1214")) + 
 	ggtitle("n = 5000")
 
 
