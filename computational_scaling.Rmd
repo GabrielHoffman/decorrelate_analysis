@@ -220,7 +220,7 @@ ylab(bquote(Time~(log[10]~seconds)))
 plot_grid(fig1, fig2, fig3, nrow=1)
 ```
 
-```{r plot.results.wall, cache=FALSE, fig.height=6, fig.width=12}
+```{r plot.results.cpu, cache=FALSE, fig.height=6, fig.width=12}
 # CPU time
 fig = res %>% 
 	filter(Measure == "cpu") %>%
