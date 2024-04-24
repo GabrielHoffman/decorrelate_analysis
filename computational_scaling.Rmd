@@ -207,7 +207,7 @@ ymax.d = res %>%
 	max(na.rm=TRUE)
 
 fig1 = fig + 
-	scale_y_continuous(expand=c(0,1), limits=c(0, ymax)) + 
+	scale_y_continuous(expand=c(0,1), limits=c(0, ymax.naive)) + 
 	scale_x_continuous(limits=c(0, 20000), expand=c(0,0))
 fig2 = fig + 
 	scale_y_continuous(expand=c(0,.5), limits=c(0, ymax.d)) + 
@@ -244,7 +244,7 @@ ymax.d = res %>%
 	max(na.rm=TRUE)
 
 fig1 = fig + 
-	scale_y_continuous(expand=c(0,1), limits=c(0, ymax)) + 
+	scale_y_continuous(expand=c(0,1), limits=c(0, ymax.naive)) + 
 	scale_x_continuous(limits=c(0, 20000), expand=c(0,0))
 fig2 = fig + 
 	scale_y_continuous(expand=c(0,.5), limits=c(0, ymax.d)) + 
