@@ -221,7 +221,16 @@ curves = c(decorrelate ~ 0 + p + I(p^2),
 
 res = fit_curves( df_time, curves)
 
-fig = ggplot(res$df_observed, aes(p, value, color=variable)) + geom_point() + theme_classic(16) + theme(aspect.ratio=1, plot.title = element_text(hjust = 0.5), legend.position="bottom") + xlab("Number of features") + ylab("Time (seconds)") + geom_line(data=res$df_smoothed, aes(p, value, color=variable)) + scale_color_manual(name="Method", values = c("red", "blue", "green")) + ggtitle("n = 5000")
+fig = ggplot(res$df_observed, aes(p, value, color=variable)) + 
+	geom_point() + 
+	theme_classic(16) + 
+	theme(aspect.ratio=1, plot.title = element_text(hjust = 0.5), legend.position="bottom") + 
+	xlab("Number of features") + 
+	ylab("Time (seconds)") + 
+	geom_line(data=res$df_smoothed, aes(p, value, color=variable)) + 
+	scale_color_manual(name="Method", values = c("green3", "blue", "green")) + 
+	ggtitle("n = 5000")
+
 
 fig1 = fig + scale_y_continuous(expand=c(0,1), limits=c(0, max(df_time$naive, na.rm=TRUE))) + scale_x_continuous(limits=c(0, 20000), expand=c(0,0))
 fig2 = fig + scale_y_continuous(expand=c(0,.5), limits=c(0, with(df_time, max(decorrelate, low.rank)))) + scale_x_continuous(expand=c(0,0))
