@@ -186,7 +186,7 @@ res = df_time %>%
 fig = res %>% 
 	filter(Measure == "wall") %>%
 	ggplot(aes(p, value, color=Method)) + 
-		geom_point(alpha=.2)) + 
+		geom_point(alpha=.2) + 
 		theme_classic(16) + 
 		theme(aspect.ratio=1, plot.title = element_text(hjust = 0.5), legend.position="bottom") + 
 		xlab("Number of features") + 
@@ -223,7 +223,7 @@ plot_grid(fig1, fig2, fig3, nrow=1)
 fig = res %>% 
 	filter(Measure == "cpu") %>%
 	ggplot(aes(p, value, color=Method)) + 
-		geom_point(alpha=.2)) + 
+		geom_point(alpha=.2) + 
 		theme_classic(16) + 
 		theme(aspect.ratio=1, plot.title = element_text(hjust = 0.5), legend.position="bottom") + 
 		xlab("Number of features") + 
