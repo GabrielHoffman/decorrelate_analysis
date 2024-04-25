@@ -192,7 +192,7 @@ fig = res %>%
 		xlab("Number of features") + 
 		ylab("Wall Time (seconds)") + 
 		# geom_line(data=res$df_smoothed, aes(p, value, color=variable)) + 
-		scale_color_manual(name="Method", values = c("green4", "#E41A1C", "#9f1214")) + 
+		scale_color_manual(name="Method", values = c(naive = "green4", low_rank = "#E41A1C", decorrelate = "#9f1214")) + 
 		ggtitle("n = 5000")
 
 ymax.naive = res %>% 
@@ -213,7 +213,7 @@ fig2 = fig +
 	scale_x_continuous(expand=c(0,0))
 fig3 = fig + scale_x_log10() + 
 	scale_y_log10() + xlab(bquote(Number~of~features~(log[10]))) + 
-ylab(bquote(Time~(log[10]~seconds)))
+ylab(bquote(Wall~Time~(log[10]~seconds)))
 
 plot_grid(fig1, fig2, fig3, nrow=1)
 ```
@@ -250,7 +250,7 @@ fig2 = fig +
 	scale_x_continuous(expand=c(0,0))
 fig3 = fig + scale_x_log10() + 
 	scale_y_log10() + xlab(bquote(Number~of~features~(log[10]))) + 
-ylab(bquote(Time~(log[10]~seconds)))
+ylab(bquote(CPU~Time~(log[10]~seconds)))
 
 plot_grid(fig1, fig2, fig3, nrow=1)
 ```
