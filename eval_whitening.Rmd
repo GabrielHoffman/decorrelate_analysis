@@ -51,7 +51,7 @@ library(tidyverse)
 ```
 
 ```{r all, fig.width=12, fig.height=8, cache=FALSE}
-colMethods = c("GIW-EB" = "#E41A1C",
+colMethods = c("GIW-EB" = "red",
               "GIW-EB (k=50)" = "#9f1214",
               "lambda = 0.01" = "#377EB8", 
               "lambda = 1e-4" = "#37b8b2",
