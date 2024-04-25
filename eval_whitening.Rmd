@@ -201,7 +201,7 @@ df %>%
 df %>% 
 	group_by(Method, pop) %>%
 	summarize(elapsed = sum(elapsed)/3600) %>%
-	ggplot(aes(Method, 10*elapsed, fill=Method)) +
+	ggplot(aes(Method, 100*elapsed, fill=Method)) +
 		geom_bar(stat="identity") + 
 		theme_bw()  +
 		theme(aspect.ratio=1, 
@@ -212,7 +212,7 @@ df %>%
 		facet_wrap( ~ pop) +
 		scale_fill_manual(name="Method",values = colMethods) +
 		coord_flip() +
-		scale_y_log10(labels = ~.x/10, expand=c(0,0), limits=c(1, 600), breaks=c(1, 3, 10, 30, 100, 350)) +
+		scale_y_log10(labels = ~.x/100, expand=c(0,0), limits=c(1, 6000), breaks=c(1, 3, 10, 30, 100, 350)*10) +
 		ylab("Wall time (hours)")
 ```
 
