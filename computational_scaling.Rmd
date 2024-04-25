@@ -192,7 +192,7 @@ fig = res %>%
 		xlab("Number of features") + 
 		ylab("Wall Time (seconds)") + 
 		geom_smooth() +
-		scale_color_manual(name="Method", values = c(naive = "green4",  decorrelate = "red",  low_rank = "#9f1214")) + 
+		scale_color_manual(name="Method", values = c(naive = "green3",  decorrelate = "red",  low_rank = "#9f1214")) + 
 		ggtitle("n = 5000")
 
 ymax.naive = res %>% 
@@ -229,7 +229,7 @@ fig = res %>%
 		xlab("Number of features") + 
 		ylab("CPU Time (seconds)") + 
 		geom_smooth() +
-		scale_color_manual(name="Method", values = c(naive = "green4",  decorrelate = "#E41A1C",  low_rank = "#9f1214")) + 
+		scale_color_manual(name="Method", values = c(naive = "green3",  decorrelate = "red",  low_rank = "#9f1214")) + 
 		ggtitle("n = 5000")
 
 ymax.naive = res %>% 
