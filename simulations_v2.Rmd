@@ -406,7 +406,7 @@ make_plots(n/2, n, "constant", 0.6)
 
 ```{r constant_correlation, cache=FALSE, fig.height=4, fig.width=12}
 ymax = df %>%
-  filter(((Method == 'lambda = 0') & (p < 0.49*n))) %>%
+  filter(((Method == 'lambda = 0') & (p < 0.46*n))) %>%
   summarize(max = max(rmse)) %>%
   pull
 
