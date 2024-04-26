@@ -502,7 +502,7 @@ make_plots(n/2, n, "autocorr", 0.95)
 
 ```{r auto_correlation, cache=FALSE, fig.height=4, fig.width=12}
 ymax = df %>%
-  filter(((Method == 'Pseudoinverse') & (p < 0.48*n))) %>%
+  filter(((Method == 'Pseudoinverse') & (p < 0.49*n))) %>%
   summarize(max = max(rmse)) %>%
   pull
   
@@ -533,7 +533,7 @@ df2 = df %>%
   mutate(rel.err = rmse / rMSE_baseline)
 
 ymax = df2 %>%
-  filter(((Method == 'Pseudoinverse') & (p < 0.48*n))) %>%
+  filter(((Method == 'Pseudoinverse') & (p < 0.49*n))) %>%
   summarize(max = max(100*rel.err)) %>%
   pull
 
