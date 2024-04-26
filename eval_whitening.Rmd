@@ -216,7 +216,7 @@ df %>%
 
 
 # Wall time
-```{r time.wall, fig.width=10, fig.height=4, cache=FALSE}
+```{r time.wall, fig.width=9, fig.height=4, cache=FALSE}
 df %>% 
 	group_by(Method, pop) %>%
 	summarize(elapsed = sum(elapsed)/3600) %>%
@@ -240,7 +240,7 @@ df %>%
 
 
 # CPU time
-```{r time, fig.width=12, fig.height=6, cache=FALSE}
+```{r time, fig.width=9, fig.height=4, cache=FALSE}
 df %>% 
 	group_by(Method, pop) %>%
 	summarize(user.self = sum(user.self)/3600) %>%
