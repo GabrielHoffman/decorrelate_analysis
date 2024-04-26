@@ -502,7 +502,7 @@ make_plots(n/2, n, "autocorr", 0.95)
 
 ```{r auto_correlation, cache=FALSE, fig.height=4, fig.width=12}
 ymax = df %>%
-  filter(((Method == 'lambda = 0') & (p < 0.47*n))) %>%
+  filter(((Method == 'lambda = 0') & (p < 0.48*n))) %>%
   summarize(max = max(rmse)) %>%
   pull
   
@@ -672,7 +672,7 @@ df %>%
 
 
 
-## Block auto-correlation: $\rho = 0.95$, 4 blocks
+## Block Auto-correlation: $\rho = 0.95$, 4 blocks
 ```{r run_sim4}
 set.seed(12)
 n = 1000 # number of samples
