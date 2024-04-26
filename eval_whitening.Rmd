@@ -140,7 +140,7 @@ df2 = df %>%
 	# filter(Method == "Pseudoinverse") %>%
 	mutate(rel.err = rmse / rMSE_baseline ) %>%
 	# mutate(category = cut(nsnps, breaks = breaks)) %>%
-	mutate(category = cut_number(nsnps, breaks = 5)) %>%
+	mutate(category = cut_number(nsnps, 5)) %>%
 	group_by(Method, category, pop) %>%
 	summarize(mean = mean(100*rel.err), se = sd(100*rel.err) / sqrt(length(rel.err))) %>%
 	mutate(meanValue = mean, 
