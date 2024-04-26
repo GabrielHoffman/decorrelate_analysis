@@ -135,7 +135,7 @@ make_plots = function(n,p, sigma_method, rho){
   ecl = eclairs(Ys, compute="corr")
 
   # par( pty = "s")
-  fig1 = ~ plot(ecl)
+  fig1 = ~plot(ecl)
 
   # Sigma for plotting
   p = p/10
