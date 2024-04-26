@@ -716,7 +716,7 @@ fig = df %>%
 
 ymax = 1.02*max(df$rmse[df$Method == 'lambda = 1e-4'])
 ymin = 0.98*min(df$rmse)
-ymax = .09
+ymax = .085
 
 plot_grid(fig + theme(legend.position="none"), 
         fig + 
