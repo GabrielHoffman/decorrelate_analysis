@@ -716,6 +716,7 @@ fig = df %>%
 
 ymax = 1.02*max(df$rmse[df$Method == 'lambda = 1e-4'])
 ymin = 0.98*min(df$rmse)
+ymax = .09
 
 plot_grid(fig + theme(legend.position="none"), 
         fig + 
@@ -727,11 +728,10 @@ plot_grid(fig + theme(legend.position="none"),
 df2 = df %>%  
   mutate(rel.err = rmse / rMSE_baseline)
 
-# ymax = df2 %>%
-#   filter(((Method == 'lambda = 0') & (p < 0.47*n))) %>%
-#   summarize(max = max(100*rel.err)) %>%
-#   pull
-ymax = 0.9
+ymax = df2 %>%
+  filter(((Method == 'lambda = 0') & (p < 0.47*n))) %>%
+  summarize(max = max(100*rel.err)) %>%
+  pull
 
 fig = df2 %>%
   filter((Method != "lambda = 0") | (Method == "lambda = 0" & rel.err*100 < 1.2*ymax)) %>%
