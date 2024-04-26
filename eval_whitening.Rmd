@@ -262,16 +262,6 @@ df %>%
 
 
 
-```{r number.of.snps}
-a = df %>% 
-	filter(nsnps > 10000) %>% 
-	select(chrom, nsnps) %>% 
-	distinct %>%
-	nrow
-```
-
-
-
 
 ```{r exit}
 knitr::knit_exit()
@@ -282,83 +272,6 @@ knitr::knit_exit()
 
 
 
-
-
-
-
-```{r read.data}
-df = readRDS("df_EUR.RDS")
-```
-
-```{r plots, cache=FALSE}
-df %>%
-	mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
-	filter(method != "0") %>%
-	filter(method != "Touloumis") %>%
-	group_by(method) %>%
-	ggplot(aes(method, rel.err)) + 
-	geom_boxplot() +
-	theme_classic() +
-	theme(aspect.ratio=1) +
-	ylab("Relative reduction in rMSE") +
-	scale_y_continuous(limits=c(0, NA))
-
-
-df %>%
-	mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
-	mutate(category = cut(nsnps, breaks = c(0, 100, 200, 500, 1000, 2000, 5000, Inf))) %>%
-	filter(method != "0") %>%
-	filter(method != "Touloumis") %>%
-	group_by(method) %>%
-	ggplot(aes(method, rel.err*100, color=method)) + 
-		geom_boxplot() +
-		theme_classic()  +
-		facet_wrap(~category) +
-		theme(aspect.ratio=1) +
-		ylab("Relative reduction in rMSE (%)") +
-		scale_y_continuous(limits=c(0, NA))
-
-
-df %>%
-	group_by(method) %>%
-	summarize(mean = mean(rMSE/rMSE_baseline), 
-		sem  = sd(rMSE/rMSE_baseline) / length(rMSE)) %>%
-	ggplot(aes(method, mean)) + 
-	geom_bar(stat="identity") +
-	geom_errorbar(aes(ymin = mean - 1.96*sem, ymax = mean + 1.96*sem), width=.1, color="red") +
-	theme_classic() +
-	theme(aspect.ratio=1)
-
-
-df %>%
-	mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
-	group_by(method) %>%
-	summarize(mean = mean(rel.err), 
-		sem  = sd(rel.err) / length(rMSE)) %>%
-	filter(method != "0") %>%
-	filter(method != "Touloumis") %>%
-	ggplot(aes(method, mean)) + 
-	geom_bar(stat="identity") +
-	geom_errorbar(aes(ymin = mean - 1.96*sem, ymax = mean + 1.96*sem), width=.1, color="red") +
-	theme_classic() +
-	theme(aspect.ratio=1)
-
-df %>%
-	mutate(rel.err = (rMSE_baseline - rMSE) / rMSE_baseline) %>%
-	mutate(category = cut(df$nsnps, breaks = c(0, 1000, 2000, 5000, 10000, Inf))) %>%
-	group_by(method, category) %>%
-	summarize(mean = mean(rel.err), 
-		sem  = sd(rel.err) / length(rMSE)) %>%
-	filter(method != "0") %>%
-	# filter(method != "Touloumis") %>%
-	ggplot(aes(method, mean)) + 
-	geom_bar(stat="identity") +
-	geom_errorbar(aes(ymin = mean - 1.96*sem, ymax = mean + 1.96*sem), width=.1, color="red") +
-	theme_classic() +
-	facet_wrap(~category) + 
-	theme(aspect.ratio=1) +
-	ylab("Relative reduction in rMSE")
-```
 
 
 
