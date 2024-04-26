@@ -164,6 +164,7 @@ df2 %>%
 
 df2 %>%
 	filter(pop == "EUR") %>%
+	droplevels %>%
 	ggplot(aes(Method, mean, fill=Method)) + 
 		geom_bar(stat="identity") +
 		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
