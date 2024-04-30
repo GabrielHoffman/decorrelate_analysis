@@ -126,7 +126,7 @@ get_w_ginv = function(X, k, tol = 1e-14){
 tab = sort(table(info$SMTSD))
 
 # for each tissue
-res = lapply( names(tab)[1:13], function(tissue){
+res = lapply( names(tab)[1:25], function(tissue){
 
   message(tissue, "        \n\n")
 
