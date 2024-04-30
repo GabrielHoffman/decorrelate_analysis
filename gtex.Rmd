@@ -56,7 +56,7 @@ library(cowplot)
 library(CovTools)
 library(RhpcBLASctl)
 })
-omp_set_num_threads(6)
+omp_set_num_threads(12)
 ```
 
 # Load data
@@ -118,6 +118,19 @@ get_w_ginv = function(X, k, tol = 1e-14){
   W = with(dcmp, vectors[,seq(k)] %*% ((1/sqrt(values[seq(k)])) * t(vectors[,seq(k)])))
   W
 }
+
+colMethods = c("GIW-EB" = "red",
+              "GIW-EB (k=50)" = "#9f1214",
+              "lambda = 0.01" = "#377EB8", 
+              "lambda = 1e-4" = "#37b8b2",
+              "lambda = 0" = "#0000cd", 
+              "Ledoit-Wolf" = "#FF7F00",    
+              "OAS"= "#cccc29", 
+              "Touloumis" = "#A65628", 
+              "Schäfer-Strimmer" = "#f569b3", 
+              "Pseudoinverse" = "green3",                           
+              "Baseline" = "grey50",
+              "Oracle" = "black")
 ```
 
 
@@ -144,7 +157,7 @@ res = lapply( names(tab)[1:25], function(tissue){
   keep = rowSums(geneExpr > 1) > 50
 
   # get log2 TMP with features on columns
-  Ys = scale(log2(t(geneExpr[keep,])))
+  Ys = scale(log2(t(geneExpr[keep,])))[1:100,]
 
   n = nrow(Ys)
 
@@ -176,15 +189,15 @@ res = lapply( names(tab)[1:25], function(tissue){
   #                     t(c(tm)),
   #                     rmse = rmse))
 
-  # tm = system.time({
-  #   ecl <- eclairs( Ys[idx_train,])
-  #   y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 0)
-  #   })   
-  # rmse = normCov(cora(y_white))
-  # df = rbind(df, data.frame(
-  #                     Method = "lambda = 0",  
-  #                     t(c(tm)),
-  #                     rmse = rmse))
+  tm = system.time({
+    ecl <- eclairs( Ys[idx_train,])
+    y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 0)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "lambda = 0",  
+                      t(c(tm)),
+                      rmse = rmse))
 
   # tm = system.time({
   #   ecl <- eclairs( Ys[idx_train,])
@@ -265,6 +278,8 @@ res = lapply( names(tab)[1:25], function(tissue){
   df
 })
 res = do.call(rbind, res)
+res$Method = factor(res$Method, names(colMethods))
+res$Method = droplevels(res$Method)
 ```
 
 # Plots
@@ -272,19 +287,20 @@ res = do.call(rbind, res)
 
 
 res %>%
-  ggplot(aes(Method, rmse / rMSE_baseline, fill=Method)) + 
+  ggplot(aes(Method, 100*rmse / rMSE_baseline, fill=Method)) + 
     geom_bar(stat="identity") +
     theme_classic()  +
     theme(aspect.ratio=1, 
       plot.title = element_text(hjust = 0.5),
       legend.position="none") +
-    facet_wrap(~ Tissue) +
-    coord_flip() +
-    ylab("rMSE compared to baseline (%)") 
+    facet_wrap(~ Tissue, nrow=5) +
+    ylab("rMSE compared to baseline (%)")  +
+    coord_flip(expand=FALSE, ylim=c(0, 100) ) + 
+    scale_fill_manual(name="Method", values = colMethods)
 
 
 
-
+```
 
 
 
