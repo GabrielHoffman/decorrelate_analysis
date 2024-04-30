@@ -1,0 +1,72 @@
+---
+title: "Evaluate performance of whitening transform"
+subtitle: 'Run on gene expression from GTEx'
+author: "Developed by [Gabriel Hoffman](http://gabrielhoffman.github.io/)"
+date: "Run on `r Sys.time()`"
+output: 
+  html_document:
+    toc: true
+    smart: true
+params:
+  DATASET: NULL
+---
+
+
+<!--- 
+
+cd /hpc/users/hoffmg01/work/decorrelate_analysis
+
+git pull 
+R
+
+system("git pull"); rmarkdown::render("gtex.Rmd")
+
+
+
+# https://hoffmg01.hpc.mssm.edu/decorrelate_analysis
+
+
+--->
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning=FALSE,
+  message=FALSE,
+  error = FALSE,
+  tidy = FALSE,
+  dev = c("png", "pdf"),
+  package.startup.message = FALSE,
+  cache = TRUE,
+  cache.lazy = TRUE)
+```
+
+
+```{r load.packages, cache=FALSE}
+suppressPackageStartupMessages({
+library(ggplot2)
+library(tidyverse)
+library(decorrelate)
+})
+```
+
+# Load data
+```{r load}
+file = "GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz"
+df <- read.delim(file, as.is=TRUE, row.names=1, check.names=FALSE ,skip=2)
+gene.names.df <- df[, 'Description', drop=FALSE]
+df <- df[, !(names(df) %in% c('Description'))]
+
+info <- read.delim("GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt", as.is=TRUE, header=TRUE, row.names=1
+```
+
+
+
+
+table(info$SMTSD)
+
+
+
+
+
