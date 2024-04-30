@@ -158,7 +158,7 @@ res = mclapply( names(tab)[1:30], function(tissue){
   keep = rowSums(geneExpr > 1) > 50
 
   # get log2 TMP with features on columns
-  Ys = scale(log2(t(geneExpr[keep,])))[1:100,]
+  Ys = scale(log2(t(geneExpr[keep,])))[,1:100]
 
   n = nrow(Ys)
 
