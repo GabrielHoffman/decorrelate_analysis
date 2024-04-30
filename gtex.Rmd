@@ -314,7 +314,7 @@ res %>%
 res %>% 
   group_by(Method) %>%
   summarize(elapsed = sum(elapsed)/3600) %>%
-  ggplot(aes(Method, 100*elapsed, fill=Method)) +
+  ggplot(aes(Method, elapsed, fill=Method)) +
     geom_bar(stat="identity") + 
     theme_bw()  +
     theme(aspect.ratio=1, 
