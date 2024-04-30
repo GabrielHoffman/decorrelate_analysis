@@ -122,13 +122,13 @@ get_w_ginv = function(X, k, tol = 1e-14){
 
 
 
-```{r analysis}
+```{r analysis, message=TRUE}
 tab = sort(table(info$SMTSD))
 
 # for each tissue
 res = lapply(tab[1:13], function(tissue){
 
-  cat("\r", tissue, "        ")
+  message("\r", tissue, "        ")
 
   # subset info
   infoSub = info[info$SMTSD == tissue,]
