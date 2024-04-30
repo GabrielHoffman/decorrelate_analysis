@@ -140,7 +140,7 @@ colMethods = c("GIW-EB" = "red",
 tab = sort(table(info$SMTSD))
 
 # for each tissue
-res = mclapply( names(tab)[1:30], function(tissue){
+res = mclapply( names(tab), function(tissue){
 
   message(tissue)
 
@@ -158,7 +158,7 @@ res = mclapply( names(tab)[1:30], function(tissue){
   keep = rowSums(geneExpr > 1) > 50
 
   # get log2 TMP with features on columns
-  Ys = scale(log2(t(geneExpr[keep,])))[,1:100]
+  Ys = scale(log2(t(geneExpr[keep,])))[,1:200]
 
   n = nrow(Ys)
 
@@ -179,16 +179,16 @@ res = mclapply( names(tab)[1:30], function(tissue){
                       t(c(tm)),
                       rmse = rmse))
 
-  # # decorrelate
-  # tm = system.time({
-  #   ecl <- eclairs( Ys[idx_train,], k=50)
-  #   y_white <- decorrelate(Ys[-idx_train,], ecl)
-  #   })   
-  # rmse = normCov(cora(y_white))
-  # df = rbind(df, data.frame(
-  #                     Method = 'GIW-EB (k=50)', 
-  #                     t(c(tm)),
-  #                     rmse = rmse))
+  # decorrelate
+  tm = system.time({
+    ecl <- eclairs( Ys[idx_train,], k=50)
+    y_white <- decorrelate(Ys[-idx_train,], ecl)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = 'GIW-EB (k=50)', 
+                      t(c(tm)),
+                      rmse = rmse))
 
   tm = system.time({
     ecl <- eclairs( Ys[idx_train,])
@@ -220,25 +220,25 @@ res = mclapply( names(tab)[1:30], function(tissue){
                       t(c(tm)),
                       rmse = rmse))
 
-  # tm = system.time({
-  #   fit <- CovTools::CovEst.2003LW( Ys[idx_train,] )
-  #   y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
-  #   })   
-  # rmse = normCov(cora(y_white))
-  # df = rbind(df, data.frame(
-  #                     Method = "Ledoit-Wolf",  
-  #                     t(c(tm)),
-  #                     rmse = rmse))
+  tm = system.time({
+    fit <- CovTools::CovEst.2003LW( Ys[idx_train,] )
+    y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "Ledoit-Wolf",  
+                      t(c(tm)),
+                      rmse = rmse))
 
-  # tm = system.time({
-  #   fit <- CovTools::CovEst.2010OAS( Ys[idx_train,] )
-  #   y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
-  #   })   
-  # rmse = normCov(cora(y_white))
-  # df = rbind(df, data.frame(
-  #                     Method = "OAS",  
-  #                     t(c(tm)),
-  #                     rmse = rmse))
+  tm = system.time({
+    fit <- CovTools::CovEst.2010OAS( Ys[idx_train,] )
+    y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "OAS",  
+                      t(c(tm)),
+                      rmse = rmse))
 
   tm = system.time({
     fit <- shrinkcovmat.equal( t(Ys[idx_train,]) )
