@@ -129,6 +129,8 @@ tissueType = names(tab)[tab >= 200][1:3]
 # for each tissue
 res = lapply(tissueType, function(tissue){
 
+  cat(tissue, "\r   ")
+
   # subset info
   infoSub = info[info$SMTSD == tissue,]
   include = rownames(infoSub)[rownames(infoSub) %in% colnames(dfTMP)]
@@ -144,7 +146,7 @@ res = lapply(tissueType, function(tissue){
 
   n = nrow(Ys)
 
-  idx_train = sample.int(n, n/2, replace=FALSE)
+  idx_train = sort(sample.int(n, n/2, replace=FALSE))
   df = data.frame()
 
   # Eval methods
