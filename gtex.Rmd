@@ -73,7 +73,9 @@ save(dfTMP, info, file="GTEx_data.RDATA")
 ```
 
 ```{r functions, cache=FALSE}
-load("GTEx_data.RDATA")
+if( ! "dfTMP" %in% ls()){
+  load("GTEx_data.RDATA")
+}
 
 df_colors = fromJSON("colors.json")
 df_colors = lapply(df_colors, data.frame)
