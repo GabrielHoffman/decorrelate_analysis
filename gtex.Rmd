@@ -50,6 +50,7 @@ library(tidyverse)
 library(decorrelate)
 library(Rfast)
 library(corpcor)
+library(parallel)
 library(ShrinkCovMat)
 library(jsonlite)
 library(cowplot)
@@ -139,7 +140,7 @@ colMethods = c("GIW-EB" = "red",
 tab = sort(table(info$SMTSD))
 
 # for each tissue
-res = lapply( names(tab), function(tissue){
+res = mclapply( names(tab)[1:30], function(tissue){
 
   message(tissue)
 
@@ -276,7 +277,7 @@ res = lapply( names(tab), function(tissue){
   df$p = ncol(Ys)
   df$rMSE_baseline = normCov(cora(Ys[-idx_train,]))
   df
-})
+}, mc.cores=6)
 res = do.call(rbind, res)
 res$Method = factor(res$Method, names(colMethods))
 res$Method = droplevels(res$Method)
