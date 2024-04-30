@@ -284,11 +284,13 @@ res$Method = droplevels(res$Method)
 
 # Plots
 ```{r plots, cache=FALSE}
+res = res %>%
+  mutate(value = 100*rmse / rMSE_baseline)
 
 cutoff = 100
 
 res %>%
-  ggplot(aes(Method, 100*rmse / rMSE_baseline, fill=Method)) + 
+  ggplot(aes(Method, value, fill=Method)) + 
     geom_bar(stat="identity") +
     theme_classic()  +
     theme(aspect.ratio=1, 
@@ -298,7 +300,7 @@ res %>%
     ylab("rMSE compared to baseline (%)")  +
     coord_flip(expand=FALSE, ylim=c(0, cutoff) ) + 
     scale_fill_manual(name="Method", values = colMethods) +    
-    geom_text(data=filter(res, mean == cutoff), aes(Method, cutoff*.9, label=round(100*rmse / rMSE_baseline, digits=1)), color="white")
+    geom_text(data=filter(res, value > cutoff), aes(Method, cutoff*.9, label=round(value, digits=1)), color="white")
 
 
 
