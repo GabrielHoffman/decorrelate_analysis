@@ -48,24 +48,223 @@ suppressPackageStartupMessages({
 library(ggplot2)
 library(tidyverse)
 library(decorrelate)
+library(corpcor)
+library(ShrinkCovMat)
+library(cowplot)
+library(CovTools)
+library(RhpcBLASctl)
 })
+omp_set_num_threads(6)
 ```
 
 # Load data
 ```{r load}
 file = "GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz"
-df <- read.delim(file, as.is=TRUE, row.names=1, check.names=FALSE ,skip=2)
-gene.names.df <- df[, 'Description', drop=FALSE]
-df <- df[, !(names(df) %in% c('Description'))]
+dfTMP <- read.delim(file, as.is=TRUE, row.names=1, check.names=FALSE ,skip=2)
+gene.names.df <- dfTMP[, 'Description', drop=FALSE]
+dfTMP <- dfTMP[, !(names(dfTMP) %in% c('Description'))]
 
 file = "GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt"
 info <- read.delim(file, as.is=TRUE, header=TRUE, row.names=1)
 ```
 
+```{r functions}
+# norm of matrix compared to identity,
+# This is the root mean squared error of the off diagonal entries
+normCov = function(Sigma){
+
+  if( length(Sigma) == 1)
+    if( is.na(Sigma) ) return(NA)
+  # base::norm(Sigma - diag(1, nrow(Sigma)), "F")^2 / length(Sigma)
+
+  mse = mean((Sigma-diag(1, nrow(Sigma)))^2)
+  sqrt(mse)
+}
+
+# matrix square root
+msqrt = function(S){
+  dcmp = eigen(S)
+  # with(dcmp, vectors %*% diag(sqrt(values)) %*% t(vectors))
+  with(dcmp, vectors %*% (sqrt(values) * t(vectors)))
+}
+
+minvsqrt = function(S, tol = 1e-14){
+  dcmp = eigen(S)  
+  k = sum(dcmp$values > tol)
+  # with(dcmp, vectors %*% diag(1/sqrt(values)) %*% t(vectors))
+  with(dcmp, vectors[,seq(k)] %*% ((1/sqrt(values[seq(k)])) * t(vectors[,seq(k)])))
+}
+
+
+# whiten with pseudoinverse with fixed rank
+get_w_ginv = function(X, k, tol = 1e-14){
+  C = cov(X)
+  dcmp = eigen(C)
+
+  k = sum(dcmp$values[seq(k)] > tol)
+  # W = with(dcmp, vectors[,seq(k)] %*% diag(1/sqrt(values[seq(k)])) %*% t(vectors[,seq(k)]))
+  W = with(dcmp, vectors[,seq(k)] %*% ((1/sqrt(values[seq(k)])) * t(vectors[,seq(k)])))
+  W
+}
+```
+
+
+```{r selection}
+# keep tissues with at least 200 samples
+tab = table(info$SMTSD)
+tissueType = names(tab)]tab >= 200]
+
+# for each tissue
+res = lapply(tissueType, function(tissue){
+
+  # subset info
+  infoSub = info[info$SMTSD == tissue,]
+
+  # subset gene expression, convert to log2 TPM
+  geneExpr = log2(dfTMP[,rownames(infoSub)] + 1e-3)
+  Ys = scale(t(geneExpr))
+
+  n = nrow(infoSub)
+
+  idx_train = sample.int(n, n/2, replace=FALSE)
+  df = data.frame()
+
+  # Eval methods
+  #-------------
+
+  # decorrelate
+  tm = system.time({
+    ecl <- eclairs( Ys[idx_train,])
+    y_white <- decorrelate(Ys[-idx_train,], ecl)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = 'GIW-EB', 
+                      t(c(tm)),
+                      rmse = rmse))
+
+  # decorrelate
+  tm = system.time({
+    ecl <- eclairs( Ys[idx_train,], k=50)
+    y_white <- decorrelate(Ys[-idx_train,], ecl)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = 'GIW-EB (k=50)', 
+                      t(c(tm)),
+                      rmse = rmse))
+
+  tm = system.time({
+    ecl <- eclairs( Ys[idx_train,])
+    y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 0)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "lambda = 0",  
+                      t(c(tm)),
+                      rmse = rmse))
+
+  tm = system.time({
+    ecl <- eclairs( Ys[idx_train,])
+    y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 0.01)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "lambda = 0.01", 
+                      t(c(tm)),
+                      rmse = rmse))
+
+  tm = system.time({
+    ecl <- eclairs( Ys[idx_train,])
+    y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 1e-4)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "lambda = 1e-4",  
+                      t(c(tm)),
+                      rmse = rmse))
+
+  tm = system.time({
+    fit <- CovTools::CovEst.2003LW( Ys[idx_train,] )
+    y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "Ledoit-Wolf",  
+                      t(c(tm)),
+                      rmse = rmse))
+
+  tm = system.time({
+    fit <- CovTools::CovEst.2010OAS( Ys[idx_train,] )
+    y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "OAS",  
+                      t(c(tm)),
+                      rmse = rmse))
+
+  tm = system.time({
+    fit <- shrinkcovmat.equal( t(Ys[idx_train,]) )
+    y_white <- Ys[-idx_train,] %*% minvsqrt(fit$Sigmahat)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "Touloumis", 
+                      t(c(tm)),
+                      rmse = rmse))
+
+  tm = system.time({
+    C <- cor.shrink( Ys[idx_train,], verbose=FALSE )
+    y_white <- Ys[-idx_train,] %*% minvsqrt(C)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "Schäfer-Strimmer", 
+                      t(c(tm)),
+                      rmse = rmse))
+
+  tm = system.time({
+    y_white <- Ys[-idx_train,] %*% minvsqrt(Sigma)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "Oracle", 
+                      t(c(tm)),
+                      rmse = rmse))
+
+  tm = system.time({
+    # learn transformation
+    k <- min(dim(Ys[idx_train,]))-1
+    W <- get_w_ginv(Ys[idx_train,], k)
+    y_white <- tcrossprod(Ys[-idx_train,], W)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "Pseudoinverse", 
+                      t(c(tm)),
+                      rmse = rmse))    
+
+  df$Tissue = Tissue
+  df$n = n
+  df$rMSE_baseline = normCov(cora(Ys[-idx_train,]))
+  df
+})
+res = do.call(rbind, res)
+```
 
 
 
-table(info$SMTSD)
+
+
+
+
+
+
+
+
+
+
 
 
 
