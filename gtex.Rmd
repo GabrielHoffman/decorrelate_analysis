@@ -293,7 +293,7 @@ res %>%
     theme(aspect.ratio=1, 
       plot.title = element_text(hjust = 0.5),
       legend.position="none") +
-    facet_wrap(~ Tissue, nrow=5) +
+    facet_wrap(~ Tissue, ncol=5) +
     ylab("rMSE compared to baseline (%)")  +
     coord_flip(expand=FALSE, ylim=c(0, 100) ) + 
     scale_fill_manual(name="Method", values = colMethods)
