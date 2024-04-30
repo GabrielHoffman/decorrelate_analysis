@@ -128,7 +128,7 @@ tab = sort(table(info$SMTSD))
 # for each tissue
 res = lapply( names(tab)[1:25], function(tissue){
 
-  message(tissue, "        \n\n")
+  message(tissue)
 
   # subset info
   infoSub = info[info$SMTSD == tissue,]
@@ -165,36 +165,36 @@ res = lapply( names(tab)[1:25], function(tissue){
                       t(c(tm)),
                       rmse = rmse))
 
-  # decorrelate
-  tm = system.time({
-    ecl <- eclairs( Ys[idx_train,], k=50)
-    y_white <- decorrelate(Ys[-idx_train,], ecl)
-    })   
-  rmse = normCov(cora(y_white))
-  df = rbind(df, data.frame(
-                      Method = 'GIW-EB (k=50)', 
-                      t(c(tm)),
-                      rmse = rmse))
+  # # decorrelate
+  # tm = system.time({
+  #   ecl <- eclairs( Ys[idx_train,], k=50)
+  #   y_white <- decorrelate(Ys[-idx_train,], ecl)
+  #   })   
+  # rmse = normCov(cora(y_white))
+  # df = rbind(df, data.frame(
+  #                     Method = 'GIW-EB (k=50)', 
+  #                     t(c(tm)),
+  #                     rmse = rmse))
 
-  tm = system.time({
-    ecl <- eclairs( Ys[idx_train,])
-    y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 0)
-    })   
-  rmse = normCov(cora(y_white))
-  df = rbind(df, data.frame(
-                      Method = "lambda = 0",  
-                      t(c(tm)),
-                      rmse = rmse))
+  # tm = system.time({
+  #   ecl <- eclairs( Ys[idx_train,])
+  #   y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 0)
+  #   })   
+  # rmse = normCov(cora(y_white))
+  # df = rbind(df, data.frame(
+  #                     Method = "lambda = 0",  
+  #                     t(c(tm)),
+  #                     rmse = rmse))
 
-  tm = system.time({
-    ecl <- eclairs( Ys[idx_train,])
-    y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 0.01)
-    })   
-  rmse = normCov(cora(y_white))
-  df = rbind(df, data.frame(
-                      Method = "lambda = 0.01", 
-                      t(c(tm)),
-                      rmse = rmse))
+  # tm = system.time({
+  #   ecl <- eclairs( Ys[idx_train,])
+  #   y_white <- decorrelate(Ys[-idx_train,], ecl, lambda = 0.01)
+  #   })   
+  # rmse = normCov(cora(y_white))
+  # df = rbind(df, data.frame(
+  #                     Method = "lambda = 0.01", 
+  #                     t(c(tm)),
+  #                     rmse = rmse))
 
   # tm = system.time({
   #   ecl <- eclairs( Ys[idx_train,])
@@ -226,37 +226,37 @@ res = lapply( names(tab)[1:25], function(tissue){
   #                     t(c(tm)),
   #                     rmse = rmse))
 
-  tm = system.time({
-    fit <- shrinkcovmat.equal( t(Ys[idx_train,]) )
-    y_white <- Ys[-idx_train,] %*% minvsqrt(fit$Sigmahat)
-    })   
-  rmse = normCov(cora(y_white))
-  df = rbind(df, data.frame(
-                      Method = "Touloumis", 
-                      t(c(tm)),
-                      rmse = rmse))
+  # tm = system.time({
+  #   fit <- shrinkcovmat.equal( t(Ys[idx_train,]) )
+  #   y_white <- Ys[-idx_train,] %*% minvsqrt(fit$Sigmahat)
+  #   })   
+  # rmse = normCov(cora(y_white))
+  # df = rbind(df, data.frame(
+  #                     Method = "Touloumis", 
+  #                     t(c(tm)),
+  #                     rmse = rmse))
 
-  tm = system.time({
-    C <- cor.shrink( Ys[idx_train,], verbose=FALSE )
-    y_white <- Ys[-idx_train,] %*% minvsqrt(C)
-    })   
-  rmse = normCov(cora(y_white))
-  df = rbind(df, data.frame(
-                      Method = "Schäfer-Strimmer", 
-                      t(c(tm)),
-                      rmse = rmse))
+  # tm = system.time({
+  #   C <- cor.shrink( Ys[idx_train,], verbose=FALSE )
+  #   y_white <- Ys[-idx_train,] %*% minvsqrt(C)
+  #   })   
+  # rmse = normCov(cora(y_white))
+  # df = rbind(df, data.frame(
+  #                     Method = "Schäfer-Strimmer", 
+  #                     t(c(tm)),
+  #                     rmse = rmse))
 
-  tm = system.time({
-    # learn transformation
-    k <- min(dim(Ys[idx_train,]))-1
-    W <- get_w_ginv(Ys[idx_train,], k)
-    y_white <- tcrossprod(Ys[-idx_train,], W)
-    })   
-  rmse = normCov(cora(y_white))
-  df = rbind(df, data.frame(
-                      Method = "Pseudoinverse", 
-                      t(c(tm)),
-                      rmse = rmse))    
+  # tm = system.time({
+  #   # learn transformation
+  #   k <- min(dim(Ys[idx_train,]))-1
+  #   W <- get_w_ginv(Ys[idx_train,], k)
+  #   y_white <- tcrossprod(Ys[-idx_train,], W)
+  #   })   
+  # rmse = normCov(cora(y_white))
+  # df = rbind(df, data.frame(
+  #                     Method = "Pseudoinverse", 
+  #                     t(c(tm)),
+  #                     rmse = rmse))    
 
   df$Tissue = tissue
   df$n = nrow(Ys)
@@ -267,6 +267,20 @@ res = lapply( names(tab)[1:25], function(tissue){
 res = do.call(rbind, res)
 ```
 
+# Plots
+```{r plots, cache=FALSE}
+
+
+res %>%
+  ggplot(aes(Method, rmse / rMSE_baseline, fill=Method)) + 
+    geom_bar(stat="identity") +
+    theme_classic()  +
+    theme(aspect.ratio=1, 
+      plot.title = element_text(hjust = 0.5),
+      legend.position="none") +
+    facet_wrap(~ Tissue) +
+    coord_flip() +
+    ylab("rMSE compared to baseline (%)") 
 
 
 
