@@ -124,7 +124,7 @@ get_w_ginv = function(X, k, tol = 1e-14){
 ```{r selection}
 # keep tissues with at least 200 samples
 tab = sort(table(info$SMTSD))
-tissueType = names(tab)[tab >= 200]
+tissueType = names(tab)[tab >= 200][1:3]
 
 # for each tissue
 res = lapply(tissueType, function(tissue){
@@ -254,7 +254,7 @@ res = lapply(tissueType, function(tissue){
   #                     t(c(tm)),
   #                     rmse = rmse))    
 
-  df$Tissue = Tissue
+  df$Tissue = tissue
   df$n = nrow(Ys)
   df$p = ncol(Ys)
   df$rMSE_baseline = normCov(cora(Ys[-idx_train,]))
