@@ -58,7 +58,8 @@ df <- read.delim(file, as.is=TRUE, row.names=1, check.names=FALSE ,skip=2)
 gene.names.df <- df[, 'Description', drop=FALSE]
 df <- df[, !(names(df) %in% c('Description'))]
 
-info <- read.delim("GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt", as.is=TRUE, header=TRUE, row.names=1
+file = "GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt"
+info <- read.delim(file, as.is=TRUE, header=TRUE, row.names=1)
 ```
 
 
