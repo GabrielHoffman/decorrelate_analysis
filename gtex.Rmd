@@ -128,7 +128,7 @@ tab = sort(table(info$SMTSD))
 # for each tissue
 res = lapply( names(tab)[1:13], function(tissue){
 
-  message("\r", tissue, "        ")
+  message(tissue, "        \n\n")
 
   # subset info
   infoSub = info[info$SMTSD == tissue,]
