@@ -285,6 +285,7 @@ res$Method = droplevels(res$Method)
 # Plots
 ```{r plots, cache=FALSE}
 
+cutoff = 100
 
 res %>%
   ggplot(aes(Method, 100*rmse / rMSE_baseline, fill=Method)) + 
@@ -295,8 +296,9 @@ res %>%
       legend.position="none") +
     facet_wrap(~ Tissue, ncol=5) +
     ylab("rMSE compared to baseline (%)")  +
-    coord_flip(expand=FALSE, ylim=c(0, 100) ) + 
-    scale_fill_manual(name="Method", values = colMethods)
+    coord_flip(expand=FALSE, ylim=c(0, cutoff) ) + 
+    scale_fill_manual(name="Method", values = colMethods) +    
+    geom_text(data=filter(res, mean == cutoff), aes(Method, cutoff*.9, label=round(100*rmse / rMSE_baseline, digits=1)), color="white")
 
 
 
