@@ -288,7 +288,7 @@ res$Method = droplevels(res$Method)
 res = res %>%
   mutate(value = 100*rmse / rMSE_baseline)
 
-cutoff = 100
+cutoff = 50
 
 res %>%
   ggplot(aes(Method, value, fill=Method)) + 
@@ -313,7 +313,7 @@ res %>%
 ```{r time.wall, fig.width=9, fig.height=4, cache=FALSE}
 res %>% 
   group_by(Method) %>%
-  summarize(elapsed = sum(elapsed)/3600) %>%
+  summarize(elapsed = sum(elapsed)/60) %>%
   ggplot(aes(Method, elapsed, fill=Method)) +
     geom_bar(stat="identity") + 
     theme_bw()  +
@@ -325,7 +325,7 @@ res %>%
     scale_fill_manual(name="Method",values = colMethods) +
     coord_flip() +
     # scale_y_log10(labels = ~.x/100, expand=c(0,0), limits=c(1, 60), breaks=c(1, 3)) +
-    ylab("Wall time (hours)")
+    ylab("Wall time (minutes)")
 ```
 
 
