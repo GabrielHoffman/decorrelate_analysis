@@ -278,7 +278,7 @@ res = mclapply( names(tab), function(tissue){
   df$p = ncol(Ys)
   df$rMSE_baseline = normCov(cora(Ys[-idx_train,]))
   df
-}, mc.cores=6)
+}, mc.cores=12)
 res = do.call(rbind, res)
 res$Method = factor(res$Method, names(colMethods))
 res$Method = droplevels(res$Method)
@@ -287,7 +287,8 @@ res$Method = droplevels(res$Method)
 # Plots
 ```{r plots, cache=FALSE, fig.width=11, fig.height=20}
 res = res %>%
-  mutate(value = 100*rmse / rMSE_baseline)
+  mutate(value = 100*rmse / rMSE_baseline) %>%
+  mutate( Tissue = gsub("^(.*) \\(.*$", "\\1", Tissue))
 
 cutoff = 60
 
@@ -303,9 +304,6 @@ res %>%
     coord_flip(expand=FALSE, ylim=c(0, cutoff) ) + 
     scale_fill_manual(name="Method", values = colMethods) +    
     geom_text(data=filter(res, value > cutoff), aes(Method, cutoff*.9, label=round(value, digits=1)), color="white")
-
-
-
 ```
 
 
