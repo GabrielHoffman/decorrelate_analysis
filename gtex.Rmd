@@ -331,7 +331,7 @@ res %>%
 
 
 # CPU time
-```{r time.wall, fig.width=9, fig.height=4, cache=FALSE}
+```{r time.cpu, fig.width=9, fig.height=4, cache=FALSE}
 res %>% 
   group_by(Method) %>%
   summarize(elapsed = sum(user.self) / 60) %>%
