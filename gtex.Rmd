@@ -330,6 +330,31 @@ res %>%
 
 
 
+# CPU time
+```{r time.wall, fig.width=9, fig.height=4, cache=FALSE}
+res %>% 
+  group_by(Method) %>%
+  summarize(elapsed = sum(user.self) / 60) %>%
+  ggplot(aes(Method, 10*elapsed, fill=Method)) +
+    geom_bar(stat="identity") + 
+    theme_bw()  +
+    theme(aspect.ratio=1, 
+      plot.title = element_text(hjust = 0.5), 
+      legend.position = "none",
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.x = element_blank()) +
+    scale_fill_manual(name="Method",values = colMethods) +
+    coord_flip() +
+    scale_y_log10(labels = ~.x/10, expand=c(0,0), limits=c(1, 30000), breaks  =c(10, 100, 1000, 10000)) +
+    ylab("CPU time (minutes)")
+```
+
+
+
+
+
+
+
 
 
 
