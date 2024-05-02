@@ -312,8 +312,8 @@ res %>%
 ```{r time.wall, fig.width=9, fig.height=4, cache=FALSE}
 res %>% 
   group_by(Method) %>%
-  summarize(elapsed = sum(elapsed) / 60) %>%
-  ggplot(aes(Method, 10*elapsed, fill=Method)) +
+  summarize(elapsed = sum(elapsed) / 3600) %>%
+  ggplot(aes(Method, 1000*elapsed, fill=Method)) +
     geom_bar(stat="identity") + 
     theme_bw()  +
     theme(aspect.ratio=1, 
@@ -323,9 +323,11 @@ res %>%
       panel.grid.minor.x = element_blank()) +
     scale_fill_manual(name="Method",values = colMethods) +
     coord_flip() +
-    scale_y_log10(labels = ~.x/10, expand=c(0,0), limits=c(1, 20000), breaks  =c(10, 100, 1000, 10000)) +
-    ylab("Wall time (minutes)")
+    scale_y_log10(labels = ~.x/1000, expand=c(0,0), limits=c(1, 80000), breaks  =c(10, 100, 1000, 10000, 35000)) +
+    ylab("Wall time (hours)")
 ```
+
+
 
 
 
@@ -333,8 +335,8 @@ res %>%
 ```{r time.cpu, fig.width=9, fig.height=4, cache=FALSE}
 res %>% 
   group_by(Method) %>%
-  summarize(elapsed = sum(user.self) / 60) %>%
-  ggplot(aes(Method, 10*elapsed, fill=Method)) +
+  summarize(user.self = sum(user.self) / 3600) %>%
+  ggplot(aes(Method, 1000*user.self, fill=Method)) +
     geom_bar(stat="identity") + 
     theme_bw()  +
     theme(aspect.ratio=1, 
@@ -344,8 +346,8 @@ res %>%
       panel.grid.minor.x = element_blank()) +
     scale_fill_manual(name="Method",values = colMethods) +
     coord_flip() +
-    scale_y_log10(labels = ~.x/10, expand=c(0,0), limits=c(1, 30000), breaks  =c(10, 100, 1000, 10000)) +
-    ylab("CPU time (minutes)")
+    scale_y_log10(labels = ~.x/1000, expand=c(0,0), limits=c(1, 80000), breaks  =c(10, 100, 1000, 10000, 35000)) +
+    ylab("CPU time (hours)")
 ```
 
 
