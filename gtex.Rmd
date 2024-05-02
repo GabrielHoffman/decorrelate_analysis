@@ -290,7 +290,7 @@ res = res %>%
   mutate(value = 100*rmse / rMSE_baseline) %>%
   mutate( Tissue = gsub("^(.*) \\(.*$", "\\1", Tissue))
 
-cutoff = 60
+cutoff = 59
 
 res %>%
   ggplot(aes(Method, value, fill=Method)) + 
