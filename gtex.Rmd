@@ -313,7 +313,7 @@ cutoff = 59
 res2 = res %>%
   filter(Tissue == "Brain - Hypothalamus") 
 
-res2 %>%
+fig1 = res2 %>%
   ggplot(aes(Method, value, fill=Method)) + 
     geom_bar(stat="identity") +
     theme_classic()  +
@@ -324,11 +324,12 @@ res2 %>%
     coord_flip(expand=FALSE, ylim=c(0, cutoff) ) + 
     scale_fill_manual(name="Method", values = colMethods) +    
     geom_text(data=filter(res2, value > cutoff), aes(Method, cutoff*.9, label=round(value, digits=1)), color="white")
+fig1
 ```
 
 # Wall time
 ```{r time.wall, fig.width=9, fig.height=4, cache=FALSE}
-res %>% 
+fig2 = res %>% 
   group_by(Method) %>%
   summarize(elapsed = sum(elapsed) / 3600) %>%
   ggplot(aes(Method, 1000*elapsed, fill=Method)) +
@@ -343,8 +344,13 @@ res %>%
     coord_flip() +
     scale_y_log10(labels = ~.x/1000, expand=c(0,0), limits=c(1, 80000), breaks  =c(10, 100, 1000, 10000, 30000)) +
     ylab("Wall time (hours)")
+fig2
 ```
 
+
+```{r combine, fig.width=9, fig.height=4, cache=FALSE}
+plot_grid(fig1, fig2)
+```
 
 
 
