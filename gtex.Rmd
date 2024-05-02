@@ -310,9 +310,10 @@ res %>%
 
 ```{r plots.focus, cache=FALSE, fig.width=9, fig.height=4}
 cutoff = 59
+res2 = res %>%
+  filter(Tissue == "Brain - Hypothalamus") 
 
-res %>%
-  filter(Tissue == "Brain - Hypothalamus") %>%
+res2 %>%
   ggplot(aes(Method, value, fill=Method)) + 
     geom_bar(stat="identity") +
     theme_classic()  +
@@ -322,7 +323,7 @@ res %>%
     ylab("rMSE compared to baseline (%)")  +
     coord_flip(expand=FALSE, ylim=c(0, cutoff) ) + 
     scale_fill_manual(name="Method", values = colMethods) +    
-    geom_text(data=filter(res, value > cutoff), aes(Method, cutoff*.9, label=round(value, digits=1)), color="white")
+    geom_text(data=filter(res2, value > cutoff), aes(Method, cutoff*.9, label=round(value, digits=1)), color="white")
 ```
 
 # Wall time
