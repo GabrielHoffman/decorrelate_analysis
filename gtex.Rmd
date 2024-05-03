@@ -330,8 +330,8 @@ res_all %>%
     ylab("Root mean squared error")  +
     coord_flip(expand=FALSE, ylim=c(0, cutoff) ) + 
     scale_fill_manual(name="Method", values = colMethods) +
-    facet_wrap(~Tissue, ncol=5)+    
-    geom_text(data=filter(res_all, rmse > cutoff), aes(Method, cutoff*.9, label=round(rmse, digits=1)), color="white")
+    facet_wrap(~Tissue, ncol=5) +    
+    geom_text(data=filter(res_all, rmse > cutoff), aes(Method, cutoff*.9, label=round(rmse, digits=2)), color="white")
 ```
 
 
@@ -366,7 +366,8 @@ fig1a = res_all %>%
       legend.position="none") +
     ylab("Root mean squared error")  +
     coord_flip(expand=FALSE, ylim=c(0, NA) ) + 
-    scale_fill_manual(name="Method", values = colMethods)  
+    scale_fill_manual(name="Method", values = colMethods) +    
+    geom_text(data=filter(., rmse > cutoff), aes(Method, cutoff*.9, label=round(rmse, digits=2)), color="white") 
 fig1a
 ```
 
