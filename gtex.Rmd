@@ -367,7 +367,7 @@ fig1a = res_all %>%
     ylab("Root mean squared error")  +
     coord_flip(expand=FALSE, ylim=c(0, NA) ) + 
     scale_fill_manual(name="Method", values = colMethods) +    
-    geom_text(data=filter(., rmse > cutoff), aes(Method, cutoff*.9, label=round(rmse, digits=2)), color="white") 
+    geom_text(data=filter(.x, rmse > cutoff), aes(Method, cutoff*.9, label=round(rmse, digits=2)), color="white") 
 fig1a
 ```
 
