@@ -329,7 +329,7 @@ res_all %>%
 
 
 
-```{r plots.focus, cache=FALSE, fig.width=9, fig.height=4}
+```{r plots.focus, fig.width=9, fig.height=4, cache=FALSE}
 cutoff = 59
 res2 = res %>%
   filter(Tissue == "Brain - Hypothalamus") 
