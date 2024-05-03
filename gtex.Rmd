@@ -290,6 +290,14 @@ res = res %>%
   mutate(value = 100*rmse / rMSE_baseline) %>%
   mutate( Tissue = gsub("^(.*) \\(.*$", "\\1", Tissue))
 
+res_all = res %>%
+  group_by(Tissue, n, p) %>%
+  reframe(rMSE_baseline = rMSE_baseline) %>%
+  distinct %>%
+  with(.,tibble(Method = "baseline", rmse=rMSE_baseline, Tissue, n, p)) %>%
+  bind_rows(res %>% select(Method, rmse, Tissue, n,p),.)
+
+
 cutoff = 59
 
 res %>%
@@ -304,7 +312,20 @@ res %>%
     coord_flip(expand=FALSE, ylim=c(0, cutoff) ) + 
     scale_fill_manual(name="Method", values = colMethods) +    
     geom_text(data=filter(res, value > cutoff), aes(Method, cutoff*.9, label=round(value, digits=1)), color="white")
+
+res_all %>%
+  filter(Method != "lambda = 0") %>%
+  ggplot(aes(Method, rmse, fill=Method)) + 
+    geom_bar(stat="identity") +
+    theme_classic()  +
+    theme(aspect.ratio=1, 
+      plot.title = element_text(hjust = 0.5),
+      legend.position="none") +
+    ylab("Root mean squared error")  +
+    coord_flip(expand=FALSE, ylim=c(0, NA) ) + 
+    scale_fill_manual(name="Method", values = colMethods)  
 ```
+
 
 
 
@@ -325,7 +346,23 @@ fig1 = res2 %>%
     scale_fill_manual(name="Method", values = colMethods) +    
     geom_text(data=filter(res2, value > cutoff), aes(Method, cutoff*.9, label=round(value, digits=1)), color="white")
 fig1
+
+res_all %>%
+  filter(Tissue == "Brain - Hypothalamus")  %>%
+  filter(Method != "lambda = 0") %>%
+  ggplot(aes(Method, rmse, fill=Method)) + 
+    geom_bar(stat="identity") +
+    theme_classic()  +
+    theme(aspect.ratio=1, 
+      plot.title = element_text(hjust = 0.5),
+      legend.position="none") +
+    ylab("Root mean squared error")  +
+    coord_flip(expand=FALSE, ylim=c(0, NA) ) + 
+    scale_fill_manual(name="Method", values = colMethods)  
 ```
+
+
+
 
 # Wall time
 ```{r time.wall, fig.width=9, fig.height=4, cache=FALSE}
