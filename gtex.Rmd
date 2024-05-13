@@ -166,7 +166,7 @@ dataList = lapply( names(tab), function(tissue){
 
   info2 = infoSub[include,]
 
-  form = ~ SMRIN + SMTSISCH + SMRRNART + SMDPMPRT + (1|SMGEBTCH) + (1|SMNABTCH) + (1|SMATSSCR)
+  form = ~ SMRIN + SMTSISCH + SMRRNART + (1|SMGEBTCH) + (1|SMNABTCH) + (1|SMATSSCR)
 
   # scaled residuals
   fit = dream(log2(geneExpr[keep,]), form, info2, BPPARAM=SnowParam(12))
