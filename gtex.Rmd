@@ -140,17 +140,14 @@ colMethods = c("GIW-EB" = "red",
               "Oracle" = "black")
 ```
 
-
-
-```{r analysis, message=FALSE}
-tab = sort(table(info$SMTSD))
+```{r residuals}
+tab = rev(sort(table(info$SMTSD)))[20]
 
 # for each tissue
 file.remove("progress.log")
-res = mclapply( names(tab), function(tissue){
-
+dataList = lapply( names(tab), function(tissue){
   write(tissue, file="progress.log", append=TRUE)
-
+  
   # subset info
   infoSub = info[info$SMTSD == tissue,]
   include = rownames(infoSub)[rownames(infoSub) %in% colnames(dfTMP)]
@@ -169,9 +166,23 @@ res = mclapply( names(tab), function(tissue){
 
   # scaled residuals
   form = ~ SEX + (1|SMGEBTCH)
-  fit = dream(log2(geneExpr[keep,]), form, infoSub[include,])
+  fit = dream(log2(geneExpr[keep,]), form, infoSub[include,], BPPARAM=SnowParam(12))
   Ys = scale(t(residuals(fit)))
 
+  list(geneExpr = Ys, info = infoSub[include,])
+})
+names(dataList) = names(tab)
+```
+
+
+```{r analysis, message=FALSE}
+# for each tissue
+file.remove("progress.log")
+res = mclapply( names(dataList), function(tissue){
+
+  write(tissue, file="progress.log", append=TRUE)
+
+  Ys = dataList[[tissue]]$geneExpr
   n = nrow(Ys)
 
   idx_train = sort(sample.int(n, n * .8, replace=FALSE))
