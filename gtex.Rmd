@@ -186,7 +186,7 @@ res = mclapply( names(dataList), function(tissue){
   write(tissue, file="progress.log", append=TRUE)
 
   Ys = dataList[[tissue]]$geneExpr
-  n = nrow(Ys)
+  n = nrow(Ys) 
 
   idx_train = sort(sample.int(n, n * .8, replace=FALSE))
   df = data.frame()
