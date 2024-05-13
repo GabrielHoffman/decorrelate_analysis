@@ -141,7 +141,7 @@ colMethods = c("GIW-EB" = "red",
 ```
 
 ```{r residuals}
-tab = rev(sort(table(info$SMTSD)))[20:25]
+tab = rev(sort(table(info$SMTSD)))
 
 # for each tissue
 file.remove("progress.log")
