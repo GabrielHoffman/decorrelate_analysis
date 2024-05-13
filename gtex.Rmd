@@ -23,8 +23,7 @@ system("git pull"); rmarkdown::render("gtex.Rmd")
 
 
 
-# https://hoffmg01.hpc.mssm.edu/decorrelate_analysis
-
+# https://hoffmg01.hpc.mssm.edu/decorrelate_analysis/gtex.html
 
 --->
 
@@ -55,6 +54,7 @@ library(ShrinkCovMat)
 library(jsonlite)
 library(cowplot)
 library(CovTools)
+library(variancePartition)
 library(RhpcBLASctl)
 })
 omp_set_num_threads(6)
