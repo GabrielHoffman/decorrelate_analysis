@@ -127,7 +127,7 @@ get_w_ginv = function(X, k, tol = 1e-14){
 }
 
 colMethods = c("GIW-EB" = "red",
-              "GIW-EB (k=10)" = "#9f1214",
+              "GIW-EB (k=50)" = "#9f1214",
               "lambda = 0.01" = "#377EB8", 
               "lambda = 1e-4" = "#37b8b2",
               "lambda = 0" = "#0000cd", 
