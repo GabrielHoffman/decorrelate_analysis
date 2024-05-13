@@ -149,7 +149,6 @@ tab = sort(table(info$SMTSD))
 file.remove("progress.log")
 res = mclapply( names(tab), function(tissue){
 
-  library(variancePartition)
   write(tissue, file="progress.log", append=TRUE)
 
   # subset info
@@ -169,7 +168,7 @@ res = mclapply( names(tab), function(tissue){
   # Ys = scale(log2(t(geneExpr[keep,])))
 
   # scaled residuals
-  form = ~ SEX + SMGEBTCH
+  form = ~ SEX + (1|SMGEBTCH)
   fit = dream(log2(geneExpr[keep,]), form, infoSub[include,])
   Ys = scale(t(residuals(fit)))
 
