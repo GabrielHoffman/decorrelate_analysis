@@ -215,7 +215,7 @@ res = mclapply( names(dataList), function(tissue){
     })   
   rmse = normCov(cora(y_white))
   df = rbind(df, data.frame(
-                      Method = 'GIW-EB (k=10)', 
+                      Method = 'GIW-EB (k=50)', 
                       t(c(tm)),
                       rmse = rmse))
 
