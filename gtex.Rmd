@@ -149,6 +149,7 @@ tab = sort(table(info$SMTSD))
 file.remove("progress.log")
 res = mclapply( names(tab), function(tissue){
 
+  library(variancePartition)
   write(tissue, file="progress.log", append=TRUE)
 
   # subset info
