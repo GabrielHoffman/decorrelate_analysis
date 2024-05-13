@@ -147,7 +147,7 @@ tab = rev(sort(table(info$SMTSD)))[20]
 file.remove("progress.log")
 dataList = lapply( names(tab), function(tissue){
   write(tissue, file="progress.log", append=TRUE)
-  
+
   # subset info
   infoSub = info[info$SMTSD == tissue,]
   include = rownames(infoSub)[rownames(infoSub) %in% colnames(dfTMP)]
@@ -165,7 +165,7 @@ dataList = lapply( names(tab), function(tissue){
   # Ys = scale(log2(t(geneExpr[keep,])))
 
   # scaled residuals
-  form = ~ SEX + (1|SMGEBTCH)
+  form = ~ (1|SMGEBTCH)
   fit = dream(log2(geneExpr[keep,]), form, infoSub[include,], BPPARAM=SnowParam(12))
   Ys = scale(t(residuals(fit)))
 
