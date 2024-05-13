@@ -166,7 +166,7 @@ dataList = lapply( names(tab), function(tissue){
 
   info2 = infoSub[include,]
 
-  form = ~ scale(SMRIN) + scale(SMTSISCH) + scale(SMRRNART) + (1|SMGEBTCH) + (1|SMNABTCH) + (1|SMATSSCR)
+  form = ~ scale(SMRIN) + scale(SMTSISCH) + scale(SMRRNART) + (1|SMGEBTCH) + (1|SMNABTCH) 
 
   # scaled residuals
   fit = dream(log2(geneExpr[keep,]), form, info2, BPPARAM=SnowParam(12))
@@ -177,6 +177,13 @@ dataList = lapply( names(tab), function(tissue){
 names(dataList) = names(tab)
 ```
 
+
+  # info2 = info2[,all.vars(form)]
+  # wh = apply(info2, 2, function(x) sum(is.na(x)) > 50)
+
+  # if( "SMATSSCR" %in% names(wh[wh])){
+  #     form = ~ scale(SMRIN) + scale(SMTSISCH) + scale(SMRRNART) + (1|SMGEBTCH) + (1|SMNABTCH) 
+  # }
 
 ```{r analysis, message=FALSE}
 # for each tissue
