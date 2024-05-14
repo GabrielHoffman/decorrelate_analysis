@@ -193,7 +193,7 @@ res = mclapply( names(dataList), function(tissue){
   n = nrow(Ys) 
 
   # idx_train = sort(sample.int(n, n * .9, replace=FALSE))
-  idx_train = seq(0.9*n)
+  idx_train = seq(0.8*n)
   df = data.frame()
 
   # Eval methods
