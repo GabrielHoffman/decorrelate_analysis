@@ -251,57 +251,57 @@ res = mclapply( names(dataList), function(tissue){
                       t(c(tm)),
                       rmse = rmse))
 
-  # tm = system.time({
-  #   fit <- CovTools::CovEst.2003LW( Ys[idx_train,] )
-  #   y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
-  #   })   
-  # rmse = normCov(cora(y_white))
-  # df = rbind(df, data.frame(
-  #                     Method = "Ledoit-Wolf",  
-  #                     t(c(tm)),
-  #                     rmse = rmse))
+  tm = system.time({
+    fit <- CovTools::CovEst.2003LW( Ys[idx_train,] )
+    y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "Ledoit-Wolf",  
+                      t(c(tm)),
+                      rmse = rmse))
 
-  # tm = system.time({
-  #   fit <- CovTools::CovEst.2010OAS( Ys[idx_train,] )
-  #   y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
-  #   })   
-  # rmse = normCov(cora(y_white))
-  # df = rbind(df, data.frame(
-  #                     Method = "OAS",  
-  #                     t(c(tm)),
-  #                     rmse = rmse))
+  tm = system.time({
+    fit <- CovTools::CovEst.2010OAS( Ys[idx_train,] )
+    y_white <- Ys[-idx_train,] %*% minvsqrt(fit$S)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "OAS",  
+                      t(c(tm)),
+                      rmse = rmse))
 
-  # tm = system.time({
-  #   fit <- shrinkcovmat.equal( t(Ys[idx_train,]) )
-  #   y_white <- Ys[-idx_train,] %*% minvsqrt(fit$Sigmahat)
-  #   })   
-  # rmse = normCov(cora(y_white))
-  # df = rbind(df, data.frame(
-  #                     Method = "Touloumis", 
-  #                     t(c(tm)),
-  #                     rmse = rmse))
+  tm = system.time({
+    fit <- shrinkcovmat.equal( t(Ys[idx_train,]) )
+    y_white <- Ys[-idx_train,] %*% minvsqrt(fit$Sigmahat)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "Touloumis", 
+                      t(c(tm)),
+                      rmse = rmse))
 
-  # tm = system.time({
-  #   C <- cor.shrink( Ys[idx_train,], verbose=FALSE )
-  #   y_white <- Ys[-idx_train,] %*% minvsqrt(C)
-  #   })   
-  # rmse = normCov(cora(y_white))
-  # df = rbind(df, data.frame(
-  #                     Method = "Schäfer-Strimmer", 
-  #                     t(c(tm)),
-  #                     rmse = rmse))
+  tm = system.time({
+    C <- cor.shrink( Ys[idx_train,], verbose=FALSE )
+    y_white <- Ys[-idx_train,] %*% minvsqrt(C)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "Schäfer-Strimmer", 
+                      t(c(tm)),
+                      rmse = rmse))
 
-  # tm = system.time({
-  #   # learn transformation
-  #   k <- min(dim(Ys[idx_train,]))-1
-  #   W <- get_w_ginv(Ys[idx_train,], k)
-  #   y_white <- tcrossprod(Ys[-idx_train,], W)
-  #   })   
-  # rmse = normCov(cora(y_white))
-  # df = rbind(df, data.frame(
-  #                     Method = "Pseudoinverse", 
-  #                     t(c(tm)),
-  #                     rmse = rmse))    
+  tm = system.time({
+    # learn transformation
+    k <- min(dim(Ys[idx_train,]))-1
+    W <- get_w_ginv(Ys[idx_train,], k)
+    y_white <- tcrossprod(Ys[-idx_train,], W)
+    })   
+  rmse = normCov(cora(y_white))
+  df = rbind(df, data.frame(
+                      Method = "Pseudoinverse", 
+                      t(c(tm)),
+                      rmse = rmse))    
 
   df$Tissue = tissue
   df$n = nrow(Ys)
@@ -328,7 +328,7 @@ res_all = res %>%
   bind_rows(res %>% select(Method, rmse, Tissue, n,p),.)
 
 
-cutoff = 80
+cutoff = 83
 
 res %>%
   ggplot(aes(Method, value, fill=Method)) + 
