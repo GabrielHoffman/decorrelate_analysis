@@ -192,6 +192,10 @@ res = mclapply( names(dataList), function(tissue){
 
   write(tissue, file="progress.log", append=TRUE)
 
+  if( is.null(dataList[[tissue]]) ){
+    return( NULL)
+  }
+  
   Ys = dataList[[tissue]]$geneExpr
   n = nrow(Ys) 
 
