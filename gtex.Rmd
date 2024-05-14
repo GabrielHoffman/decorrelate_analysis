@@ -328,7 +328,7 @@ res_all = res %>%
   bind_rows(res %>% select(Method, rmse, Tissue, n,p),.)
 
 
-cutoff = 59
+cutoff = 80
 
 res %>%
   ggplot(aes(Method, value, fill=Method)) + 
