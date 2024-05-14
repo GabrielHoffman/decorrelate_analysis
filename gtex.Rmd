@@ -178,13 +178,6 @@ names(dataList) = names(tab)
 ```
 
 
-  # info2 = info2[,all.vars(form)]
-  # wh = apply(info2, 2, function(x) sum(is.na(x)) > 50)
-
-  # if( "SMATSSCR" %in% names(wh[wh])){
-  #     form = ~ scale(SMRIN) + scale(SMTSISCH) + scale(SMRRNART) + (1|SMGEBTCH) + (1|SMNABTCH) 
-  # }
-
 ```{r analysis, message=FALSE}
 # for each tissue
 file.remove("progress.log") 
@@ -199,7 +192,8 @@ res = mclapply( names(dataList), function(tissue){
   Ys = dataList[[tissue]]$geneExpr
   n = nrow(Ys) 
 
-  idx_train = sort(sample.int(n, n * .8, replace=FALSE))
+  # idx_train = sort(sample.int(n, n * .9, replace=FALSE))
+  idx_train = seq(0.9*n)
   df = data.frame()
 
   # Eval methods
