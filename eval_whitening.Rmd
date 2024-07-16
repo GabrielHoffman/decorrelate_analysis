@@ -107,32 +107,7 @@ breaks = c(0, 1500, 3000, 5000, 7000, Inf)
 # 		scale_fill_manual(name="Method",values = colMethods)
 ```
 
-```{r test, eval=FALSE}
-a = df %>%
-	mutate(rel.err = rmse ) %>%
-	mutate(category = cut(nsnps, breaks = breaks)) %>%
-	group_by(Method, category, pop) %>%
-	summarize(mean = mean(100*rel.err), 
-		se = sd(100*rel.err) / sqrt(length(rel.err)),
-		lambda = mean(lambda)) %>%
-	arrange(category) %>%
-	filter( pop == "ASN") 
-	# filter(category == "(300,500]", pop == "ASN") 
-
-df %>% 
-	mutate(category = cut(nsnps, breaks = breaks)) %>%
-	filter(Method == "GIW-EB (current work)") %>%
-	ggplot(aes(category, lambda)) +
-		geom_boxplot() +
-		scale_y_log10() + 
-		coord_flip() +
-		theme_classic()  +
-		theme(aspect.ratio=1, 
-			plot.title = element_text(hjust = 0.5),
-			legend.position="none")
-```
-
-
+# Relative rMSE
 ```{r all.mean, fig.width=12, fig.height=8, cache=FALSE}
 cutoff = 91
 
@@ -160,25 +135,46 @@ df2 %>%
 		ylab("rMSE compared to baseline (%)") +
 		coord_flip(expand=FALSE, ylim=c(0, cutoff) ) + 
 		scale_fill_manual(name="Method",values = colMethods)
+```
 
-df3 = df2 %>%
-	filter(pop == "EUR") %>%
-	droplevels
+# Points
+```{r points, fig.width=12, fig.height=8, cache=FALSE}
+df_temp = df2 %>% 
+			filter(Method == 'GIW-EB')
 
-df3 %>%
-	ggplot(aes(Method, mean, fill=Method)) + 
-		geom_bar(stat="identity") +
+fig = df2 %>%
+	# filter(category == "(1.5e+03,3e+03]") %>%
+	filter(! Method %in% c("lambda = 0", "Pseudoinverse")) %>%
+	droplevels %>%
+	ggplot(aes(Method, mean, fill=Method, color=Method)) + 
+		# geom_bar(stat="identity") +
+		geom_point() +
 		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
-		geom_text(data=filter(df3, mean == cutoff), aes(Method, cutoff*.9, label=round(meanValue, digits=1)), color="white") +
 		theme_classic()  +
 		theme(aspect.ratio=1, 
 			plot.title = element_text(hjust = 0.5),
 			legend.position="none") +
-		facet_grid(pop ~ category) +
+		facet_grid(pop ~ category, scales="free_x") +
 		ylab("rMSE compared to baseline (%)") +
-		coord_flip(expand=FALSE, ylim=c(0, cutoff) ) + 
-		scale_fill_manual(name="Method",values = colMethods)
+		coord_flip(expand=TRUE ) + 
+		scale_fill_manual(name="Method",values = colMethods) + 
+		scale_color_manual(name="Method",values = colMethods) +
+		geom_abline(data = df_temp, aes(intercept=mean, slope=0), linetype="dashed", color="grey50")
 ```
+
+# rMSE
+```{r all.mean, fig.width=12, fig.height=8, cache=FALSE}
+# df_all = df %>%
+#   group_by(Methopd, n, p) %>%
+#   reframe(rMSE_baseline = rMSE_baseline) %>%
+#   distinct %>%
+#   with(.,tibble(Method = "baseline", rmse=rMSE_baseline, Tissue, n, p)) %>%
+#   bind_rows(res %>% select(Method, rmse, Tissue, n,p),.)
+
+
+
+```
+
 
 
 ```{r compare, cache=FALSE, eval=FALSE}
