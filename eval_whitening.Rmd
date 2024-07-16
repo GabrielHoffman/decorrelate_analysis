@@ -162,19 +162,6 @@ fig = df2 %>%
 		geom_abline(data = df_temp, aes(intercept=mean, slope=0), linetype="dashed", color="grey50")
 ```
 
-# rMSE
-```{r all.mean, fig.width=12, fig.height=8, cache=FALSE}
-# df_all = df %>%
-#   group_by(Methopd, n, p) %>%
-#   reframe(rMSE_baseline = rMSE_baseline) %>%
-#   distinct %>%
-#   with(.,tibble(Method = "baseline", rmse=rMSE_baseline, Tissue, n, p)) %>%
-#   bind_rows(res %>% select(Method, rmse, Tissue, n,p),.)
-
-
-
-```
-
 
 
 ```{r compare, cache=FALSE, eval=FALSE}
