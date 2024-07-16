@@ -148,7 +148,7 @@ df2 %>%
 	droplevels %>%
 	ggplot(aes(Method, mean, fill=Method, color=Method)) + 
 		# geom_bar(stat="identity") +
-		geom_point() +
+		geom_point(size=2) +
 		geom_errorbar(aes(ymin = mean - 1.96*se, ymax=mean + 1.96*se), width=0) +
 		theme_classic()  +
 		theme(aspect.ratio=1, 
