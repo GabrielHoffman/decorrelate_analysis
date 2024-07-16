@@ -142,7 +142,7 @@ df2 %>%
 df_temp = df2 %>% 
 			filter(Method == 'GIW-EB')
 
-fig = df2 %>%
+df2 %>%
 	# filter(category == "(1.5e+03,3e+03]") %>%
 	filter(! Method %in% c("lambda = 0", "Pseudoinverse")) %>%
 	droplevels %>%
