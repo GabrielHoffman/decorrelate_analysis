@@ -62,7 +62,7 @@ colMethods = c("GIW-EB" = "red",
               "Baseline" = "grey50",
               "Oracle" = "black")
 
-#  
+
 df = lapply(c("EUR", "AFR", "ASN"), function(pop){
 	file = paste0("df_", pop, ".RDS")
 	readRDS(file) %>%
@@ -70,7 +70,8 @@ df = lapply(c("EUR", "AFR", "ASN"), function(pop){
 		mutate(pop = pop)
 })
 df = bind_rows(df) %>%
-	mutate(Method = recode( Method, "0" = 'lambda = 0'))
+	mutate(Method = recode( Method, "0" = 'lambda = 0')) %>%
+	filter(Method %in% names(colMethods))
 df$Method = factor(df$Method, names(colMethods))
 df$Method = droplevels(df$Method)
 
