@@ -555,11 +555,6 @@ df %>%
 
 
 
-```{r exit2, cache=FALSE}
-# rmarkdown::render("simulations_v2.Rmd");
-knitr::knit_exit()
-```
-
 
 
 ## Block correlation: $\rho = 0.6$, 4 blocks
@@ -656,6 +651,11 @@ df %>%
 ```
 
 
+
+```{r exit2, cache=FALSE}
+# rmarkdown::render("simulations_v2.Rmd");
+knitr::knit_exit()
+```
 
 
 ## Block Auto-correlation: $\rho = 0.95$, 4 blocks
