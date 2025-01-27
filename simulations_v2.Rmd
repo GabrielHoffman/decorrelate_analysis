@@ -691,9 +691,8 @@ fig = df %>%
   scale_color_manual(name="Method",values = colMethods) + 
   geom_smooth(method='loess', se=FALSE, span=.3, size=1.5)
 
-ymax = 1.02*max(df$rmse[df$Method == 'lambda = 1e-4'])
+ymax = 1.02*max(df$rmse[df$Method == 'GIW-EB (k=50)'])
 ymin = 0.98*min(df$rmse)
-ymax = .085
 
 plot_grid(fig + theme(legend.position="none"), 
         fig + 
@@ -724,7 +723,7 @@ fig = df2 %>%
   geom_smooth(method='loess', se=FALSE, span=.4, size=1.5) +
   geom_hline(yintercept = 100, linetype="dashed", color="grey30") 
 
-ymax = 1.02*max(100*df2$rel.err[df2$Method == 'lambda = 0.01'])
+ymax = 1.02*max(100*df2$rel.err[df2$Method == 'GIW-EB (k=50)'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), 
