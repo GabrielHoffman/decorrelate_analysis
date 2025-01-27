@@ -20,10 +20,11 @@ vignette: >
 <!--- 
 
 cd /sc/arion/work/hoffmg01/decorrelate_analysis
-ml pandoc gcc/11.2.0
+git pull
+
 
 R
-system("git pull"); rmarkdown::render("simulations_v2.Rmd");
+rmarkdown::render("simulations_v2.Rmd");
 
 
 https://hoffmg01.hpc.mssm.edu/decorrelate_analysis/simulations_v2.html
@@ -504,6 +505,10 @@ plot_grid(fig + theme(legend.position="none"),
         coord_cartesian(ylim = c(ymin, ymax), xlim = c(0, NA), expand=FALSE), ncol=2, align="hv", axis="tblr", labels = LETTERS[1:2])
 ```
 
+
+```{r exit2, cache=FALSE}
+knitr::knit_exit()
+```
 
 ```{r relative.error2, cache=FALSE, fig.height=4, fig.width=12}
 df2 = df %>%  
