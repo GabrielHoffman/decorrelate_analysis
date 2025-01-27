@@ -485,7 +485,7 @@ make_plots(n/2, n, "autocorr", 0.95)
 ymax = .22
   
 fig = df %>%  
-  # filter((Method != "lambda = 0") | (Method == "lambda = 0" & rmse < 1.2*ymax)) %>%
+  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rmse < 1.2*ymax)) %>%
   ggplot(aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
@@ -506,9 +506,6 @@ plot_grid(fig + theme(legend.position="none"),
 ```
 
 
-```{r exit2, cache=FALSE}
-knitr::knit_exit()
-```
 
 ```{r relative.error2, cache=FALSE, fig.height=4, fig.width=12}
 df2 = df %>%  
@@ -656,6 +653,10 @@ df %>%
 
 
 
+```{r exit2, cache=FALSE}
+# rmarkdown::render("simulations_v2.Rmd");
+knitr::knit_exit()
+```
 
 ## Block Auto-correlation: $\rho = 0.95$, 4 blocks
 ```{r run_sim4}
