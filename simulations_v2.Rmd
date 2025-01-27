@@ -497,7 +497,7 @@ fig = df %>%
   scale_color_manual(name="Method",values = colMethods) + 
   geom_smooth(method='loess', se=FALSE, span=.2, size=1.5)
 
-# ymax = 1.02*max(df$rmse[df$Method == 'Pseudoinverse'])
+ymax = 1.02*max(df$rmse[df$Method == 'GIW-EB'])
 ymin = 0.98*min(df$rmse)
 
 plot_grid(fig + theme(legend.position="none"), 
@@ -596,7 +596,7 @@ fig = df %>%
   scale_color_manual(name="Method",values = colMethods) + 
   geom_smooth(method='loess', se=FALSE, span=.2, size=1.5)
 
-# ymax = 1.02*max(df$rmse[df$Method == 'Pseudoinverse'])
+ymax = 1.02*max(df$rmse[df$Method == 'Schäfer-Strimmer'])
 ymin = 0.98*min(df$rmse)
 
 plot_grid(fig + theme(legend.position="none"), 
