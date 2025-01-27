@@ -485,7 +485,7 @@ make_plots(n/2, n, "autocorr", 0.95)
 ymax = .22
   
 fig = df %>%  
-  filter((Method != "lambda = 0") | (Method == "lambda = 0" & rmse < 1.2*ymax)) %>%
+  # filter((Method != "lambda = 0") | (Method == "lambda = 0" & rmse < 1.2*ymax)) %>%
   ggplot(aes(p, rmse, color=Method)) + 
   geom_point(alpha=.2) + 
   theme_classic() + 
@@ -497,7 +497,7 @@ fig = df %>%
   scale_color_manual(name="Method",values = colMethods) + 
   geom_smooth(method='loess', se=FALSE, span=.2, size=1.5)
 
-ymax = 1.02*max(df$rmse[df$Method == 'lambda = 1e-4'])
+# ymax = 1.02*max(df$rmse[df$Method == 'Pseudoinverse'])
 ymin = 0.98*min(df$rmse)
 
 plot_grid(fig + theme(legend.position="none"), 
