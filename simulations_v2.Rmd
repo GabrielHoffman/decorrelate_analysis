@@ -629,7 +629,7 @@ fig = df2 %>%
   geom_smooth(method='loess', se=FALSE, span=.2, size=1.5) +
   geom_hline(yintercept = 100, linetype="dashed", color="grey30")
 
-ymax = 1.02*max(100*df2$rel.err[df2$Method == 'lambda = 0.01'])
+# ymax = 1.02*max(100*df2$rel.err[df2$Method == 'Pseudoinverse'])
 ymin = .98*min(100*df2$rel.err[df2$Method == 'Oracle'])
 
 plot_grid(fig + theme(legend.position="none"), 
