@@ -448,7 +448,7 @@ ggplot(aes(Method, user.self, fill=Method)) +
       panel.grid.minor.x = element_blank()) +
     scale_fill_manual(name="Method",values = colMethods) +
     coord_flip() +
-  scale_y_log10(labels = names(breaks), breaks = breaks, expand=c(0,0), limits=c(1, 920000))
+  scale_y_log10(labels = names(breaks), breaks = breaks, expand=c(0,0), limits=c(1, 920000)) +
   ylab("CPU time")
 ```
 
