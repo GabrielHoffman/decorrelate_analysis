@@ -12,3 +12,5 @@
 
 ### Schizophrenia GWAS
 [imputez_PGC3_SCZ.Rmd](imputez_PGC3_SCZ.Rmd)
+
+[imputez](https://gabrielhoffman.github.io/imputez) R package for imputing z-statistics from GWAS using [decorrelate]https://gabrielhoffman.github.io/decorrelate)
