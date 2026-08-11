@@ -32,9 +32,6 @@ library(ShrinkCovMat)
 library(parallel)
 })
 
-omp_set_num_threads(1)
-
-
 # from: /Users/gabrielhoffman/workspace/repos/eval_methods/decorrelate
 # norm of matrix compared to identity,
 # This is the root mean squared error of the off diagonal entries
@@ -116,6 +113,7 @@ df = lapply(seq(nrow(df_grid)), function(i){
     df = mclapply(seq(length(gr_chr)), function(k){
 
       message(i, " ", k)
+      omp_set_num_threads(1)
 
       # Read data in range
       vcf.file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/filter/", opt$super_pop, ".chr",df_grid$chrom[i], ".vcf.gz")
