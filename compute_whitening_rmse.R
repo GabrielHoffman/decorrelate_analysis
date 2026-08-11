@@ -101,7 +101,9 @@ set.seed(1)
 idx_train = sample(nrow(info), 0.5*nrow(info))
 idx_test = setdiff(seq(nrow(info)), idx_train)
 
-df = lapply(1:nrow(df_grid), function(i){
+df = lapply(seq(nrow(df_grid)), function(i){
+
+      message(i)
 
     # read in genome-blocks for this population
     file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/ldetect-data/", opt$super_pop, "/fourier_ls-all_mod.bed")
