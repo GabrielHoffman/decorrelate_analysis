@@ -248,7 +248,7 @@ df = lapply(seq(nrow(df_grid)), function(i){
       cat(df_grid$chrom[i], k, "  \r")
 
       cbind(df, nsnps = ncol(Y))
-    }, mc.cores=63)
+    }, mc.cores=30)
     do.call(rbind, df)
 })
 df = do.call(rbind, df)
