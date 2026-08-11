@@ -29,9 +29,10 @@ library(GenomeInfoDb)
 library(corpcor)
 library(RhpcBLASctl)
 library(ShrinkCovMat)
+library(parallel)
 })
 
-omp_set_num_threads(4)
+omp_set_num_threads(1)
 
 
 # from: /Users/gabrielhoffman/workspace/repos/eval_methods/decorrelate
@@ -103,8 +104,6 @@ idx_test = setdiff(seq(nrow(info)), idx_train)
 
 df = lapply(seq(nrow(df_grid)), function(i){
 
-      message(i)
-
     # read in genome-blocks for this population
     file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/ldetect-data/", opt$super_pop, "/fourier_ls-all_mod.bed")
     # file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/adjclust/", opt$super_pop, ".bed")
@@ -114,7 +113,10 @@ df = lapply(seq(nrow(df_grid)), function(i){
     # subset Granges for this chrom
     gr_chr = gr[seqnames(gr) == df_grid$chrom[i]]
 
-    df = lapply(seq(length(gr_chr)), function(k){
+    df = mclapply(seq(length(gr_chr)), function(k){
+
+      message(i, " ", k)
+
       # Read data in range
       vcf.file = paste0("/sc/arion/projects/CommonMind/hoffman/ldref/filter/", opt$super_pop, ".chr",df_grid$chrom[i], ".vcf.gz")
       res = readVcf( vcf.file, genome = "GRCh37", param = gr_chr[k] )
@@ -248,7 +250,7 @@ df = lapply(seq(nrow(df_grid)), function(i){
       cat(df_grid$chrom[i], k, "  \r")
 
       cbind(df, nsnps = ncol(Y))
-    })
+    }, mc.cores=63)
     do.call(rbind, df)
 })
 df = do.call(rbind, df)
